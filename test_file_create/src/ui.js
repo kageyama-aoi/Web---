@@ -15,6 +15,7 @@ export function getNewline(){
   return v==="CRLF" ? "\r\n" : v==="CR" ? "\r" : "\n";
 }
 export function withHeader(){ return $("#withHeader").checked; }
+export function getEncoding(){ return $$('input[name="enc"]').find(x=>x.checked)?.value || "UTF-8"; }
 
 export function extFor(fmt){
   return ({CSV:"csv",TSV:"tsv",JSON:"json",YAML:"yaml",XML:"xml",Markdown:"md",TXT:"txt",HTML:"html",SQL:"sql",FIXED:"txt"})[fmt] || "txt";
@@ -28,6 +29,8 @@ export function applyPresetDefaults(){
   $$('input[name="delim"]').forEach(r => r.checked = (r.value === (p.default?.delimiter || ",")));
   // header
   $("#withHeader").checked = (p.default?.withHeader ?? true);
+  // encoding
+  $$('input[name="enc"]').forEach(r => r.checked = (r.value === (p.default?.encoding || "UTF-8")));
   updateControlAvailability();
 }
 
@@ -45,4 +48,3 @@ export function headerLabels(){
   // フォールバック（未定義時）
   return [];
 }
-

@@ -1,7 +1,7 @@
 const PRESETS = {
   "1600_19_1": {
     id: "1600_19_1", name: "講師謝礼追加",
-    default: { format: "CSV", delimiter: ",", withHeader: true },
+    default: { format: "CSV", delimiter: ",", withHeader: true, encoding: "SJIS" },
     // 汎用20項目のサンプル（簡略）
     fields: [
       { key:"講師ID",type:"text",len:36 },{ key:"ID番号",type:"text",len:32 },
@@ -24,7 +24,7 @@ const PRESETS = {
 
   "2000_1_1": {
     id: "2000_1_1", name: "EDI新規会員データ取込",
-    default: { format: "FIXED", delimiter: "\t", withHeader: true },
+    default: { format: "FIXED", delimiter: "\t", withHeader: true, encoding: "UTF-8" },
     // このプリセットのスキーマ（CSV/JSON等でも使うヘッダ名）
     fields: [
       { key:"レコード区分", type:"number", len:1 },
@@ -44,13 +44,13 @@ const PRESETS = {
     rowsObj: [
       { 審査フラグ:"0", カード番号:"4111111111111111", "カード有効期限(YYMM)":"2607", "13桁会員番号":"1234567890123", カナ氏名:"ｶｹﾞﾔﾏ ｱｵｲ", 性別:"2", "生年月日(YYYYMMDD)":"19901123", "入会申込日(YYYYMMDD)":"20250819", 受付店舗コード:"007" },
       { 審査フラグ:"1", カード番号:"5500000000000004", "カード有効期限(YYMM)":"2703", "13桁会員番号":"9876543210987", カナ氏名:"ﾔﾏﾀﾞ ﾀﾛｳ", 性別:"1", "生年月日(YYYYMMDD)":"19800123", "入会申込日(YYYYMMDD)":"20250820", 受付店舗コード:"001" },
-      { 審査フラグ:"0", カード番号:"340000000000009",  "カード有効期限(YYMM)":"2812", "13桁会員番号":"1112223334445", カナ氏名:"ｽｽﾞｷ ﾊﾅｺ", 性別:"2", "生年月日(YYYYMMDD)":"19940228", "入会申込日(YYYYMMDD)":"20250818", 受付店舗コード:"010" }
+      { 審査フラグ:"0", カード番号:"3400000000000091", "カード有効期限(YYMM)":"2812", "13桁会員番号":"1112223334445", カナ氏名:"ｽｽﾞｷ ﾊﾅｺ", 性別:"2", "生年月日(YYYYMMDD)":"19940228", "入会申込日(YYYYMMDD)":"20250818", 受付店舗コード:"010" }
     ]
   },
 
   "4000_3_1": {
     id:"4000_3_1", name:"SMBC買取状態読込（ダミー）",
-    default:{ format:"CSV", delimiter:",", withHeader:true },
+    default:{ format:"CSV", delimiter:",", withHeader:true, encoding: "SJIS" },
     fields:[
       { key:"取引ID",type:"text",len:32 },
       { key:"状態",type:"text",len:8 },

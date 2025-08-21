@@ -1,5 +1,5 @@
 import { PRESETS } from './data/presets.js';
-import { $, $$, getPreset, getFormat, getDelimiter, getNewline, withHeader, extFor, applyPresetDefaults, updateControlAvailability, headerLabels } from './ui.js';
+import { $, $$, getPreset, getFormat, getDelimiter, getNewline, withHeader, getEncoding, extFor, applyPresetDefaults, updateControlAvailability, headerLabels } from './ui.js';
 import { generateEDI2000Fixed, validateEDI } from './formatters/ediFormatter.js';
 import { toCSVTSV } from './formatters/csvFormatter.js';
 import { toJSON } from './formatters/jsonFormatter.js';
@@ -78,7 +78,17 @@ function updateUI(text, p, ext, warn) {
   // 画面反映
   $('#preview').value = text;
   $('#fileName').textContent = `sample_${p.id}.${ext}`;
-  $('#fileSize').textContent = `${new Blob([text]).size.toLocaleString()} bytes`;
+
+  // ファイルサイズは選択中のエンコーディングで計算
+  const encoding = getEncoding();
+  let blob;
+  if (encoding === 'SJIS' && window.encoding) {
+    const sjisArray = window.encoding.convert(text, { to: 'SJIS', from: 'UNICODE' });
+    blob = new Blob([new Uint8Array(sjisArray)]);
+  } else {
+    blob = new Blob([text]);
+  }
+  $('#fileSize').textContent = `${blob.size.toLocaleString()} bytes`;
   $('#lineCount').textContent = (text.match(/\n/g)?.length ?? 0) + 1;
 
   // メタチェック（先頭行を schema で見る：固定長系のみ）
@@ -121,7 +131,18 @@ function renderChecks(rowsObj, p, fmt){
 function doDownload(){
   const { text, ext } = generate();
   const name = $("#fileName").textContent || `sample.${ext}`;
-  const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  const encoding = getEncoding();
+  const mimeType = `text/plain;charset=${encoding.toLowerCase()}`;
+
+  let blob;
+  if (encoding === 'SJIS' && window.encoding) {
+    const sjisArray = window.encoding.convert(text, { to: 'SJIS', from: 'UNICODE' });
+    blob = new Blob([new Uint8Array(sjisArray)], { type: mimeType });
+  } else {
+    // UTF-8
+    blob = new Blob([text], { type: mimeType });
+  }
+
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = name;
@@ -150,6 +171,9 @@ function initEventListeners() {
     generate();
   });
     $$('input[name="nl"]').forEach(r=>r.addEventListener("change", ()=>{
+    generate();
+  }));
+  $$('input[name="enc"]').forEach(r=>r.addEventListener("change", ()=>{
     generate();
   }));
   $("#btnPreview").addEventListener("click", ()=>{

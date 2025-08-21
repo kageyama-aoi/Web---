@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>サンプルファイル生成アプリ（統合版）</title>
+  <script src="https://cdn.jsdelivr.net/npm/encoding-japanese@2.1.0/encoding.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,68 +16,76 @@
     <!-- Left controls -->
     <div class="card">
       <h2>⚙️ 設定</h2>
-      <div class="body grid">
+      <form class="body grid" id="settingsForm">
         <div class="row">
           <label for="preset">プリセット</label>
-          <select id="preset">
+          <select id="preset" name="preset">
             <option value="1600_19_1">1600_19_1｜講師謝礼追加</option>
             <option value="2000_1_1" selected>2000_1_1｜EDI新規会員データ取込</option>
             <option value="4000_3_1">4000_3_1｜SMBC買取状態読込（ダミー）</option>
           </select>
         </div>
 
-        <div class="row">
-          <label>フォーマット</label>
+        <fieldset class="row">
+          <legend>フォーマット</legend>
           <div class="flex" id="fmtGroup">
-            <label class="switch"><input type="radio" name="fmt" value="CSV">CSV</label>
-            <label class="switch"><input type="radio" name="fmt" value="TSV">TSV</label>
-            <label class="switch"><input type="radio" name="fmt" value="JSON">JSON</label>
-            <label class="switch"><input type="radio" name="fmt" value="YAML">YAML</label>
-            <label class="switch"><input type="radio" name="fmt" value="XML">XML</label>
-            <label class="switch"><input type="radio" name="fmt" value="Markdown">MD</label>
-            <label class="switch"><input type="radio" name="fmt" value="TXT">TXT</label>
-            <label class="switch"><input type="radio" name="fmt" value="HTML">HTML</label>
-            <label class="switch"><input type="radio" name="fmt" value="SQL">SQL</label>
-            <label class="switch"><input type="radio" name="fmt" value="FIXED" checked>固定長</label>
+            <label class="switch" for="fmt_csv"><input type="radio" name="fmt" value="CSV" id="fmt_csv">CSV</label>
+            <label class="switch" for="fmt_tsv"><input type="radio" name="fmt" value="TSV" id="fmt_tsv">TSV</label>
+            <label class="switch" for="fmt_json"><input type="radio" name="fmt" value="JSON" id="fmt_json">JSON</label>
+            <label class="switch" for="fmt_yaml"><input type="radio" name="fmt" value="YAML" id="fmt_yaml">YAML</label>
+            <label class="switch" for="fmt_xml"><input type="radio" name="fmt" value="XML" id="fmt_xml">XML</label>
+            <label class="switch" for="fmt_md"><input type="radio" name="fmt" value="Markdown" id="fmt_md">MD</label>
+            <label class="switch" for="fmt_txt"><input type="radio" name="fmt" value="TXT" id="fmt_txt">TXT</label>
+            <label class="switch" for="fmt_html"><input type="radio" name="fmt" value="HTML" id="fmt_html">HTML</label>
+            <label class="switch" for="fmt_sql"><input type="radio" name="fmt" value="SQL" id="fmt_sql">SQL</label>
+            <label class="switch" for="fmt_fixed"><input type="radio" name="fmt" value="FIXED" id="fmt_fixed" checked>固定長</label>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="row">
-          <label>区切り</label>
+        <fieldset class="row">
+          <legend>区切り</legend>
           <div class="flex">
-            <label class="switch"><input type="radio" name="delim" value="," checked>,（カンマ）</label>
-            <label class="switch"><input type="radio" name="delim" value="\t">\t（タブ）</label>
+            <label class="switch" for="delim_comma"><input type="radio" name="delim" value="," id="delim_comma" checked>,（カンマ）</label>
+            <label class="switch" for="delim_tab"><input type="radio" name="delim" value="\t" id="delim_tab">\t（タブ）</label>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="row">
-          <label>ヘッダ行</label>
+        <fieldset class="row">
+          <legend>ヘッダ行</legend>
           <div class="flex">
-            <label class="switch"><input type="checkbox" id="withHeader" checked>出力にヘッダを含める</label>
+            <label class="switch" for="withHeader"><input type="checkbox" id="withHeader" name="withHeader" checked>出力にヘッダを含める</label>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="row">
-          <label>改行コード</label>
+        <fieldset class="row">
+          <legend>改行コード</legend>
           <div class="flex">
-            <label class="switch"><input type="radio" name="nl" value="LF" checked>LF (\n)</label>
-            <label class="switch"><input type="radio" name="nl" value="CRLF">CRLF (\r\n)</label>
-            <label class="switch"><input type="radio" name="nl" value="CR">CR (\r)</label>
+            <label class="switch" for="nl_lf"><input type="radio" name="nl" value="LF" id="nl_lf" checked>LF (\n)</label>
+            <label class="switch" for="nl_crlf"><input type="radio" name="nl" value="CRLF" id="nl_crlf">CRLF (\r\n)</label>
+            <label class="switch" for="nl_cr"><input type="radio" name="nl" value="CR" id="nl_cr">CR (\r)</label>
           </div>
-        </div>
+        </fieldset>
+
+        <fieldset class="row">
+          <legend>文字コード</legend>
+          <div class="flex">
+            <label class="switch" for="enc_utf8"><input type="radio" name="enc" value="UTF-8" id="enc_utf8" checked>UTF-8</label>
+            <label class="switch" for="enc_sjis"><input type="radio" name="enc" value="SJIS" id="enc_sjis">Shift-JIS</label>
+          </div>
+        </fieldset>
 
         <div class="row">
           <label>プレビュー</label>
           <div class="flex">
-            <button class="btn" id="btnPreview">再生成</button>
-            <button class="btn primary" id="btnDownload">ダウンロード</button>
+            <button type="button" class="btn" id="btnPreview">再生成</button>
+            <button type="button" class="btn primary" id="btnDownload">ダウンロード</button>
           </div>
         </div>
 
         <div class="grid small muted">
           <div>ヒント：<span class="kbd">固定長</span> は 2000_1_1 のとき <span class="hl">EDI仕様（100桁・ヘッダ/データ/トレーラー/エンド）</span> を自動適用します。</div>
         </div>
-      </div>
+      </form>
       <div class="foot small">v0.2 – 統合版 / EDI対応・TSV/CSV/他各形式</div>
     </div>
 
@@ -89,7 +98,7 @@
           <span class="pill">サイズ: <span id="fileSize" class="mono"></span></span>
           <span class="pill">行数: <span id="lineCount" class="mono"></span></span>
         </div>
-        <textarea id="preview" class="mono" spellcheck="false"></textarea>
+        <textarea id="preview" class="mono" spellcheck="false" aria-label="出力プレビュー"></textarea>
 
         <div id="panelChecks" class="grid">
           <div class="small muted">メタチェック（先頭レコード基準）</div>
