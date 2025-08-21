@@ -44,8 +44,26 @@
     box-shadow: 0 4px 12px rgba(0,0,0,.05);
     transition: background-color .3s, color .3s;
   }
-  .preview-panel .inner { max-width: 1100px; margin: 0 auto; display: grid; gap: 10px; align-items: center; grid-template-columns: 1fr 1fr auto; }
+  .preview-panel .inner {
+    max-width: 1100px; margin: 0 auto; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  }
   .preview-panel .title { font-weight: 700; }
+  .preview-panel .muted-text { font-size: 14px; opacity: 0.7; }
+  .preview-panel a { font-weight: 600; text-decoration: none; }
+  .preview-panel a:hover { text-decoration: underline; }
+  .preview-panel input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid;
+    font-size: 14px;
+    min-width: 160px;
+  }
+  .btn.ghost {
+    background: transparent;
+    border: 1px solid;
+    padding: 9px 13px;
+  }
+
   .card.active {
     outline: 3px solid var(--accent, #007AFF);
     outline-offset: -2px;
@@ -61,9 +79,13 @@
 
   <div id="preview-panel" class="preview-panel">
     <div class="inner">
-      <div id="preview-title" class="title">見出しテキスト</div>
-      <div id="preview-text">ここに本文のサンプルが表示されます。</div>
-      <button id="preview-btn" class="btn">ボタン</button>
+      <span id="preview-title" class="title">見出し</span>
+      <span id="preview-text">本文サンプル</span>
+      <a href="#" id="preview-link" onclick="return false;">リンク</a>
+      <span id="preview-muted" class="muted-text">補助テキスト</span>
+      <input type="text" id="preview-input" placeholder="入力フォーム">
+      <button id="preview-btn" class="btn" style="margin-left: auto;">ボタン</button>
+      <button id="preview-reset" class="btn ghost">リセット</button>
     </div>
   </div>
 
@@ -127,23 +149,44 @@
 
     // --- Interactive Preview Logic ---
     const cards = document.querySelectorAll('.card');
+    // Preview elements
     const previewPanel = document.getElementById('preview-panel');
+    const previewLink = document.getElementById('preview-link');
+    const previewMuted = document.getElementById('preview-muted');
+    const previewInput = document.getElementById('preview-input');
     const previewBtn = document.getElementById('preview-btn');
+    const previewReset = document.getElementById('preview-reset');
 
     function applyPalette(card) {
       const swatches = card.querySelectorAll('.swatch');
-      if (swatches.length < 3) return;
+      if (swatches.length < 4) return;
 
       const bgColor = swatches[0].style.backgroundColor;
       const textColor = swatches[1].style.backgroundColor;
       const accentColor = swatches[2].style.backgroundColor;
       const btnTextColor = swatches[2].style.color;
+      const mutedBgColor = swatches[3].style.backgroundColor;
 
+      // Apply base colors
       previewPanel.style.backgroundColor = bgColor;
       previewPanel.style.color = textColor;
+
+      // Apply component colors
       previewBtn.style.backgroundColor = accentColor;
       previewBtn.style.color = btnTextColor;
 
+      previewLink.style.color = accentColor;
+
+      previewMuted.style.opacity = '0.7';
+
+      previewInput.style.backgroundColor = mutedBgColor;
+      previewInput.style.color = textColor;
+      previewInput.style.borderColor = mutedBgColor;
+
+      previewReset.style.color = textColor;
+      previewReset.style.borderColor = mutedBgColor;
+
+      // Update active state
       cards.forEach(c => c.classList.remove('active'));
       card.classList.add('active');
       card.style.setProperty('--accent', accentColor);
@@ -151,6 +194,10 @@
 
     cards.forEach(card => {
       card.addEventListener('click', () => applyPalette(card));
+    });
+
+    previewReset.addEventListener('click', () => {
+      if (cards.length > 0) applyPalette(cards[0]);
     });
 
     // Initialize with the first palette
