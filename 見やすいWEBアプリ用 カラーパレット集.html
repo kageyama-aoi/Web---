@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>見やすいWEBアプリ用 カラーパレット集（全10種）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --radius: 16px;
@@ -12,28 +15,44 @@
     --gap: 16px;
   }
   * { box-sizing: border-box; }
-  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+  body {
+    font-family: "Noto Sans JP", sans-serif;
     margin: 0; background: #f7f7f9; color: #222; line-height: 1.6; }
-  header { padding: 40px 20px 16px; text-align: center; }
+  header { padding: 40px 20px 24px; text-align: center; }
   header h1 { margin: 0 0 8px; font-size: clamp(22px, 4vw, 32px); }
   header p { margin: 0; color: #555; }
-  .container { max-width: 1100px; margin: 0 auto; padding: 20px;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--gap); }
-  .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 20px 20px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: var(--gap); }
+  .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); 
     border: var(--border); overflow: hidden; display: flex; flex-direction: column; }
   .meta { padding: 16px 18px 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
   .meta h2 { font-size: 18px; margin: 0; } .meta small { color: #666; }
-  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); border-top: var(--border); border-bottom: var(--border); }
-  .swatch { padding: 20px 12px; min-height: 92px; display: flex; flex-direction: column;
+  .swatches { display: grid; grid-template-columns: repeat(5, 1fr); border-top: var(--border); border-bottom: var(--border); }
+  .swatch { padding: 20px 8px; min-height: 92px; display: flex; flex-direction: column;
     justify-content: center; align-items: center; gap: 6px; cursor: pointer; }
-  .swatch b { font-size: 12px; opacity: .9; } .swatch code { font-family: ui-monospace, monospace; font-size: 12px;
+  .swatch b { font-size: 11px; opacity: .9; } .swatch code { font-family: ui-monospace, monospace; font-size: 12px;
     padding: 2px 6px; border-radius: 6px; background: rgba(255,255,255,.6); }
   .btn { display: inline-block; padding: 10px 14px; border-radius: 999px; font-weight: 600; border: none; cursor: pointer; }
   .link { text-decoration: underline; font-weight: 600; }
-  .actions { display: flex; gap: 10px; padding: 12px 16px 18px; border-top: var(--border); }
+  .actions { display: flex; gap: 10px; padding: 12px 16px 18px; border-top: var(--border); align-items: center; }
   .copy { margin-left: auto; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,.12);
     background: #fafafa; cursor: pointer; font-size: 13px; }
   .code { display:none; }
+
+  /* ボタンの操作感を向上させるスタイル */
+  .btn, .copy {
+    transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+  }
+  .btn:hover, .copy:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+  .btn:active, .copy:active {
+    transform: translateY(1px);
+    box-shadow: none;
+    filter: brightness(0.95);
+  }
+
   .preview-panel {
     position: sticky;
     top: 0;
@@ -62,6 +81,12 @@
     background: transparent;
     border: 1px solid;
     padding: 9px 13px;
+  }
+  .preview-panel input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
+    transition: border-color .2s, box-shadow .2s;
   }
 
   .card.active {
@@ -92,43 +117,43 @@
   <main class="container">
 <section class="card">
     <div class="meta"><h2>① シンプル＆モダン</h2><small>白背景ベース</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#FFFFFF;color:#1A1A1A"><b>背景</b><code>#FFFFFF</code></div><div class="swatch" style="background-color:#1A1A1A;color:#FFFFFF"><b>テキスト</b><code>#1A1A1A</code></div><div class="swatch" style="background-color:#007AFF;color:#FFFFFF"><b>アクセント</b><code>#007AFF</code></div><div class="swatch" style="background-color:#F2F2F2;color:#1A1A1A"><b>補助</b><code>#F2F2F2</code></div></div><pre class="code">:root{--color-bg:#FFFFFF;--color-text:#1A1A1A;--color-accent:#007AFF;--color-muted:#F2F2F2;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#FFFFFF;color:#1A1A1A"><b>背景</b><code>#FFFFFF</code></div><div class="swatch" style="background-color:#1A1A1A;color:#FFFFFF"><b>テキスト</b><code>#1A1A1A</code></div><div class="swatch" style="background-color:#007AFF;color:#FFFFFF"><b>アクセント</b><code>#007AFF</code></div><div class="swatch" style="background-color:#F2F2F2;color:#1A1A1A"><b>補助</b><code>#F2F2F2</code></div><div class="swatch" style="background-color:#5856D6;color:#FFFFFF"><b>アクセント2</b><code>#5856D6</code></div></div><pre class="code">:root{--color-bg:#FFFFFF;--color-text:#1A1A1A;--color-accent:#007AFF;--color-muted:#F2F2F2;--color-accent2:#5856D6;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>② ダークモード</h2><small>夜間利用</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#121212;color:#EAEAEA"><b>背景</b><code>#121212</code></div><div class="swatch" style="background-color:#EAEAEA;color:#121212"><b>テキスト</b><code>#EAEAEA</code></div><div class="swatch" style="background-color:#BB86FC;color:#121212"><b>アクセント</b><code>#BB86FC</code></div><div class="swatch" style="background-color:#03DAC6;color:#121212"><b>補助</b><code>#03DAC6</code></div></div><pre class="code">:root{--color-bg:#121212;--color-text:#EAEAEA;--color-accent:#BB86FC;--color-muted:#03DAC6;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#121212;color:#EAEAEA"><b>背景</b><code>#121212</code></div><div class="swatch" style="background-color:#EAEAEA;color:#121212"><b>テキスト</b><code>#EAEAEA</code></div><div class="swatch" style="background-color:#BB86FC;color:#121212"><b>アクセント</b><code>#BB86FC</code></div><div class="swatch" style="background-color:#03DAC6;color:#121212"><b>補助</b><code>#03DAC6</code></div><div class="swatch" style="background-color:#CF6679;color:#121212"><b>アクセント2</b><code>#CF6679</code></div></div><pre class="code">:root{--color-bg:#121212;--color-text:#EAEAEA;--color-accent:#BB86FC;--color-muted:#03DAC6;--color-accent2:#CF6679;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>③ ナチュラル＆落ち着き</h2><small>教育・健康系</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#FDFBF7;color:#3E3E3E"><b>背景</b><code>#FDFBF7</code></div><div class="swatch" style="background-color:#3E3E3E;color:#FDFBF7"><b>テキスト</b><code>#3E3E3E</code></div><div class="swatch" style="background-color:#8FB996;color:#102015"><b>アクセント</b><code>#8FB996</code></div><div class="swatch" style="background-color:#E6C229;color:#3E3E3E"><b>補助</b><code>#E6C229</code></div></div><pre class="code">:root{--color-bg:#FDFBF7;--color-text:#3E3E3E;--color-accent:#8FB996;--color-muted:#E6C229;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#FDFBF7;color:#3E3E3E"><b>背景</b><code>#FDFBF7</code></div><div class="swatch" style="background-color:#3E3E3E;color:#FDFBF7"><b>テキスト</b><code>#3E3E3E</code></div><div class="swatch" style="background-color:#8FB996;color:#102015"><b>アクセント</b><code>#8FB996</code></div><div class="swatch" style="background-color:#E6C229;color:#3E3E3E"><b>補助</b><code>#E6C229</code></div><div class="swatch" style="background-color:#4F6D7A;color:#FFFFFF"><b>アクセント2</b><code>#4F6D7A</code></div></div><pre class="code">:root{--color-bg:#FDFBF7;--color-text:#3E3E3E;--color-accent:#8FB996;--color-muted:#E6C229;--color-accent2:#4F6D7A;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>④ ビジネス（信頼感重視）</h2><small>金融・管理系</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#F5F7FA;color:#2C3E50"><b>背景</b><code>#F5F7FA</code></div><div class="swatch" style="background-color:#2C3E50;color:#F5F7FA"><b>テキスト</b><code>#2C3E50</code></div><div class="swatch" style="background-color:#2980B9;color:#FFFFFF"><b>アクセント</b><code>#2980B9</code></div><div class="swatch" style="background-color:#27AE60;color:#FFFFFF"><b>補助</b><code>#27AE60</code></div></div><pre class="code">:root{--color-bg:#F5F7FA;--color-text:#2C3E50;--color-accent:#2980B9;--color-muted:#27AE60;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#F5F7FA;color:#2C3E50"><b>背景</b><code>#F5F7FA</code></div><div class="swatch" style="background-color:#2C3E50;color:#F5F7FA"><b>テキスト</b><code>#2C3E50</code></div><div class="swatch" style="background-color:#2980B9;color:#FFFFFF"><b>アクセント</b><code>#2980B9</code></div><div class="swatch" style="background-color:#27AE60;color:#FFFFFF"><b>補助</b><code>#27AE60</code></div><div class="swatch" style="background-color:#E74C3C;color:#FFFFFF"><b>アクセント2</b><code>#E74C3C</code></div></div><pre class="code">:root{--color-bg:#F5F7FA;--color-text:#2C3E50;--color-accent:#2980B9;--color-muted:#27AE60;--color-accent2:#E74C3C;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>⑤ ポップ＆フレンドリー</h2><small>SNS・コミュニティ系</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#FFF8E7;color:#333333"><b>背景</b><code>#FFF8E7</code></div><div class="swatch" style="background-color:#333333;color:#FFF8E7"><b>テキスト</b><code>#333333</code></div><div class="swatch" style="background-color:#FF6B6B;color:#2b0d0d"><b>アクセント</b><code>#FF6B6B</code></div><div class="swatch" style="background-color:#FFD93D;color:#333333"><b>補助</b><code>#FFD93D</code></div></div><pre class="code">:root{--color-bg:#FFF8E7;--color-text:#333333;--color-accent:#FF6B6B;--color-muted:#FFD93D;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#FFF8E7;color:#333333"><b>背景</b><code>#FFF8E7</code></div><div class="swatch" style="background-color:#333333;color:#FFF8E7"><b>テキスト</b><code>#333333</code></div><div class="swatch" style="background-color:#FF6B6B;color:#2b0d0d"><b>アクセント</b><code>#FF6B6B</code></div><div class="swatch" style="background-color:#FFD93D;color:#333333"><b>補助</b><code>#FFD93D</code></div><div class="swatch" style="background-color:#4ECDC4;color:#FFFFFF"><b>アクセント2</b><code>#4ECDC4</code></div></div><pre class="code">:root{--color-bg:#FFF8E7;--color-text:#333333;--color-accent:#FF6B6B;--color-muted:#FFD93D;--color-accent2:#4ECDC4;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>⑥ エレガント＆ラグジュアリー</h2><small>高級感・上品</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#FAF7F2;color:#2C2C2C"><b>背景</b><code>#FAF7F2</code></div><div class="swatch" style="background-color:#2C2C2C;color:#FAF7F2"><b>テキスト</b><code>#2C2C2C</code></div><div class="swatch" style="background-color:#A67C52;color:#FFFFFF"><b>アクセント</b><code>#A67C52</code></div><div class="swatch" style="background-color:#6A5ACD;color:#FFFFFF"><b>補助</b><code>#6A5ACD</code></div></div><pre class="code">:root{--color-bg:#FAF7F2;--color-text:#2C2C2C;--color-accent:#A67C52;--color-muted:#6A5ACD;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#FAF7F2;color:#2C2C2C"><b>背景</b><code>#FAF7F2</code></div><div class="swatch" style="background-color:#2C2C2C;color:#FAF7F2"><b>テキスト</b><code>#2C2C2C</code></div><div class="swatch" style="background-color:#A67C52;color:#FFFFFF"><b>アクセント</b><code>#A67C52</code></div><div class="swatch" style="background-color:#6A5ACD;color:#FFFFFF"><b>補助</b><code>#6A5ACD</code></div><div class="swatch" style="background-color:#D4AF37;color:#2C2C2C"><b>アクセント2</b><code>#D4AF37</code></div></div><pre class="code">:root{--color-bg:#FAF7F2;--color-text:#2C2C2C;--color-accent:#A67C52;--color-muted:#6A5ACD;--color-accent2:#D4AF37;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>⑦ エネルギッシュ＆スポーティ</h2><small>活発・元気</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#FFFFFF;color:#202020"><b>背景</b><code>#FFFFFF</code></div><div class="swatch" style="background-color:#202020;color:#FFFFFF"><b>テキスト</b><code>#202020</code></div><div class="swatch" style="background-color:#FF3B30;color:#FFFFFF"><b>アクセント</b><code>#FF3B30</code></div><div class="swatch" style="background-color:#34C759;color:#FFFFFF"><b>補助</b><code>#34C759</code></div></div><pre class="code">:root{--color-bg:#FFFFFF;--color-text:#202020;--color-accent:#FF3B30;--color-muted:#34C759;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#FFFFFF;color:#202020"><b>背景</b><code>#FFFFFF</code></div><div class="swatch" style="background-color:#202020;color:#FFFFFF"><b>テキスト</b><code>#202020</code></div><div class="swatch" style="background-color:#FF3B30;color:#FFFFFF"><b>アクセント</b><code>#FF3B30</code></div><div class="swatch" style="background-color:#34C759;color:#FFFFFF"><b>補助</b><code>#34C759</code></div><div class="swatch" style="background-color:#007AFF;color:#FFFFFF"><b>アクセント2</b><code>#007AFF</code></div></div><pre class="code">:root{--color-bg:#FFFFFF;--color-text:#202020;--color-accent:#FF3B30;--color-muted:#34C759;--color-accent2:#007AFF;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>⑧ フレッシュ＆クリーン</h2><small>自然・安心感</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#E8F5E9;color:#1B5E20"><b>背景</b><code>#E8F5E9</code></div><div class="swatch" style="background-color:#1B5E20;color:#E8F5E9"><b>テキスト</b><code>#1B5E20</code></div><div class="swatch" style="background-color:#00C853;color:#FFFFFF"><b>アクセント</b><code>#00C853</code></div><div class="swatch" style="background-color:#81D4FA;color:#1B5E20"><b>補助</b><code>#81D4FA</code></div></div><pre class="code">:root{--color-bg:#E8F5E9;--color-text:#1B5E20;--color-accent:#00C853;--color-muted:#81D4FA;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#E8F5E9;color:#1B5E20"><b>背景</b><code>#E8F5E9</code></div><div class="swatch" style="background-color:#1B5E20;color:#E8F5E9"><b>テキスト</b><code>#1B5E20</code></div><div class="swatch" style="background-color:#00C853;color:#FFFFFF"><b>アクセント</b><code>#00C853</code></div><div class="swatch" style="background-color:#81D4FA;color:#1B5E20"><b>補助</b><code>#81D4FA</code></div><div class="swatch" style="background-color:#FF9500;color:#FFFFFF"><b>アクセント2</b><code>#FF9500</code></div></div><pre class="code">:root{--color-bg:#E8F5E9;--color-text:#1B5E20;--color-accent:#00C853;--color-muted:#81D4FA;--color-accent2:#FF9500;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>⑨ ウォーム＆カジュアル</h2><small>親しみやすい</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#FFF3E0;color:#4E342E"><b>背景</b><code>#FFF3E0</code></div><div class="swatch" style="background-color:#4E342E;color:#FFF3E0"><b>テキスト</b><code>#4E342E</code></div><div class="swatch" style="background-color:#FF7043;color:#FFFFFF"><b>アクセント</b><code>#FF7043</code></div><div class="swatch" style="background-color:#FFB74D;color:#4E342E"><b>補助</b><code>#FFB74D</code></div></div><pre class="code">:root{--color-bg:#FFF3E0;--color-text:#4E342E;--color-accent:#FF7043;--color-muted:#FFB74D;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#FFF3E0;color:#4E342E"><b>背景</b><code>#FFF3E0</code></div><div class="swatch" style="background-color:#4E342E;color:#FFF3E0"><b>テキスト</b><code>#4E342E</code></div><div class="swatch" style="background-color:#FF7043;color:#FFFFFF"><b>アクセント</b><code>#FF7043</code></div><div class="swatch" style="background-color:#FFB74D;color:#4E342E"><b>補助</b><code>#FFB74D</code></div><div class="swatch" style="background-color:#8D6E63;color:#FFFFFF"><b>アクセント2</b><code>#8D6E63</code></div></div><pre class="code">:root{--color-bg:#FFF3E0;--color-text:#4E342E;--color-accent:#FF7043;--color-muted:#FFB74D;--color-accent2:#8D6E63;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section><section class="card">
     <div class="meta"><h2>⑩ クール＆テック</h2><small>IT・開発ツール</small></div>
-    <div class="swatches"><div class="swatch" style="background-color:#0D1117;color:#C9D1D9"><b>背景</b><code>#0D1117</code></div><div class="swatch" style="background-color:#C9D1D9;color:#0D1117"><b>テキスト</b><code>#C9D1D9</code></div><div class="swatch" style="background-color:#58A6FF;color:#0D1117"><b>アクセント</b><code>#58A6FF</code></div><div class="swatch" style="background-color:#1F6FEB;color:#FFFFFF"><b>補助</b><code>#1F6FEB</code></div></div><pre class="code">:root{--color-bg:#0D1117;--color-text:#C9D1D9;--color-accent:#58A6FF;--color-muted:#1F6FEB;}</pre>
+    <div class="swatches"><div class="swatch" style="background-color:#0D1117;color:#C9D1D9"><b>背景</b><code>#0D1117</code></div><div class="swatch" style="background-color:#C9D1D9;color:#0D1117"><b>テキスト</b><code>#C9D1D9</code></div><div class="swatch" style="background-color:#58A6FF;color:#0D1117"><b>アクセント</b><code>#58A6FF</code></div><div class="swatch" style="background-color:#1F6FEB;color:#FFFFFF"><b>補助</b><code>#1F6FEB</code></div><div class="swatch" style="background-color:#3FB950;color:#FFFFFF"><b>アクセント2</b><code>#3FB950</code></div></div><pre class="code">:root{--color-bg:#0D1117;--color-text:#C9D1D9;--color-accent:#58A6FF;--color-muted:#1F6FEB;--color-accent2:#3FB950;}</pre>
     <div class="actions"><button class="copy">CSS変数をコピー</button></div>
     </section></main>
 <footer><p>好みのパレットをコピーして <code>:root</code> に貼り付けてください。</p></footer>
@@ -159,13 +184,15 @@
 
     function applyPalette(card) {
       const swatches = card.querySelectorAll('.swatch');
-      if (swatches.length < 4) return;
+      if (swatches.length < 5) return;
 
       const bgColor = swatches[0].style.backgroundColor;
       const textColor = swatches[1].style.backgroundColor;
       const accentColor = swatches[2].style.backgroundColor;
       const btnTextColor = swatches[2].style.color;
       const mutedBgColor = swatches[3].style.backgroundColor;
+      const mutedTextColor = swatches[3].style.color;
+      const accent2Color = swatches[4].style.backgroundColor;
 
       // Apply base colors
       previewPanel.style.backgroundColor = bgColor;
@@ -180,13 +207,14 @@
       previewMuted.style.opacity = '0.7';
 
       previewInput.style.backgroundColor = mutedBgColor;
-      previewInput.style.color = textColor;
+      previewInput.style.color = accent2Color;
       previewInput.style.borderColor = mutedBgColor;
 
-      previewReset.style.color = textColor;
+      previewReset.style.color = mutedTextColor;
       previewReset.style.borderColor = mutedBgColor;
 
       // Update active state
+      previewPanel.style.setProperty('--accent', accentColor);
       cards.forEach(c => c.classList.remove('active'));
       card.classList.add('active');
       card.style.setProperty('--accent', accentColor);

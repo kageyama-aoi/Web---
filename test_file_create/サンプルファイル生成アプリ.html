@@ -6,6 +6,27 @@
   <title>サンプルファイル生成アプリ（統合版）</title>
   <script src="https://cdn.jsdelivr.net/npm/encoding-japanese@2.1.0/encoding.min.js"></script>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ボタンの操作感を向上させるスタイル */
+    .btn {
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .btn.primary {
+      /* プライマリボタンには少し影をつけて立体感を出す */
+      box-shadow: 0 2px 5px rgba(0, 90, 210, 0.2);
+    }
+    .btn:hover {
+      /* ホバー時に少し浮き上がる */
+      transform: translateY(-1px);
+    }
+    .btn:active {
+      /* クリック時に沈み込む */
+      transform: translateY(1px);
+      /* 影を消して、押された感を強調 */
+      box-shadow: none;
+      filter: brightness(0.95);
+    }
+  </style>
 </head>
 <body>
   <header>
