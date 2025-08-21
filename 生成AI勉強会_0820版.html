@@ -70,7 +70,11 @@ header {
 }
 .wrap{max-width:960px;margin:0 auto;padding:0 1rem 3rem;}
   h1{font-size:clamp(1.6rem,1.4rem + 1.5vw,2.4rem);margin:.2rem 0 .4rem}
-  h2{font-size:1.3rem;margin:2rem 0 .6rem;border-bottom:1px solid var(--line);padding-bottom:.4rem}
+  .section-summary {
+    font-size:1.3rem;margin:2rem 0 .6rem;border-bottom:1px solid var(--line);padding-bottom:.4rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
   h3{font-size:1.1rem;margin:1.2rem 0 .4rem}
   p,li{font-size:1rem}
   a{color:var(--link)}
@@ -163,20 +167,50 @@ header {
     <nav class="toc card" aria-label="目次">
       <strong>目次</strong>
       <ol style="padding-left: 1.2em;">
-        <li><a href="#intro-script"><strong>導入（アイスブレイク台本）</strong></a></li>
-        <li><a href="#drama-script">会話劇：職場シーン風の台本作成例</a></li>
-        <li><a href="#prompt-intro">プロンプトの工夫（入口体験：整理型／会話型）</a></li>
-        <li><a href="#agenda">勉強会の全体構成（90分）</a></li>
-        <li><a href="#prep">当日までの準備</a></li>
-        <li><a href="#slides">スライド台本（実演・ワーク・まとめ）</a></li>
-        <li><a href="#worksheets">ワークシート雛形</a></li>
-        <li><a href="#appendix">付録：質問テンプレ＆話し方メモ</a></li>
+        <li><a href="#agenda">1. 勉強会の全体構成（90分）</a></li>
+        <li><a href="#intro-script">2. 導入（アイスブレイク台本）</a></li>
+        <li><a href="#drama-script">3. 会話劇：職場シーン風の台本作成例</a></li>
+        <li><a href="#prompt-intro">4. プロンプトの工夫（入口体験：整理型／会話型）</a></li>
+        <li><a href="#prep">5. 当日までの準備</a></li>
+        <li><a href="#slides">6. スライド台本（実演・ワーク・まとめ）</a></li>
+        <li><a href="#worksheets">7. ワークシート雛形</a></li>
+        <li><a href="#appendix">8. 付録：質問テンプレ＆話し方メモ</a></li>
       </ol>
     </nav>
 
-    <!-- 0. 導入 -->
-    <section id="intro-script">
-      <h2>0. 導入（アイスブレイク台本）</h2>
+    <details id="agenda" open>
+      <summary class="section-summary">1. 勉強会の全体構成（90分）</summary>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>タイムライン</h3>
+          <table>
+            <thead><tr><th>時間</th><th>内容</th><th>狙い</th></tr></thead>
+            <tbody>
+              <tr><td>10分</td><td>オープニング＆アイスブレイク</td><td>安心感・ゴール共有</td></tr>
+              <tr><td>10分</td><td>AIとの付き合い方（会話劇）</td><td>期待値調整・対話のコツ</td></tr>
+              <tr><td>10分</td><td>プロンプトの型を知る</td><td>整理型／会話型を学ぶ</td></tr>
+              <tr><td>15分</td><td>実演① スプシ関数の調べ方</td><td>“やりたいこと”→関数</td></tr>
+              <tr><td>15分</td><td>実演② 未知の知識の調べ方</td><td>条件設計＆公式確認</td></tr>
+              <tr><td>20分</td><td>ワークショップ</td><td>自分事化・定着</td></tr>
+              <tr><td>10分</td><td>まとめ・次の一歩</td><td>行動宣言</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>ゴール</h3>
+          <ul>
+            <li>AIへの<strong>質問の型</strong>（目的＋条件＋形式）を掴む</li>
+            <li>スプシ関数・調べものを<strong>実務で即試せる</strong>状態</li>
+            <li>「今週AIに1回質問する」行動の第一歩</li>
+          </ul>
+          <div class="tip"><strong>進行のコツ：</strong>専門用語は避け、手を動かす→振り返りの順で安心感をキープ。</div>
+        </div>
+      </div>
+    </details>
+
+    <details id="intro-script" open>
+      <summary class="section-summary">2. 導入（アイスブレイク台本）</summary>
       <div class="card">
         <p><span class="label">進行</span>「みなさん、こんにちは！集まってくれてありがとうございます！」</p>
         <p><span class="label">進行</span>「今日はAIについて、一緒に見ていきましょう。リラックスして聞いてくださいね。」</p>
@@ -185,13 +219,10 @@ header {
         <p><span class="label">進行</span>「ありがとうございます！ 『仕事が速くなりそう』って期待もあれば、『難しそう』『仕事がなくなるかも…』みたいな不安の声もありますね。うんうん、色々なイメージがあると思います。」</p>
         <p><span class="label">進行</span>「今日の目的は、まさにその漠然としたイメージを、<strong>『明日から使える具体的な道具』</strong>に変えることです。AIを『よく分からない何か』から『頼れる相棒』にする、その第一歩を一緒に見ていきましょう！」</p>
       </div>
-    </section>
+    </details>
 
-    <!-- 0.5. 会話劇 -->
-    <section id="drama-script">
-      <h2>0.5. 会話劇：職場シーン風の台本作成例</h2>
-      <details open>
-        <summary>登場人物と会話の例</summary>
+    <details id="drama-script" open>
+      <summary class="section-summary">3. 会話劇：職場シーン風の台本作成例</summary>
         <div class="card">
           <h3>登場人物</h3>
           <ul>
@@ -234,12 +265,10 @@ header {
             <li><strong>判断根拠が欲しいとき</strong><br>「その答えの根拠や出典を教えて」</li>
           </ul>
         </div>
-      </details>
-    </section>
+    </details>
 
-    <!-- 1. Prompt Intro -->
-    <section id="prompt-intro">
-      <h2>1. プロンプトの工夫（入口体験：<span class="badge">整理型</span>／<span class="badge">会話型</span>）</h2>
+    <details id="prompt-intro" open>
+      <summary class="section-summary">4. プロンプトの工夫（入口体験：<span class="badge">整理型</span>／<span class="badge">会話型</span>）</summary>
 
       <div class="grid cols-2">
         <div class="card">
@@ -291,42 +320,10 @@ header {
         </table>
         <div class="tip"><strong>おすすめ進行：</strong>まず全員で会話型を体験 → 整理型へ写経して“型”を掴む。</div>
       </div>
-    </section>
+    </details>
 
-    <!-- 2. アジェンダ -->
-    <section id="agenda">
-      <h2>2. 勉強会の全体構成（90分）</h2>
-
-      <div class="grid cols-2">
-        <div class="card">
-          <h3>タイムライン</h3>
-          <table>
-            <thead><tr><th>時間</th><th>内容</th><th>狙い</th></tr></thead>
-            <tbody>
-              <tr><td>10分</td><td>オープニング</td><td>安心感・ゴール共有</td></tr>
-              <tr><td>10分</td><td>AIでできること全体像</td><td>地図を描く</td></tr>
-              <tr><td>15分</td><td>実演① スプシ関数の調べ方</td><td>“やりたいこと”→関数</td></tr>
-              <tr><td>20分</td><td>実演② 未知の知識の調べ方</td><td>条件設計＆公式確認</td></tr>
-              <tr><td>20分</td><td>ワークショップ</td><td>自分事化・定着</td></tr>
-              <tr><td>10分</td><td>まとめ・次の一歩</td><td>行動宣言</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card">
-          <h3>ゴール</h3>
-          <ul>
-            <li>AIへの<strong>質問の型</strong>（目的＋条件＋形式）を掴む</li>
-            <li>スプシ関数・調べものを<strong>実務で即試せる</strong>状態</li>
-            <li>「今週AIに1回質問する」行動の第一歩</li>
-          </ul>
-          <div class="tip"><strong>進行のコツ：</strong>専門用語は避け、手を動かす→振り返りの順で安心感をキープ。</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. 準備 -->
-    <section id="prep">
-      <h2>3. 当日までの準備</h2>
+    <details id="prep" open>
+      <summary class="section-summary">5. 当日までの準備</summary>
       <div class="grid cols-2">
         <div class="card">
           <h3>主催側の準備</h3>
@@ -346,12 +343,10 @@ header {
         </div>
       </div>
       <p class="section-note">※ スクリーン共有とフォントサイズ拡大（130%目安）を当日すぐ切り替えられるように。</p>
-    </section>
+    </details>
 
-    <!-- 4. スライド台本 -->
-    <section id="slides">
-      <h2>4. スライド台本（実演・ワーク・まとめ）</h2>
-
+    <details id="slides" open>
+      <summary class="section-summary">6. スライド台本（実演・ワーク・まとめ）</summary>
       <details open>
         <summary>スライド1：タイトル</summary>
         <div class="card">
@@ -455,11 +450,10 @@ header {
           </ul>
         </div>
       </details>
-    </section>
+    </details>
 
-    <!-- 5. ワークシート -->
-    <section id="worksheets">
-      <h2>5. ワークシート雛形</h2>
+    <details id="worksheets" open>
+      <summary class="section-summary">7. ワークシート雛形</summary>
 
       <h3>ワークシート1：AI質問づくり練習（スプシ関数）</h3>
       <table>
@@ -494,11 +488,10 @@ header {
           <tr><td>データ整理</td><td>関数提案・整形・チェック式</td><td>対象表を貼って「検証式も一緒に」依頼</td></tr>
         </tbody>
       </table>
-    </section>
+    </details>
 
-    <!-- 6. 付録 -->
-    <section id="appendix">
-      <h2>6. 付録：質問テンプレ＆話し方メモ</h2>
+    <details id="appendix" open>
+      <summary class="section-summary">8. 付録：質問テンプレ＆話し方メモ</summary>
       <div class="grid cols-2">
         <div class="card">
           <h3>質問テンプレ（コピペ用）</h3>
@@ -517,7 +510,7 @@ header {
           </ul>
         </div>
       </div>
-    </section>
+    </details>
 
     <footer>
       この資料は、初心者が「最初の成功体験」を得やすい順番に構成しています（<strong>会話で入口→型で整理→実演→ワーク→宣言</strong>）。<br/>
