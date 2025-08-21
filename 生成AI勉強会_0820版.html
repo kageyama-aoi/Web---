@@ -83,41 +83,59 @@ header {
   .grid{display:grid;gap:1rem}
   .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
   nav.toc{border:1px solid var(--line);border-radius:12px;padding:1rem;background:var(--bg)}
+  nav.toc ol { padding-inline-start: 1.2em; }
   nav.toc a{text-decoration:none}
   code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-  kbd{background:var(--kbd);border:1px solid var(--line);border-bottom-color:#374151;border-radius:6px;padding:.1rem .35rem}
+  kbd{background:var(--kbd);border:1px solid var(--line);border-bottom-color:color-mix(in oklab, var(--line) 50%, black);border-radius:6px;padding:.1rem .35rem}
   pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.8rem;overflow:auto}
   .code-block{position:relative;margin:1rem 0}
   .code-block pre{margin:0}
   .copy-btn{
-    position:absolute;top:.5rem;right:.5rem;
-    background:var(--card);border:1px solid var(--line);
-    color:var(--muted);border-radius:6px;
-    padding:.2rem .5rem;cursor:pointer;font-size:.8rem;
-    opacity:.7;transition:opacity .2s, background-color .2s;
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: .2rem .5rem;
+    cursor: pointer;
+    font-size: .8rem;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
   .copy-btn:hover{
-    opacity:1;
-    background:var(--bg);
+    background: var(--brand);
+    color: var(--bg);
+    transform: scale(1.05);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   }
-  .tip{border-left:4px solid var(--brand);padding:.5rem .8rem;background:var(--tip);margin:.8rem 0;border-radius:8px}
+  .copy-btn:active {
+    transform: scale(0.95);
+    transition-duration: 0.1s;
+  }
+  hr.divider {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 1rem 0;
+  }
+  .tip{border-inline-start:4px solid var(--brand);padding:.5rem .8rem;background:var(--tip);margin:.8rem 0;border-radius:8px}
   details{border:1px dashed var(--line);border-radius:10px;padding:.8rem;background:var(--bg)}
   details>summary{cursor:pointer;font-weight:600}
   table{width:100%;border-collapse:collapse;margin:.6rem 0 1rem}
   th,td{border:1px solid var(--line);padding:.6rem .5rem;vertical-align:top}
-  th{background:color-mix(in oklab, var(--card) 75%, var(--bg) 25%);text-align:left}
+  th{background:color-mix(in oklab, var(--card) 75%, var(--bg) 25%);text-align:start}
   .badge{display:inline-block;font-size:.78rem;padding:.18rem .5rem;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
   .section-note{font-size:.95rem;color:var(--muted);margin-top:.2rem}
   footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
   .theme-toggle{
-    position:absolute;right:1rem;top:1rem;display:flex;align-items:center;gap:.5rem;
+    position:absolute;inset-inline-end:1rem;top:1rem;display:flex;align-items:center;gap:.5rem;
     background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.35rem .6rem;
   }
   .theme-toggle button{
     border:none;background:transparent;color:var(--fg);cursor:pointer;padding:.25rem .5rem;border-radius:8px;
   }
   .theme-toggle .active{outline:2px solid var(--brand)}
-  .theme-toggle .sep{width:1px;height:18px;background:var(--line)}
   @media print{
     nav.toc{break-inside:avoid}
     a{color:inherit;text-decoration:none}
@@ -127,14 +145,30 @@ header {
   }
   .label{display:inline-block;min-width:2.5rem;font-weight:600;color:var(--muted)}
   /* --- 会話劇のスタイル --- */
-  .chat-line {
-    padding-left: 12px;
-    border-left: 4px solid transparent; /* 透明なボーダーを基本に */
-    margin: 0.5rem 0;
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
-  .chat-kacho { border-left-color: var(--fg-kacho); }
-  .chat-kubo { border-left-color: var(--fg-kubo); }
-  .chat-shinohara { border-left-color: var(--fg-shinohara); }
+  .chat-line {
+    padding: .5rem 1rem;
+    border-radius: 8px;
+    max-width: 85%;
+    line-height: 1.5;
+  }
+  .chat-kacho {
+    border-inline-start: 4px solid var(--fg-kacho);
+    background-color: color-mix(in oklab, var(--fg-kacho) 12%, transparent);
+  }
+  .chat-kubo {
+    align-self: flex-end;
+    border-inline-end: 4px solid var(--fg-kubo);
+    background-color: color-mix(in oklab, var(--fg-kubo) 12%, transparent);
+  }
+  .chat-shinohara {
+    border-inline-start: 4px solid var(--fg-shinohara);
+    background-color: color-mix(in oklab, var(--fg-shinohara) 10%, transparent);
+  }
   .chat-kacho .label { color: var(--fg-kacho); }
   .chat-kubo .label { color: var(--fg-kubo); }
   .chat-shinohara .label { color: var(--fg-shinohara); }
@@ -142,38 +176,51 @@ header {
 <script>
 (function(){
   const key = "ai-workshop-theme";
-  function applyTheme(mode){ document.documentElement.setAttribute("data-theme", mode); }
-  function saved(){ return localStorage.getItem(key); }
-  function init(){
-    const v = saved(); if(v){ applyTheme(v); }
-    document.addEventListener("click", (e)=>{
-      const t = e.target; if(!(t instanceof HTMLElement)) return;
-      if(t.dataset.themeSet){
-        const mode = t.dataset.themeSet;
-        localStorage.setItem(key, mode); applyTheme(mode);
-        document.querySelectorAll("[data-theme-set]").forEach(btn=>btn.classList.remove("active"));
-        t.classList.add("active");
-      }
 
-      // コピーボタンのロジック
-      const copyBtn = t.closest('.copy-btn');
-      if (copyBtn) {
-        const block = copyBtn.closest('.code-block');
-        const pre = block?.querySelector('pre');
-        if (pre) {
-          navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = '✔';
-            setTimeout(() => { copyBtn.textContent = originalText; }, 1500);
-          }).catch(err => {
-            console.error('コピーに失敗しました', err);
-          });
-        }
-      }
-    });
+  function applyTheme(mode){ document.documentElement.setAttribute("data-theme", mode); }
+
+  function savedTheme(){
+    try { return localStorage.getItem(key); }
+    catch (e) { console.warn("localStorage is not available.", e); return null; }
+  }
+
+  function handleThemeSwitch(target) {
+    if (!target.dataset.themeSet) return;
+    const mode = target.dataset.themeSet;
+    try { localStorage.setItem(key, mode); }
+    catch (e) { console.warn("localStorage is not available.", e); }
+    applyTheme(mode);
+    document.querySelectorAll("[data-theme-set]").forEach(btn => btn.classList.remove("active"));
+    target.classList.add("active");
+  }
+
+  function handleCopy(target) {
+    const copyBtn = target.closest('.copy-btn');
+    if (!copyBtn) return;
+    const block = copyBtn.closest('.code-block');
+    const pre = block?.querySelector('pre');
+    if (pre) {
+      navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✔';
+        setTimeout(() => { copyBtn.textContent = originalText; }, 1500);
+      }).catch(err => {
+        console.error('コピーに失敗しました', err);
+      });
+    }
+  }
+
+  function init(){
+    const v = savedTheme(); if(v){ applyTheme(v); }
     const current = document.documentElement.getAttribute("data-theme") || "system";
     const btn = document.querySelector(`[data-theme-set="${current}"]`);
     if(btn) btn.classList.add("active");
+
+    document.addEventListener("click", (e)=>{
+      if (!(e.target instanceof HTMLElement)) return;
+      handleThemeSwitch(e.target);
+      handleCopy(e.target);
+    });
   }
   document.addEventListener("DOMContentLoaded", init);
 })();
@@ -183,9 +230,7 @@ header {
   <header class="wrap">
     <div class="theme-toggle" role="group" aria-label="テーマ切替">
       <button type="button" data-theme-set="light" aria-label="ライトモード">☀️ Light</button>
-      <span class="sep" aria-hidden="true"></span>
       <button type="button" data-theme-set="dark" aria-label="ダークモード">🌙 Dark</button>
-      <span class="sep" aria-hidden="true"></span>
       <button type="button" data-theme-set="system" aria-label="システム設定">🖥 System</button>
     </div>
     <h1>AI初心者向け勉強会</h1>
@@ -195,15 +240,15 @@ header {
   <main class="wrap">
     <nav class="toc card" aria-label="目次">
       <strong>目次</strong>
-      <ol style="padding-left: 1.2em;">
-        <li><a href="#agenda">1. 勉強会の全体構成（90分）</a></li>
-        <li><a href="#intro-script">2. 導入（アイスブレイク台本）</a></li>
-        <li><a href="#drama-script">3. 会話劇：職場シーン風の台本作成例</a></li>
-        <li><a href="#prompt-intro">4. プロンプトの工夫（入口体験：整理型／会話型）</a></li>
-        <li><a href="#prep">5. 当日までの準備</a></li>
-        <li><a href="#slides">6. スライド台本（実演・ワーク・まとめ）</a></li>
-        <li><a href="#worksheets">7. ワークシート雛形</a></li>
-        <li><a href="#appendix">8. 付録：質問テンプレ＆話し方メモ</a></li>
+      <ol>
+        <li><a href="#agenda">勉強会の全体構成（90分）</a></li>
+        <li><a href="#intro-script">導入（アイスブレイク台本）</a></li>
+        <li><a href="#drama-script">会話劇：職場シーン風の台本作成例</a></li>
+        <li><a href="#prompt-intro">プロンプトの工夫（入口体験：整理型／会話型）</a></li>
+        <li><a href="#prep">当日までの準備</a></li>
+        <li><a href="#slides">スライド台本（実演・ワーク・まとめ）</a></li>
+        <li><a href="#worksheets">ワークシート雛形</a></li>
+        <li><a href="#appendix">付録：質問テンプレ＆話し方メモ</a></li>
       </ol>
     </nav>
 
@@ -259,33 +304,35 @@ header {
             <li><strong>久保：</strong>現場担当の新人。AIを少し試したことはあるが半信半疑。フレンドリーで距離が近い。</li>
             <li><strong>篠原：</strong>AIに詳しい社員。具体的な使い方を紹介してリード役。</li>
           </ul>
-          <hr style="border:0; border-top:1px solid var(--line); margin: 1rem 0;">
+          <hr class="divider">
           <h3>会話劇の例</h3>
-          <p class="chat-line chat-kacho"><span class="label">課長</span>「最近AIを業務に活かそうって話が出てるけど、正直うちには向かない気がするな。」</p>
-          <p class="chat-line chat-kubo"><span class="label">久保</span>「わかりますよ、課長。この前試したら答え間違ってて、全然ダメだったっす。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「久保さん、それなら“それ間違ってるよ”って突っ込めばいいんです。AIなら怒らないし、修正してくれますよ。」</p>
-          <p class="chat-line chat-kacho"><span class="label">課長</span>「人間相手だと角が立つけど、AIなら突っ込めるってわけか。」</p>
-          <p class="chat-line chat-kubo"><span class="label">久保</span>「でも篠原さん、答えがちょっと物足りなくないっすか？ 現場で使うにはもう少し詳しくほしいっす。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そういうときは“そっちの方向性じゃない。もっと具体的に”って突っ込めば、追加で具体的な情報を出してくれます。」</p>
-          <p class="chat-line chat-kacho"><span class="label">課長</span>「でも最新情報が出てこないのは困るな。法改正やシステム変更が絡むからな。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「たとえば“これ古くない？ 2024年以降の情報を探して”って指定すれば精度が上がります。課長、それで足りなければ検索や公式資料を組み合わせれば十分です。」</p>
-          <p class="chat-line chat-kubo"><span class="label">久保</span>「なるほどっす。でも、ついAIに万能の先生を期待しちゃうんすよね。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「AIは“突っ込んで調整できる派遣スタッフ”くらいに思うのがちょうどいいんです。」</p>
-          <p class="chat-line chat-kubo"><span class="label">久保</span>「でも、どう聞けばいいか分からないんすよ。言い方が難しくて。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そこもAIに頼めばいいんです。“この質問の仕方を直して”とか、“議事録をまとめるのにいいお願いの言い方を作って”って頼めば、雛形を作ってくれますよ。」</p>
-          <p class="chat-line chat-kacho"><span class="label">課長</span>「へぇ、言い方そのものもAIに考えさせればいいのか。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「例えば“議事録をまとめるのにいいお願いの言い方を作って”って頼むと――」</p>
-          <p class="chat-line chat-kubo"><span class="label">久保</span>「AIはどう返すんすか？」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「“決定事項、議論の経緯、アクション、次回課題の4つに整理してMarkdownで出力してください”みたいに、すぐ使える形を返してくれます。」</p>
-          <p class="chat-line chat-kacho"><span class="label">課長</span>「なるほど…。ゼロから考えなくて済むのは助かるな。」</p>
-          <p class="chat-line chat-kacho"><span class="label">課長</span>「ただ、答えに近づくまで何度もやりとりするのは面倒だな。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「課長、それは発想を変える必要があります。“違う”“もっと掘り下げて”と突っ込む前提で会話する。1回で完璧を求めるより、磨き上げた方が早いんです。」</p>
-          <p class="chat-line chat-kubo"><span class="label">久保</span>「でも課長、業務データは機密だから使えないっすよね。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「本番データはNGです。ただ“マニュアルの下書き”“会議メモの整理”“説明資料の雛形”なら安心して使えます。そこから始めるのが現実的です。」</p>
-          <p class="chat-line chat-kacho"><span class="label">課長</span>「なるほど…。周辺業務からならリスクも低いし効率化もできそうだな。」</p>
-          <p class="chat-line chat-kubo"><span class="label">久保</span>「確かに、“使えない”と思ってたのは、期待の仕方を間違えてただけかもしれないっす。」</p>
-          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そうなんです。AIは万能じゃない。でも“突っ込んで調整できる派遣スタッフ”としては優秀。周辺業務からでも導入すれば、現場はかなり楽になりますよ。」</p>
-          <hr style="border:0; border-top:1px solid var(--line); margin: 1rem 0;">
+          <div class="chat-container">
+            <p class="chat-line chat-kacho"><span class="label">課長</span>「最近AIを業務に活かそうって話が出てるけど、正直うちには向かない気がするな。」</p>
+            <p class="chat-line chat-kubo"><span class="label">久保</span>「わかりますよ、課長。この前試したら答え間違ってて、全然ダメだったっす。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「久保さん、それなら“それ間違ってるよ”って突っ込めばいいんです。AIなら怒らないし、修正してくれますよ。」</p>
+            <p class="chat-line chat-kacho"><span class="label">課長</span>「人間相手だと角が立つけど、AIなら突っ込めるってわけか。」</p>
+            <p class="chat-line chat-kubo"><span class="label">久保</span>「でも篠原さん、答えがちょっと物足りなくないっすか？ 現場で使うにはもう少し詳しくほしいっす。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そういうときは“そっちの方向性じゃない。もっと具体的に”って突っ込めば、追加で具体的な情報を出してくれます。」</p>
+            <p class="chat-line chat-kacho"><span class="label">課長</span>「でも最新情報が出てこないのは困るな。法改正やシステム変更が絡むからな。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「たとえば“これ古くない？ 2024年以降の情報を探して”って指定すれば精度が上がります。課長、それで足りなければ検索や公式資料を組み合わせれば十分です。」</p>
+            <p class="chat-line chat-kubo"><span class="label">久保</span>「なるほどっす。でも、ついAIに万能の先生を期待しちゃうんすよね。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「AIは“突っ込んで調整できる派遣スタッフ”くらいに思うのがちょうどいいんです。」</p>
+            <p class="chat-line chat-kubo"><span class="label">久保</span>「でも、どう聞けばいいか分からないんすよ。言い方が難しくて。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そこもAIに頼めばいいんです。“この質問の仕方を直して”とか、“議事録をまとめるのにいいお願いの言い方を作って”って頼めば、雛形を作ってくれますよ。」</p>
+            <p class="chat-line chat-kacho"><span class="label">課長</span>「へぇ、言い方そのものもAIに考えさせればいいのか。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「例えば“議事録をまとめるのにいいお願いの言い方を作って”って頼むと――」</p>
+            <p class="chat-line chat-kubo"><span class="label">久保</span>「AIはどう返すんすか？」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「“決定事項、議論の経緯、アクション、次回課題の4つに整理してMarkdownで出力してください”みたいに、すぐ使える形を返してくれます。」</p>
+            <p class="chat-line chat-kacho"><span class="label">課長</span>「なるほど…。ゼロから考えなくて済むのは助かるな。」</p>
+            <p class="chat-line chat-kacho"><span class="label">課長</span>「ただ、答えに近づくまで何度もやりとりするのは面倒だな。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「課長、それは発想を変える必要があります。“違う”“もっと掘り下げて”と突っ込む前提で会話する。1回で完璧を求めるより、磨き上げた方が早いんです。」</p>
+            <p class="chat-line chat-kubo"><span class="label">久保</span>「でも課長、業務データは機密だから使えないっすよね。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「本番データはNGです。ただ“マニュアルの下書き”“会議メモの整理”“説明資料の雛形”なら安心して使えます。そこから始めるのが現実的です。」</p>
+            <p class="chat-line chat-kacho"><span class="label">課長</span>「なるほど…。周辺業務からならリスクも低いし効率化もできそうだな。」</p>
+            <p class="chat-line chat-kubo"><span class="label">久保</span>「確かに、“使えない”と思ってたのは、期待の仕方を間違えてただけかもしれないっす。」</p>
+            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そうなんです。AIは万能じゃない。でも“突っ込んで調整できる派遣スタッフ”としては優秀。周辺業務からでも導入すれば、現場はかなり楽になりますよ。」</p>
+          </div>
+          <hr class="divider">
           <h3>コラム：実務で使える「突っ込み」例</h3>
           <ul>
             <li><strong>最新情報を指定したいとき</strong><br>「これ古くない？ 2024年以降の情報を探して」<br>👉 年を入れると精度アップ</li>
