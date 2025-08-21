@@ -41,10 +41,26 @@
   --card:#4E342E; --kbd:#5D4037; --tip:#6D4C41; --link:#FFAB91;
 }
 
+/* --- 会話劇用の色定義 --- */
+:root{
+  --fg-kacho: #3949ab; /* 課長: 落ち着いた青 */
+  --fg-kubo: #2e7d32;  /* 久保: 緑 */
+  --fg-shinohara: #c62828; /* 篠原: はっきりした赤 */
+}
+@media (prefers-color-scheme: dark) {
+  :root{ --fg-kacho: #9fa8da; --fg-kubo: #a5d6a7; --fg-shinohara: #ef9a9a; }
+}
+[data-theme="light"]{
+  --fg-kacho: #3949ab; --fg-kubo: #2e7d32; --fg-shinohara: #c62828;
+}
+[data-theme="dark"]{
+  --fg-kacho: #9fa8da; --fg-kubo: #a5d6a7; --fg-shinohara: #ef9a9a;
+}
+
   html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;line-height:1.6;}
   /* 変更前の例：rgba(99,102,241,.10) ←青系 */
-header{
+header {
   padding:2.75rem 1rem 1rem;
   background:linear-gradient(180deg,rgba(255,112,67,.10),transparent); /* ←ブランド色に統一 */
   position:relative
@@ -90,6 +106,18 @@ header{
     .theme-toggle{display:none}
   }
   .label{display:inline-block;min-width:2.5rem;font-weight:600;color:var(--muted)}
+  /* --- 会話劇のスタイル --- */
+  .chat-line {
+    padding-left: 12px;
+    border-left: 4px solid transparent; /* 透明なボーダーを基本に */
+    margin: 0.5rem 0;
+  }
+  .chat-kacho { border-left-color: var(--fg-kacho); }
+  .chat-kubo { border-left-color: var(--fg-kubo); }
+  .chat-shinohara { border-left-color: var(--fg-shinohara); }
+  .chat-kacho .label { color: var(--fg-kacho); }
+  .chat-kubo .label { color: var(--fg-kubo); }
+  .chat-shinohara .label { color: var(--fg-shinohara); }
 </style>
 <script>
 (function(){
@@ -131,15 +159,80 @@ header{
   <main class="wrap">
     <nav class="toc card" aria-label="目次">
       <strong>目次</strong>
-      <ol>
-        <li><a href="#prompt-intro">1. プロンプトの工夫（入口体験：整理型／会話型）</a></li>
-        <li><a href="#agenda">2. 勉強会の全体構成（90分）</a></li>
-        <li><a href="#prep">3. 当日までの準備</a></li>
-        <li><a href="#slides">4. スライド台本（実演・ワーク・まとめ）</a></li>
-        <li><a href="#worksheets">5. ワークシート雛形</a></li>
-        <li><a href="#appendix">6. 付録：質問テンプレ＆話し方メモ</a></li>
+      <ol style="padding-left: 1.2em;">
+        <li><a href="#intro-script"><strong>導入（アイスブレイク台本）</strong></a></li>
+        <li><a href="#drama-script">会話劇：職場シーン風の台本作成例</a></li>
+        <li><a href="#prompt-intro">プロンプトの工夫（入口体験：整理型／会話型）</a></li>
+        <li><a href="#agenda">勉強会の全体構成（90分）</a></li>
+        <li><a href="#prep">当日までの準備</a></li>
+        <li><a href="#slides">スライド台本（実演・ワーク・まとめ）</a></li>
+        <li><a href="#worksheets">ワークシート雛形</a></li>
+        <li><a href="#appendix">付録：質問テンプレ＆話し方メモ</a></li>
       </ol>
     </nav>
+
+    <!-- 0. 導入 -->
+    <section id="intro-script">
+      <h2>0. 導入（アイスブレイク台本）</h2>
+      <div class="card">
+        <p><span class="label">進行</span>「みなさん、こんにちは！集まってくれてありがとうございます！」</p>
+        <p><span class="label">進行</span>「今日はAIについて、一緒に見ていきましょう。リラックスして聞いてくださいね。」</p>
+        <p><span class="label">進行</span>「さっそくですが、皆さんは『AI』って聞くと、どんなイメージがありますか？良いことでも悪いことでも、何でもOKです。ちょっと時間をとるので、チャットに気軽に書き込んでみてください。」</p>
+        <div class="tip">（ここで30秒～1分ほど待つ。参加者の書き込みをいくつか拾って読み上げる）</div>
+        <p><span class="label">進行</span>「ありがとうございます！ 『仕事が速くなりそう』って期待もあれば、『難しそう』『仕事がなくなるかも…』みたいな不安の声もありますね。うんうん、色々なイメージがあると思います。」</p>
+        <p><span class="label">進行</span>「今日の目的は、まさにその漠然としたイメージを、<strong>『明日から使える具体的な道具』</strong>に変えることです。AIを『よく分からない何か』から『頼れる相棒』にする、その第一歩を一緒に見ていきましょう！」</p>
+      </div>
+    </section>
+
+    <!-- 0.5. 会話劇 -->
+    <section id="drama-script">
+      <h2>0.5. 会話劇：職場シーン風の台本作成例</h2>
+      <details open>
+        <summary>登場人物と会話の例</summary>
+        <div class="card">
+          <h3>登場人物</h3>
+          <ul>
+            <li><strong>課長：</strong>現場をまとめる立場。新しいツール導入には慎重。</li>
+            <li><strong>久保：</strong>現場担当の新人。AIを少し試したことはあるが半信半疑。フレンドリーで距離が近い。</li>
+            <li><strong>篠原：</strong>AIに詳しい社員。具体的な使い方を紹介してリード役。</li>
+          </ul>
+          <hr style="border:0; border-top:1px solid var(--line); margin: 1rem 0;">
+          <h3>会話劇の例</h3>
+          <p class="chat-line chat-kacho"><span class="label">課長</span>「最近AIを業務に活かそうって話が出てるけど、正直うちには向かない気がするな。」</p>
+          <p class="chat-line chat-kubo"><span class="label">久保</span>「わかりますよ、課長。この前試したら答え間違ってて、全然ダメだったっす。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「久保さん、それなら“それ間違ってるよ”って突っ込めばいいんです。AIなら怒らないし、修正してくれますよ。」</p>
+          <p class="chat-line chat-kacho"><span class="label">課長</span>「人間相手だと角が立つけど、AIなら突っ込めるってわけか。」</p>
+          <p class="chat-line chat-kubo"><span class="label">久保</span>「でも篠原さん、答えがちょっと物足りなくないっすか？ 現場で使うにはもう少し詳しくほしいっす。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そういうときは“そっちの方向性じゃない。もっと具体的に”って突っ込めば、追加で具体的な情報を出してくれます。」</p>
+          <p class="chat-line chat-kacho"><span class="label">課長</span>「でも最新情報が出てこないのは困るな。法改正やシステム変更が絡むからな。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「たとえば“これ古くない？ 2024年以降の情報を探して”って指定すれば精度が上がります。課長、それで足りなければ検索や公式資料を組み合わせれば十分です。」</p>
+          <p class="chat-line chat-kubo"><span class="label">久保</span>「なるほどっす。でも、ついAIに万能の先生を期待しちゃうんすよね。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「AIは“突っ込んで調整できる派遣スタッフ”くらいに思うのがちょうどいいんです。」</p>
+          <p class="chat-line chat-kubo"><span class="label">久保</span>「でも、どう聞けばいいか分からないんすよ。言い方が難しくて。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そこもAIに頼めばいいんです。“この質問の仕方を直して”とか、“議事録をまとめるのにいいお願いの言い方を作って”って頼めば、雛形を作ってくれますよ。」</p>
+          <p class="chat-line chat-kacho"><span class="label">課長</span>「へぇ、言い方そのものもAIに考えさせればいいのか。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「例えば“議事録をまとめるのにいいお願いの言い方を作って”って頼むと――」</p>
+          <p class="chat-line chat-kubo"><span class="label">久保</span>「AIはどう返すんすか？」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「“決定事項、議論の経緯、アクション、次回課題の4つに整理してMarkdownで出力してください”みたいに、すぐ使える形を返してくれます。」</p>
+          <p class="chat-line chat-kacho"><span class="label">課長</span>「なるほど…。ゼロから考えなくて済むのは助かるな。」</p>
+          <p class="chat-line chat-kacho"><span class="label">課長</span>「ただ、答えに近づくまで何度もやりとりするのは面倒だな。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「課長、それは発想を変える必要があります。“違う”“もっと掘り下げて”と突っ込む前提で会話する。1回で完璧を求めるより、磨き上げた方が早いんです。」</p>
+          <p class="chat-line chat-kubo"><span class="label">久保</span>「でも課長、業務データは機密だから使えないっすよね。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「本番データはNGです。ただ“マニュアルの下書き”“会議メモの整理”“説明資料の雛形”なら安心して使えます。そこから始めるのが現実的です。」</p>
+          <p class="chat-line chat-kacho"><span class="label">課長</span>「なるほど…。周辺業務からならリスクも低いし効率化もできそうだな。」</p>
+          <p class="chat-line chat-kubo"><span class="label">久保</span>「確かに、“使えない”と思ってたのは、期待の仕方を間違えてただけかもしれないっす。」</p>
+          <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そうなんです。AIは万能じゃない。でも“突っ込んで調整できる派遣スタッフ”としては優秀。周辺業務からでも導入すれば、現場はかなり楽になりますよ。」</p>
+          <hr style="border:0; border-top:1px solid var(--line); margin: 1rem 0;">
+          <h3>コラム：実務で使える「突っ込み」例</h3>
+          <ul>
+            <li><strong>最新情報を指定したいとき</strong><br>「これ古くない？ 2024年以降の情報を探して」<br>👉 年を入れると精度アップ</li>
+            <li><strong>一般論で終わったとき</strong><br>「そっちの方向性じゃない。現場で使えるレベルまで具体的に」</li>
+            <li><strong>説明が長すぎるとき</strong><br>「要点だけで。3行以内でまとめて」</li>
+            <li><strong>判断根拠が欲しいとき</strong><br>「その答えの根拠や出典を教えて」</li>
+          </ul>
+        </div>
+      </details>
+    </section>
 
     <!-- 1. Prompt Intro -->
     <section id="prompt-intro">
