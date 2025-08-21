@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>私なりのバイブコーディング・ロードマップ（HTML版）</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --fg:#0f172a;
+      --muted:#475569;
+      --brand:#2563eb;
+      --accent:#10b981;
+      --card:#f8fafc;
+      --border:#e2e8f0;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans JP","Hiragino Kaku Gothic ProN","Meiryo",sans-serif;line-height:1.6}
+    a{color:var(--brand);text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      position:sticky;top:0;background:rgba(255,255,255,.9);
+      backdrop-filter:saturate(180%) blur(8px);
+      border-bottom:1px solid var(--border);
+      z-index:10;
+    }
+    .wrap{max-width:1080px;margin:0 auto;padding:16px 20px}
+    h1{font-size:clamp(22px,4vw,34px);margin:8px 0 6px}
+    h2{font-size:clamp(18px,3vw,26px);margin:28px 0 8px}
+    h3{font-size:clamp(16px,2.5vw,22px);margin:18px 0 6px}
+    p.lead{color:var(--muted);margin:6px 0 0}
+    .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+    .chip{display:inline-block;padding:.25rem .6rem;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:600;font-size:12px;border:1px solid #e0e7ff}
+    .muted{color:var(--muted)}
+    .toc{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+    .toc a{background:#f1f5f9;border:1px solid var(--border);padding:.4rem .7rem;border-radius:999px}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0f172a;color:#e2e8f0;border-radius:8px;padding:12px;overflow:auto;font-size:13px}
+    .checklist li{list-style:none;margin:6px 0;padding-left:32px;position:relative}
+    .checklist input[type="checkbox"]{position:absolute;left:0;top:3px;transform:scale(1.2)}
+    .week{border-left:4px solid var(--brand);padding-left:12px;margin:10px 0}
+    .note{border-left:4px solid var(--accent);padding-left:12px;background:#ecfeff;border:1px solid #cffafe;border-radius:12px;padding:12px;margin:10px 0}
+    footer{margin:40px 0 60px;color:var(--muted);text-align:center}
+    .small{font-size:12px}
+    .tag{display:inline-block;border:1px solid var(--border);border-radius:999px;padding:.25rem .6rem;margin:.15rem;background:#fff}
+    .two-col{columns:2;column-gap:16px}
+    @media (max-width:720px){.two-col{columns:1}}
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>私なりのバイブコーディング・ロードマップ</h1>
+    <p class="lead">「作って出す」を最速で回すための4週間（ゆっくり8週間）プラン。10本の小アプリ → 即公開 → ちょい改善。</p>
+    <div class="toc">
+      <a href="#overview">全体像</a>
+      <a href="#steps">5ステップ</a>
+      <a href="#weekly">週ごとの進め方</a>
+      <a href="#deploy">デプロイ手順ミニメモ</a>
+      <a href="#notion">Notionトラッカー</a>
+      <a href="#prompt">AIプロンプト雛形</a>
+      <a href="#why">この設計にした理由</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="overview" class="card">
+    <h2>全体像（ゴールとやり方）</h2>
+    <ul>
+      <li>ゴール：<strong>10個のミニWebアプリ</strong>を「30〜60分スプリント」で作成 → <strong>即公開</strong> → <strong>小さく改善</strong>。</li>
+      <li>公開先：<strong>静的＝GitHub Pages</strong> ／ <strong>動的＝Heroku / Render / Railway</strong></li>
+      <li>学び方：各アプリで<strong>毎回1テーマだけ</strong>意識（タイマー / API / Canvas / localStorage / 認証 など）</li>
+      <li>成果物：<strong>GitHubリポ10個 + 公開URL10本 + 学びメモ（Notion）</strong></li>
+    </ul>
+    <div class="note">
+      <strong>Point.</strong> 迷ったら「まず動かす・まず出す」。完成度より回転数を大事にする。
+    </div>
+  </section>
+
+  <section id="steps">
+    <h2>あなたの5ステップ</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>1) 30分Webアプリ×10で深掘り <span class="chip">最優先</span></h3>
+        <p class="muted">参考：<a href="https://ikedahayato.com/blog/30min-webapps" target="_blank" rel="noopener">イケハヤ：30分でできるWebアプリ10選</a></p>
+        <div class="two-col">
+          <ul class="checklist">
+            <li><input type="checkbox"> Todoリスト（localStorage）</li>
+            <li><input type="checkbox"> ポモドーロ（setInterval・音）</li>
+            <li><input type="checkbox"> 為替レート計算（外部API・async/await）</li>
+            <li><input type="checkbox"> お絵かき（Canvas・タッチ）</li>
+            <li><input type="checkbox"> パスワード生成（乱数・正規表現・Clipboard）</li>
+            <li><input type="checkbox"> BMI計算（フォーム・可視化）</li>
+            <li><input type="checkbox"> カウントダウン（日時計算）</li>
+            <li><input type="checkbox"> QRコード生成（外部ライブラリ）</li>
+            <li><input type="checkbox"> じゃんけん（ゲームロジック）</li>
+            <li><input type="checkbox"> Markdownエディタ（パーサ・リアルタイム）</li>
+          </ul>
+        </div>
+        <p class="small muted">毎回：①機能は3点まで → ②AIで最小実装 → ③動いたら即コミット＆公開 → ④学び1行メモ</p>
+      </div>
+
+      <div class="card">
+        <h3>2) GitHub Pagesに即公開</h3>
+        <p>静的で動くものはすべてPagesへ。<a href="https://pages.github.com/" target="_blank" rel="noopener">GitHub Pages</a></p>
+        <ol>
+          <li>新規リポに <code>index.html</code> を置く</li>
+          <li>Settings → Pages → <em>Deploy from a branch</em></li>
+          <li>URL：<code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code></li>
+        </ol>
+        <p class="small muted">以後は <code>git push</code> で自動公開。スマホ表示も都度確認。</p>
+      </div>
+
+      <div class="card">
+        <h3>3) 動的ページはPaaSへ</h3>
+        <p>サーバーが必要な拡張は3本だけ挑戦。</p>
+        <ul>
+          <li>Todo＋簡易API（Node＋SQLite）</li>
+          <li>Markdownエディタ＋保存API</li>
+          <li>為替：APIキー秘匿のための簡易プロキシ</li>
+        </ul>
+        <p class="small">
+          候補：<a href="https://www.heroku.com" target="_blank" rel="noopener">Heroku</a> ／ 
+          <a href="https://render.com" target="_blank" rel="noopener">Render</a> ／ 
+          <a href="https://railway.app" target="_blank" rel="noopener">Railway</a>
+        </p>
+      </div>
+
+      <div class="card">
+        <h3>4) 無料動画を2本だけ観る</h3>
+        <p>概念→具体例の順で理解を加速。</p>
+        <ul>
+          <li>バイブコーディング徹底解説（導入）</li>
+          <li>Sanity × バイブで運用例（実践）</li>
+        </ul>
+        <p class="small muted">YouTube「イケハヤ大学2.0」内に公開動画あり。</p>
+      </div>
+
+      <div class="card">
+        <h3>5) サロン入会（任意）</h3>
+        <p>入門資料 → 事例探索 → 週1でURL共有＆軽レビューを習慣化。</p>
+        <p class="small muted">まずは無料領域で回し、必要なら参加でもOK。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="weekly" class="card">
+    <h2>週ごとの進め方（4週間版）</h2>
+
+    <div class="week">
+      <h3>Week 0（初回セットアップ／1日）</h3>
+      <ul>
+        <li>GitHubアカウント＆Pages確認、テンプレリポ作成</li>
+        <li>PaaSアカウント作成（Heroku / Render / Railway）</li>
+      </ul>
+    </div>
+
+    <div class="week">
+      <h3>Week 1：静的5本を一気に</h3>
+      <ul class="checklist">
+        <li><input type="checkbox"> Todo</li>
+        <li><input type="checkbox"> ポモドーロ</li>
+        <li><input type="checkbox"> パスワード生成</li>
+        <li><input type="checkbox"> じゃんけん</li>
+        <li><input type="checkbox"> QR生成</li>
+      </ul>
+      <p class="small muted">学びタグ：setInterval / localStorage / Clipboard / ランダム / 外部ライブラリ</p>
+    </div>
+
+    <div class="week">
+      <h3>Week 2：静的5本 + UI磨き</h3>
+      <ul class="checklist">
+        <li><input type="checkbox"> 為替</li>
+        <li><input type="checkbox"> Canvasお絵かき</li>
+        <li><input type="checkbox"> BMI</li>
+        <li><input type="checkbox"> カウントダウン</li>
+        <li><input type="checkbox"> Markdownエディタ</li>
+      </ul>
+      <p class="small muted">1本はスマホ表示を重点改善（ヘッダ固定・タップ領域拡大など）。</p>
+    </div>
+
+    <div class="week">
+      <h3>Week 3：動的化チャレンジ</h3>
+      <ul class="checklist">
+        <li><input type="checkbox"> Todo API化（POST/GET/DELETE）→ デプロイ</li>
+        <li><input type="checkbox"> Markdown保存API → デプロイ</li>
+        <li><input type="checkbox"> 為替プロキシAPI（envでAPIキー管理） → デプロイ</li>
+      </ul>
+    </div>
+
+    <div class="week">
+      <h3>Week 4：仕上げと発信</h3>
+      <ul class="checklist">
+        <li><input type="checkbox"> スクショ＆公開URLの作品ギャラリー作成</li>
+        <li><input type="checkbox"> 気に入った2本を小改良（ダークモード / PWA など）</li>
+        <li><input type="checkbox"> Xで #バイブコーディング 発信</li>
+      </ul>
+      <div class="note">ゆっくり派は各Weekを2週間に延長（全8週間）で無理なく。</div>
+    </div>
+  </section>
+
+  <section id="deploy" class="card">
+    <h2>デプロイ手順ミニメモ</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>GitHub Pages（最短）</h3>
+        <ol>
+          <li><code>index.html</code> をコミット</li>
+          <li>Settings → Pages → <em>Deploy from a branch</em></li>
+          <li>数分後に公開：<code>https://&lt;user&gt;.github.io/&lt;repo&gt;/</code></li>
+        </ol>
+        <p class="small muted">以後は <code>git push</code> で自動更新。</p>
+      </div>
+      <div class="card">
+        <h3>Heroku（動的）</h3>
+        <ul>
+          <li>GitHub連携 → <em>Deploy Branch</em></li>
+          <li>ログでビルド確認 → <code>https://&lt;app&gt;.herokuapp.com</code></li>
+          <li>Ecoプランなら小規模1台を常時稼働可</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Render（動的/静的）</h3>
+        <ul>
+          <li>New → Web Service → GitHubリポ選択</li>
+          <li>Freeインスタンスでデプロイ（学習向き）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Railway</h3>
+        <ul>
+          <li>GitHubからImport → 自動デプロイ</li>
+          <li>料金は従量課金（無料は初回クレジットが基本）</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="notion" class="card">
+    <h2>Notion用トラッカー（プロパティ案）</h2>
+    <div>
+      <span class="tag">タイトル</span>
+      <span class="tag">リポURL</span>
+      <span class="tag">公開URL</span>
+      <span class="tag">カテゴリ（静/動）</span>
+      <span class="tag">学びタグ</span>
+      <span class="tag">ステータス</span>
+      <span class="tag">ふりかえり</span>
+    </div>
+    <p class="small muted">学びタグ例：API / Canvas / LS / Timer / Auth …</p>
+  </section>
+
+  <section id="prompt" class="card">
+    <h2>毎回使えるAIプロンプト雛形</h2>
+    <div class="kbd">
+<pre><code>以下の機能だけを満たす<strong>最小のWebアプリ</strong>を1ファイルで作ってください。
+条件：
+1) スマホで見やすい　2) 日本語UI　3) コメント多め　4) 依存はCDN読み込み
+5) GitHub Pagesでそのまま動作
+
+機能：{ここに3点だけ書く}
+
+まずは完成コードを提示 → その後に「改善の余地」を10個提案してください。</code></pre>
+    </div>
+  </section>
+
+  <section id="why" class="card">
+    <h2>この設計にした理由</h2>
+    <ul>
+      <li><strong>回転数重視</strong>：完成度より「作って出す」頻度を上げると学習効率が高い</li>
+      <li><strong>コスト最小で実運用体験</strong>：静的はPages、動的はFree/低額PaaSで十分</li>
+      <li><strong>1アプリ=1テーマ</strong>で知識が定着、疲れにくい</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p class="small">© バイブコーディング・ロードマップ（あなた用）</p>
+  </footer>
+</main>
+</body>
+</html>

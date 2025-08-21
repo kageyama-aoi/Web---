@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>プロンプト雛形 – コピーボタン付き（HTML5）</title>
+  <style>
+    :root{
+      --bg:#0b0c10; --panel:#141822; --text:#e8eaf0; --muted:#b6bcc8; --accent:#7c9cff; --border:#232838; --ok:#10b981; --warn:#f59e0b;
+    }
+    body{margin:0; background:var(--bg); color:var(--text); font:16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, sans-serif}
+    header{padding:20px 24px; border-bottom:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,.04), transparent)}
+    h1{margin:0; font-size:clamp(20px,2vw+12px,32px)}
+    .lead{color:var(--muted); margin:6px 0 0}
+    main{max-width:980px; margin:0 auto; padding:20px 24px}
+    .card{background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px 16px 12px; box-shadow:0 10px 24px rgba(0,0,0,.35);}
+    .row{display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:10px}
+    .actions{display:flex; gap:8px; flex-wrap:wrap}
+    .btn{appearance:none; border:1px solid var(--border); background:#1b2130; color:#fff; padding:8px 12px; border-radius:12px; cursor:pointer}
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{background:var(--accent); border-color:transparent}
+    .btn.ok{background:var(--ok); border-color:transparent}
+    .btn.warn{background:var(--warn); border-color:transparent; color:#111}
+    textarea{width:100%; min-height:360px; background:#0f1420; color:#eaf1ff; border:1px solid var(--border); border-radius:12px; padding:12px; font:14px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+    details{margin-top:16px}
+    summary{cursor:pointer}
+    footer{color:var(--muted); text-align:center; margin:24px 0 60px}
+    kbd{border:1px solid var(--border); padding:0 6px; border-radius:6px; background:#0f1420}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>プロンプト雛形（コピーして使える）</h1>
+    <p class="lead">このページは、先ほどのリッチな比較サイトを再現するための<strong>完成版プロンプト</strong>をワンクリックでコピーできます。</p>
+  </header>
+  <main>
+    <section class="card">
+      <div class="row">
+        <h2 style="margin:0">完全版プロンプト</h2>
+        <div class="actions">
+          <button class="btn primary" data-copy="prompt">📋 このプロンプトをコピー</button>
+          <button class="btn" id="fillPlaceholders">{{ }} を埋めるヒント</button>
+        </div>
+      </div>
+      <textarea id="prompt" spellcheck="false">あなたはフロントエンドのプロとして、<単一HTMLファイル>だけで完結するリッチな比較サイトを作成してください。外部CDNやフレームワークは使わず、ブラウザで開くだけで動作すること。以下の仕様を満たした、完成済みのHTML5（CSS/JS内蔵）だけを出力してください。
+
+【目的】
+- ページタイトル：「{{ページのタイトル}}」
+- テーマの例：技術スタック比較 / ツール比較 / 製品比較 など
+
+【データ構造】
+- JavaScript配列 DATA を埋め込み、各要素は以下のキーを持つ：
+  - name（名前）
+  - components（構成要素の配列）
+  - features（特徴の配列）
+  - scenes（利用シーンの配列）
+  - analogy（例えの一言）
+- 初期値の例（必要に応じて中身のみ差し替え、キー名は固定）：
+[
+  {
+    "name": "Next.js + React（現代フロントエンド）",
+    "components": ["Next.js","React","（周辺: Vercel / SWC / Turbopack など）"],
+    "features": ["SSR/SSG対応で高速","開発体験が良い","SEOに強い"],
+    "scenes": ["マーケティングサイト","ECサイト","ダッシュボード","ポートフォリオ"],
+    "analogy": "最新設備を備えたスマート住宅"
+  },
+  {
+    "name": "LAMPスタック",
+    "components": ["Linux","Apache","MySQL","PHP"],
+    "features": ["長年の実績と安定性","WordPressなどCMSの基盤","サーバーサイド中心"],
+    "scenes": ["CMS（WordPress）","企業サイト","予約システム"],
+    "analogy": "昔ながらの信頼できる工務店"
+  },
+  {
+    "name": "MERNスタック",
+    "components": ["MongoDB","Express","React","Node.js"],
+    "features": ["フロント〜DBまでJSで統一","SPAやWebアプリに強い"],
+    "scenes": ["SNS","チャットアプリ","タスク管理ツール"],
+    "analogy": "設計から施工までワンストップの建築会社"
+  },
+  {
+    "name": "JAMstack",
+    "components": ["JavaScript","APIs","Markup"],
+    "features": ["静的生成で超高速","高セキュリティ","CDN配信と相性◎"],
+    "scenes": ["ブログ","ランディングページ","静的EC（ヘッドレスCMS）"],
+    "analogy": "プレハブ建築（事前に部品を作って現地で組み立て）"
+  }
+]
+
+【必須機能】
+1) 表ビュー / カードビューの切替
+2) 検索（スペース区切り AND）
+3) チップ（利用シーン）でのフィルタ
+4) 名前順ソート（昇降切替）
+5) Markdownコピー（表形式）
+6) CSVエクスポート
+7) テーマ切替（ライト/ダーク、localStorage保存）
+
+【デザイン/UX】
+- モダンでフラット、レスポンシブ
+- アクセシビリティ配慮（aria属性、caption、role="region" など）
+- 余白・影・角丸・ホバーを活用し可読性と操作感を高める
+
+【実装条件】
+- 単一HTMLで完結（外部ライブラリ/CDN禁止）
+- 出力は完成済みHTMLのみ（説明文やMarkdownは不要）
+- 検索は name/components/features/scenes/analogy を連結し小文字化して AND 判定
+- チップは選択が1つ以上ある場合、そのいずれかを scenes に含む項目だけ残す
+- ソートは localeCompare を用いた昇降トグル
+- Markdown/CSV はクリップボードコピーやBlobダウンロードを実装
+- テーマは localStorage('theme') に保存。初期値は prefers-color-scheme を尊重</textarea>
+      <details>
+        <summary><strong>使い方のコツ</strong></summary>
+        <ul>
+          <li><kbd>{{ページのタイトル}}</kbd> などのプレースホルダを置き換えてからコピーすると、生成物の再現性が上がります。</li>
+          <li>データだけ差し替えたいときは、DATA配列の中身だけ変更と明示してください。</li>
+          <li>機能の追加/削除は、該当機能以外を触らないように指示すると安全です。</li>
+        </ul>
+      </details>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="row">
+        <h2 style="margin:0">極短プロンプト（差分編集用）</h2>
+        <div class="actions">
+          <button class="btn ok" data-copy="short">📋 極短版をコピー</button>
+        </div>
+      </div>
+      <textarea id="short" spellcheck="false">上記で作成済みの「単一HTML・比較サイト」コードに対して、次の変更だけを適用してください：
+- DATA配列の中身を以下JSONに完全置換（キー名は既存と同一）
+- それ以外のHTML/CSS/JSは一切変更禁止
+JSON：
+[
+  {"name":"{{名前}}","components":["…"],"features":["…"],"scenes":["…"],"analogy":"…"}
+]</textarea>
+    </section>
+
+    <footer>© 2025 Prompt Toolkit — 単一HTMLで配布OK</footer>
+  </main>
+
+  <script>
+    function copyFrom(id){
+      const el = document.getElementById(id);
+      el.select(); el.setSelectionRange(0, 99999);
+      const ok = document.execCommand('copy');
+      if(!ok){
+        navigator.clipboard?.writeText(el.value).catch(()=>{});
+      }
+      const btn = document.querySelector(`[data-copy="${id}"]`);
+      if(btn){
+        const old = btn.textContent; btn.textContent = '✅ コピーしました';
+        setTimeout(()=> btn.textContent = old, 1600);
+      }
+    }
+    document.querySelectorAll('[data-copy]').forEach(b=>{
+      b.addEventListener('click', ()=> copyFrom(b.getAttribute('data-copy')));
+    });
+
+    document.getElementById('fillPlaceholders').addEventListener('click', ()=>{
+      alert('ヒント:
+- {{ページのタイトル}} → 例: 技術スタック比較 2025
+- DATA配列はキー名固定で中身のみ差し替え
+- 追加機能は個別に指示（他は変更禁止）');
+    });
+  </script>
+</body>
+</html>

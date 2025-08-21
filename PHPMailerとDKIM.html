@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>【事例報告】PHPMailer旧版によるDKIM不一致とエンコード差異</title>
+<style>
+  :root{
+    --bg:#ffffff; --fg:#1f2937; --muted:#6b7280; --card:#f9fafb; --border:#e5e7eb; --accent:#2563eb; --ok:#059669; --warn:#b45309; --bad:#dc2626;
+  }
+  .dark{
+    --bg:#0b1020; --fg:#e5e7eb; --muted:#9ca3af; --card:#141a2a; --border:#253046; --accent:#60a5fa; --ok:#34d399; --warn:#f59e0b; --bad:#f87171;
+  }
+  html,body{ height:100%; }
+  body{ margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, Arial, sans-serif; line-height:1.65;}
+  .container{ max-width: 1080px; margin:0 auto; padding: 24px; }
+  header{ display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  h1{ font-size: clamp(1.4rem, 3vw, 2rem); margin:0 0 8px; line-height:1.2;}
+  .subtitle{ color:var(--muted); margin-top:-2px; }
+  .toolbar{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  button, .pill{
+    border:1px solid var(--border); background: var(--card); color: var(--fg);
+    padding:8px 12px; border-radius: 999px; cursor:pointer; font-weight:600;
+  }
+  button:hover{ border-color: var(--accent); }
+  .grid{ display:grid; gap:16px; grid-template-columns: repeat(12, 1fr); }
+  .card{ background: var(--card); border:1px solid var(--border); border-radius:14px; padding:16px; }
+  .span12{ grid-column: span 12; } .span8{ grid-column: span 8; } .span4{ grid-column: span 4; }
+  .kpi{ display:flex; gap:12px; align-items:center; }
+  .kpi .dot{ width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .ok .dot{ background: var(--ok); } .warn .dot{ background: var(--warn); } .bad .dot{ background: var(--bad); }
+  h2{ font-size:1.15rem; margin:0 0 10px; border-left:4px solid var(--accent); padding-left:10px; }
+  h3{ font-size:1rem; margin:12px 0 6px; color: var(--accent); }
+  code, pre{ background: #0f172a20; padding:2px 6px; border-radius:6px; }
+  table{ width:100%; border-collapse:collapse; font-size:0.95rem; }
+  th, td{ border:1px solid var(--border); padding:8px; vertical-align:top; }
+  th{ background: #00000008; text-align:left; }
+  .dark th{ background:#ffffff10; }
+  .callout{ border-left:4px solid var(--accent); background: #2563eb10; padding:10px 12px; border-radius:10px; }
+  .list-tight li{ margin:4px 0; }
+  .muted{ color: var(--muted); }
+  .footer{ font-size:0.9rem; color:var(--muted); margin-top:24px; }
+  @media (max-width: 900px){
+    .span8{ grid-column: span 12; } .span4{ grid-column: span 12; }
+  }
+  @media print{
+    .toolbar{ display:none !important; }
+    body{ background:#fff; color:#000; }
+    .card{ page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>【事例報告】PHPMailer旧版によるDKIM不一致とエンコード差異</h1>
+        <div class="subtitle">対象: 顧客「VK」/ 送信先: yahoo.co.jp / 送信元: vis-school-info@vis-kobe.co.jp</div>
+      </div>
+      <div class="toolbar">
+        <button id="toggleTheme" aria-label="テーマ切り替え">🌗 ダーク/ライト</button>
+        <button id="printBtn">🖨️ 印刷/PDF</button>
+      </div>
+    </header>
+
+    <section class="grid">
+      <div class="card span12">
+        <div class="grid">
+          <div class="span4 kpi ok">
+            <span class="dot"></span>
+            <div><strong>SPF/DMARC</strong><br><span class="muted">ともに正常（顧客・弊社で確認済）</span></div>
+          </div>
+          <div class="span4 kpi bad">
+            <span class="dot"></span>
+            <div><strong>DKIM</strong><br><span class="muted">顧客側でエラー検知（yahoo.co.jp）</span></div>
+          </div>
+          <div class="span4 kpi warn">
+            <span class="dot"></span>
+            <div><strong>本文エンコード差異</strong><br><span class="muted">quoted-printable vs 8bit</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card span8">
+        <h2>1. 概要</h2>
+        <p>管理画面から <code>vis-school-info@vis-kobe.co.jp</code> を差出人にして送信したメールについて、<strong>顧客「VK」から Yahoo! 宛で DKIM エラー</strong>の報告がありました。弊社・顧客双方のテスト送信ファイルを比較したところ、<strong>本文の Content-Transfer-Encoding が不一致</strong>（顧客: <code>quoted-printable</code>、弊社: <code>8bit</code>）でした。</p>
+        <div class="callout">
+          <strong>結論:</strong> 使用していた PHPMailer が<strong>非常に古い（v1.72 / 2004年）</strong>ため、エンコード処理と DKIM 署名の整合性に問題が生じた可能性が高い。<br>
+          <em>暫定対処として</em> アプリ側からエンコードを <code>8bit</code> に固定し、事象は解消。恒久対策としては <strong>PHPMailer 6.x への更新</strong>が必要。
+        </div>
+      </div>
+
+      <div class="card span4">
+        <h2>2. タイムライン / 影響範囲</h2>
+        <ul class="list-tight">
+          <li>顧客から DKIM エラー連絡（宛先: yahoo.co.jp）</li>
+          <li>送信ファイル比較 → <code>Content-Transfer-Encoding</code> の差異を特定</li>
+          <li>暫定対応：エンコードを <code>8bit</code> 指定（TR95495）</li>
+          <li>結果：DKIM エラー解消を確認</li>
+        </ul>
+        <p class="muted">影響は Yahoo! 宛てで主に顕在化。DKIM は改行・空白・エンコード差でも検証が失敗し得ます。</p>
+      </div>
+
+      <div class="card span12">
+        <h2>3. 技術的背景と原因分析</h2>
+        <h3>3-1. DKIM とエンコードの関係</h3>
+        <p>DKIM は「署名時に計算した本文（Body）のハッシュ」が、受信側で復元した本文ハッシュと一致するかを検証します。<strong>quoted-printable と 8bit で改行やエスケープが異なる</strong>と、復元結果がズレ、検証失敗の引き金になります。</p>
+        <h3>3-2. 古い PHPMailer の問題</h3>
+        <ul class="list-tight">
+          <li>v1.72（2004年）は <strong>DKIM 未実装期</strong> のコードで、MIME/エンコードの扱いも旧式。</li>
+          <li>本文やヘッダのエンコード/改行規則が現行サーバ運用と齟齬を起こすことがある。</li>
+          <li>結果として <strong>DKIM canonicalization と整合しない出力</strong>になり、検証が失敗しやすい。</li>
+        </ul>
+      </div>
+
+      <div class="card span6">
+        <h2>4. 比較（送信時の本文エンコード）</h2>
+        <table aria-label="エンコード比較">
+          <thead><tr><th>送信元</th><th>Content-Transfer-Encoding</th><th>備考</th></tr></thead>
+          <tbody>
+            <tr><td>顧客: VK</td><td><code>quoted-printable</code></td><td>Q-P は改行・エスケープにより本文の再現手順が増え、DKIM 検証のズレ要因になりうる。</td></tr>
+            <tr><td>弊社</td><td><code>8bit</code></td><td>今回、<strong>8bit 指定でエラー解消</strong>を確認。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card span6">
+        <h2>5. 対応方針</h2>
+        <h3>5-1. 暫定（実施済）</h3>
+        <ul class="list-tight">
+          <li>アプリから <code>$mail->Encoding = '8bit';</code> を指定（TR95495）。</li>
+          <li>Yahoo! 宛てで DKIM エラー解消を確認。</li>
+        </ul>
+        <h3>5-2. 恒久</h3>
+        <ul class="list-tight">
+          <li><strong>PHPMailer を 6.x 最新へ更新</strong>（Composer 管理推奨）。</li>
+          <li>DKIM はライブラリのネイティブ設定を使用（<code>DKIM_domain</code>, <code>DKIM_selector</code>, <code>DKIM_private</code> など）。</li>
+          <li>送信ログ（ヘッダ含む）を保管し、検証失敗時に差分比較できる体制を整備。</li>
+        </ul>
+      </div>
+
+      <div class="card span12">
+        <h2>6. DKIM 設定チェックリスト（受信側検証と整合させるために）</h2>
+        <ul class="list-tight">
+          <li>DNS: <code>selector._domainkey.vis-kobe.co.jp</code> に公開鍵（TXT）を正しく設定</li>
+          <li>署名対象: <code>From:</code> を含むヘッダの選定（<code>h=</code>）と本文の canonicalization（<code>c=relaxed/relaxed</code> 等）</li>
+          <li>送信時: 本文エンコードと改行（<code>\r\n</code>）の一貫性</li>
+          <li>運用: 署名後に MTA/ゲートウェイでヘッダを書き換えない</li>
+          <li>検証: 受信ヘッダの <code>Authentication-Results</code> で <code>dkim=pass</code> を確認</li>
+        </ul>
+      </div>
+
+      <div class="card span12">
+        <h2>7. 用語の整理（誤解を避ける表現）</h2>
+        <ul class="list-tight">
+          <li><strong>原因表現</strong>：「PHPMailer 旧版の仕様に起因するエンコード不整合」</li>
+          <li><strong>暫定対処</strong>：「アプリからエンコード固定を追加（ワークアラウンド）」</li>
+          <li><strong>恒久対策</strong>：「PHPMailer 6.x 化および DKIM 署名の標準設定に移行」</li>
+        </ul>
+      </div>
+
+      <div class="card span12">
+        <h2>8. 参考コード（PHPMailer 6.x での DKIM 設定例）</h2>
+<pre><code>// Composer で導入済みを想定
+use PHPMailer\PHPMailer\PHPMailer;
+require 'vendor/autoload.php';
+
+$mail = new PHPMailer(true);
+$mail->CharSet = 'UTF-8';
+$mail->isSMTP();
+$mail->Host = 'smtp.example.com';
+$mail->SMTPAuth = true;
+$mail->Username = 'user@example.com';
+$mail->Password = 'app-password-or-oauth';
+$mail->SMTPSecure = 'tls'; // 465なら'ssl'
+$mail->Port = 587;
+
+// DKIM
+$mail->DKIM_domain   = 'vis-kobe.co.jp';
+$mail->DKIM_selector = 'selector1';           // 例
+$mail->DKIM_private  = '/path/to/private.key';
+$mail->DKIM_identity = $mail->From;
+
+// 本文エンコード（必要時のみ明示）
+$mail->Encoding = '8bit'; // 既定で問題なければ省略
+
+$mail->setFrom('vis-school-info@vis-kobe.co.jp', 'VIS School');
+$mail->addAddress('to@yahoo.co.jp');
+$mail->isHTML(true);
+$mail->Subject = 'テスト';
+$mail->Body    = 'DKIMテスト本文';
+$mail->send();</code></pre>
+      </div>
+
+      <div class="card span12">
+        <h2>9. まとめ（要点）</h2>
+        <ul class="list-tight">
+          <li>事象は<strong>ライブラリの旧版仕様</strong>が引き金。アプリ修正は「回避策の実装」に過ぎない。</li>
+          <li>暫定対処の <code>8bit</code> 指定で解消したが、<strong>恒久的には 6.x 化が必須</strong>。</li>
+          <li>DKIM はエンコード・改行・ヘッダ整形の差で簡単に fail するため、<strong>署名直後の内容を変えない運用</strong>が重要。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="footer">
+      <p>※ この文書は、顧客/社内共有を想定した HTML レポートです。印刷ボタンで PDF 化できます。</p>
+      <p>— 補足：構造化（概要→原因→対策→チェックリスト）の順で、意思決定と再発防止に必要な情報を最短で確認できるように設計しています。</p>
+    </section>
+  </div>
+
+<script>
+  const root = document.documentElement;
+  const toggleBtn = document.getElementById('toggleTheme');
+  const printBtn = document.getElementById('printBtn');
+  function setTheme(mode){
+    if(mode==='dark'){ document.body.classList.add('dark'); }
+    else{ document.body.classList.remove('dark'); }
+    localStorage.setItem('dkim-theme', mode);
+  }
+  toggleBtn.addEventListener('click', ()=>{
+    const isDark = document.body.classList.toggle('dark');
+    localStorage.setItem('dkim-theme', isDark ? 'dark' : 'light');
+  });
+  printBtn.addEventListener('click', ()=> window.print());
+  // 初期テーマ
+  const saved = localStorage.getItem('dkim-theme');
+  if(saved==='dark'){ document.body.classList.add('dark'); }
+</script>
+</body>
+</html>

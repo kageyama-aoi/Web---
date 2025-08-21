@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="system">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI初心者向け勉強会｜スライド台本＋ワークシート（v3 再構成）</title>
+<meta name="color-scheme" content="light dark" />
+<style>
+:root{
+  --bg:#FFF3E0;        /* 背景：やわらかいクリーム */
+  --fg:#4E342E;        /* 文字：落ち着いたブラウン */
+  --muted:#8D6E63;     /* 補助文字：少し淡めのブラウン */
+  --brand:#FF7043;     /* アクセント：温かいオレンジ */
+  --line:#FFB74D;      /* 罫線：やや明るいオレンジ */
+  --card:#FFE0B2;      /* カード背景：薄いオレンジ */
+  --kbd:#FFE0B2;       /* kbd背景：カードと統一 */
+  --tip:#FFF8E1;       /* Tip背景：さらに淡いクリーム */
+  --link:#FF7043;      /* リンク：ブランド色に合わせる */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root{
+    --bg:#3E2723;      /* 背景：深いブラウン */
+    --fg:#FFCCBC;      /* 文字：高コントラストの薄橙 */
+    --muted:#BCAAA4;   /* 補助文字 */
+    --brand:#FF8A65;   /* アクセント：少し明るめに */
+    --line:#6D4C41;    /* 罫線：背景より少し明るい */
+    --card:#4E342E;    /* カード背景 */
+    --kbd:#5D4037;
+    --tip:#6D4C41;
+    --link:#FFAB91;    /* リンク：読みやすく少し明るく */
+  }
+}
+
+[data-theme="light"]{
+  --bg:#FFF3E0; --fg:#4E342E; --muted:#8D6E63; --brand:#FF7043; --line:#FFB74D;
+  --card:#FFE0B2; --kbd:#FFE0B2; --tip:#FFF8E1; --link:#FF7043;
+}
+[data-theme="dark"]{
+  --bg:#3E2723; --fg:#FFCCBC; --muted:#BCAAA4; --brand:#FF8A65; --line:#6D4C41;
+  --card:#4E342E; --kbd:#5D4037; --tip:#6D4C41; --link:#FFAB91;
+}
+
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif;line-height:1.6;}
+  /* 変更前の例：rgba(99,102,241,.10) ←青系 */
+header{
+  padding:2.75rem 1rem 1rem;
+  background:linear-gradient(180deg,rgba(255,112,67,.10),transparent); /* ←ブランド色に統一 */
+  position:relative
+}
+.wrap{max-width:960px;margin:0 auto;padding:0 1rem 3rem;}
+  h1{font-size:clamp(1.6rem,1.4rem + 1.5vw,2.4rem);margin:.2rem 0 .4rem}
+  h2{font-size:1.3rem;margin:2rem 0 .6rem;border-bottom:1px solid var(--line);padding-bottom:.4rem}
+  h3{font-size:1.1rem;margin:1.2rem 0 .4rem}
+  p,li{font-size:1rem}
+  a{color:var(--link)}
+  .muted{color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:1rem;margin:1rem 0}
+  .grid{display:grid;gap:1rem}
+  .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  nav.toc{border:1px solid var(--line);border-radius:12px;padding:1rem;background:var(--bg)}
+  nav.toc a{text-decoration:none}
+  code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  kbd{background:var(--kbd);border:1px solid var(--line);border-bottom-color:#374151;border-radius:6px;padding:.1rem .35rem}
+  pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.8rem;overflow:auto}
+  .tip{border-left:4px solid var(--brand);padding:.5rem .8rem;background:var(--tip);margin:.8rem 0;border-radius:8px}
+  details{border:1px dashed var(--line);border-radius:10px;padding:.8rem;background:var(--bg)}
+  details>summary{cursor:pointer;font-weight:600}
+  table{width:100%;border-collapse:collapse;margin:.6rem 0 1rem}
+  th,td{border:1px solid var(--line);padding:.6rem .5rem;vertical-align:top}
+  th{background:color-mix(in oklab, var(--card) 75%, var(--bg) 25%);text-align:left}
+  .badge{display:inline-block;font-size:.78rem;padding:.18rem .5rem;border:1px solid var(--line);border-radius:999px;background:var(--bg)}
+  .section-note{font-size:.95rem;color:var(--muted);margin-top:.2rem}
+  footer{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+  .theme-toggle{
+    position:absolute;right:1rem;top:1rem;display:flex;align-items:center;gap:.5rem;
+    background:var(--card);border:1px solid var(--line);border-radius:999px;padding:.35rem .6rem;
+  }
+  .theme-toggle button{
+    border:none;background:transparent;color:var(--fg);cursor:pointer;padding:.25rem .5rem;border-radius:8px;
+  }
+  .theme-toggle .active{outline:2px solid var(--brand)}
+  .theme-toggle .sep{width:1px;height:18px;background:var(--line)}
+  @media print{
+    nav.toc{break-inside:avoid}
+    a{color:inherit;text-decoration:none}
+    .tip,details{border:1px solid #999}
+    header{padding-bottom:.5rem}
+    .theme-toggle{display:none}
+  }
+  .label{display:inline-block;min-width:2.5rem;font-weight:600;color:var(--muted)}
+</style>
+<script>
+(function(){
+  const key = "ai-workshop-theme";
+  function applyTheme(mode){ document.documentElement.setAttribute("data-theme", mode); }
+  function saved(){ return localStorage.getItem(key); }
+  function init(){
+    const v = saved(); if(v){ applyTheme(v); }
+    document.addEventListener("click", (e)=>{
+      const t = e.target; if(!(t instanceof HTMLElement)) return;
+      if(t.dataset.themeSet){
+        const mode = t.dataset.themeSet;
+        localStorage.setItem(key, mode); applyTheme(mode);
+        document.querySelectorAll("[data-theme-set]").forEach(btn=>btn.classList.remove("active"));
+        t.classList.add("active");
+      }
+    });
+    const current = document.documentElement.getAttribute("data-theme") || "system";
+    const btn = document.querySelector(`[data-theme-set="${current}"]`);
+    if(btn) btn.classList.add("active");
+  }
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+</head>
+<body>
+  <header class="wrap">
+    <div class="theme-toggle" role="group" aria-label="テーマ切替">
+      <button type="button" data-theme-set="light" aria-label="ライトモード">☀️ Light</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" data-theme-set="dark" aria-label="ダークモード">🌙 Dark</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" data-theme-set="system" aria-label="システム設定">🖥 System</button>
+    </div>
+    <h1>AI初心者向け勉強会<br>スライド台本＋ワークシート（v3 再構成）</h1>
+    <p class="muted">対象：AIの扱い方がまだ分からない方向け／所要：90分想定／目的：AIを「怖い未知」から「頼れる相棒」に</p>
+  </header>
+
+  <main class="wrap">
+    <nav class="toc card" aria-label="目次">
+      <strong>目次</strong>
+      <ol>
+        <li><a href="#prompt-intro">1. プロンプトの工夫（入口体験：整理型／会話型）</a></li>
+        <li><a href="#agenda">2. 勉強会の全体構成（90分）</a></li>
+        <li><a href="#prep">3. 当日までの準備</a></li>
+        <li><a href="#slides">4. スライド台本（実演・ワーク・まとめ）</a></li>
+        <li><a href="#worksheets">5. ワークシート雛形</a></li>
+        <li><a href="#appendix">6. 付録：質問テンプレ＆話し方メモ</a></li>
+      </ol>
+    </nav>
+
+    <!-- 1. Prompt Intro -->
+    <section id="prompt-intro">
+      <h2>1. プロンプトの工夫（入口体験：<span class="badge">整理型</span>／<span class="badge">会話型</span>）</h2>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>1A. 整理型（目的・条件・形式で書く）</h3>
+          <p>しっかり言語化してから依頼したい人向け。後で資料にも残しやすい。</p>
+          <pre><code>【目的】◯◯をしたい
+【対象】中学生向け／社会人向け／初心者向け
+【形式】会話形式／表形式／箇条書き
+【条件】例を3つ／公式URLを添えて／よくある注意点も
+【質問】＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿</code></pre>
+          <div class="tip">
+            <strong>例（スプシ関数）：</strong><br>
+            <span class="label">目的</span>日付から曜日を日本語の短縮形で表示したい<br>
+            <span class="label">形式</span>ステップ→関数→注意点（箇条書き）<br>
+            <span class="label">質問</span>Googleスプレッドシートで、A1の日付の曜日を日本語の短縮形で表示する関数と注意点を、ステップ＋関数例＋よくあるミスの順で教えて。
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>1B. 会話型（先生と生徒のやりとり）</h3>
+          <p>“目的とか書くのめんどくさい派”はこちら。会話で進めて理解する。</p>
+          <pre><code>会話形式で説明してください。
+あなたは先生役、私は生徒役です。
+スプレッドシートで日付から曜日を出す方法を、質問と答えのやり取りで教えてください。</code></pre>
+          <pre><code>助成金について説明してください。
+社会人向けに、3分で読める要点だけ。表形式で「制度名／対象／金額／URL」を整理してください。</code></pre>
+          <p class="section-note">※ 会話型で理解 → 必要に応じて整理型に「転記」すると再利用が楽。</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>整理型 vs 会話型（対応表）</h3>
+        <table>
+          <thead><tr><th>スタイル</th><th>特徴</th><th>向いている人</th><th>例プロンプト</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>整理型</strong></td>
+              <td>目的・条件を表で整理／後から再利用しやすい</td>
+              <td>業務に残す・反復利用したい</td>
+              <td>「【目的】◯◯ 【条件】◯◯ 【形式】◯◯」</td>
+            </tr>
+            <tr>
+              <td><strong>会話型</strong></td>
+              <td>対話で自然に理解／気楽に始められる</td>
+              <td>最初の学習・文章化が苦手</td>
+              <td>「先生役と生徒役で説明して」</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="tip"><strong>おすすめ進行：</strong>まず全員で会話型を体験 → 整理型へ写経して“型”を掴む。</div>
+      </div>
+    </section>
+
+    <!-- 2. アジェンダ -->
+    <section id="agenda">
+      <h2>2. 勉強会の全体構成（90分）</h2>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>タイムライン</h3>
+          <table>
+            <thead><tr><th>時間</th><th>内容</th><th>狙い</th></tr></thead>
+            <tbody>
+              <tr><td>10分</td><td>オープニング</td><td>安心感・ゴール共有</td></tr>
+              <tr><td>10分</td><td>AIでできること全体像</td><td>地図を描く</td></tr>
+              <tr><td>15分</td><td>実演① スプシ関数の調べ方</td><td>“やりたいこと”→関数</td></tr>
+              <tr><td>20分</td><td>実演② 未知の知識の調べ方</td><td>条件設計＆公式確認</td></tr>
+              <tr><td>20分</td><td>ワークショップ</td><td>自分事化・定着</td></tr>
+              <tr><td>10分</td><td>まとめ・次の一歩</td><td>行動宣言</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>ゴール</h3>
+          <ul>
+            <li>AIへの<strong>質問の型</strong>（目的＋条件＋形式）を掴む</li>
+            <li>スプシ関数・調べものを<strong>実務で即試せる</strong>状態</li>
+            <li>「今週AIに1回質問する」行動の第一歩</li>
+          </ul>
+          <div class="tip"><strong>進行のコツ：</strong>専門用語は避け、手を動かす→振り返りの順で安心感をキープ。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 準備 -->
+    <section id="prep">
+      <h2>3. 当日までの準備</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>主催側の準備</h3>
+          <ul>
+            <li>進行スライド：目的／ルール／AIできることマップ／実演スクショ</li>
+            <li>デモ環境：AIツール表示、<span class="badge">スプシ</span>（関数サンプル）、<span class="badge">助成金質問テンプレ</span></li>
+            <li>ワーク資料：<span class="badge">条件整理シート</span>、<span class="badge">関数検索WS</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>参加者への事前案内</h3>
+          <ul>
+            <li>PC/タブレット（スマホ可だが制限あり）</li>
+            <li>Googleアカウント（スプシ利用）</li>
+            <li>事前アンケート：AIで解決したい作業を1つ</li>
+          </ul>
+        </div>
+      </div>
+      <p class="section-note">※ スクリーン共有とフォントサイズ拡大（130%目安）を当日すぐ切り替えられるように。</p>
+    </section>
+
+    <!-- 4. スライド台本 -->
+    <section id="slides">
+      <h2>4. スライド台本（実演・ワーク・まとめ）</h2>
+
+      <details open>
+        <summary>スライド1：タイトル</summary>
+        <div class="card">
+          <p><strong>タイトル：</strong>AI初心者向け勉強会～今日から使える！AIで仕事と調べものを効率化～</p>
+          <ul>
+            <li>自己紹介＆開催背景</li>
+            <li>今日のゴール共有：「AIを相棒に」</li>
+          </ul>
+        </div>
+      </details>
+
+      <details open>
+        <summary>スライド2：今日のゴール</summary>
+        <div class="card">
+          <ul>
+            <li>AIを「怖い未知」→「頼れる相棒」に</li>
+            <li>スプシ関数・調べものを実務に直結</li>
+            <li>自分に合った使い方を見つける</li>
+          </ul>
+          <div class="tip">一言フレーズ：「全部できなくてOK。<strong>1つ</strong>持ち帰れたら成功です。」</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>スライド3：本日の流れ</summary>
+        <div class="card"><p>5ブロック（全体像→実演×2→ワーク→まとめ）。</p></div>
+      </details>
+
+      <details>
+        <summary>スライド4：AIでできることマップ</summary>
+        <div class="card">
+          <ul>
+            <li>文章作成（メール／説明文）</li>
+            <li>情報検索（未知の用語・制度）</li>
+            <li>データ処理（関数や計算式）</li>
+            <li>アイデア出し（企画／コピー）</li>
+            <li>コード生成（スクリプト／マクロ）</li>
+          </ul>
+          <p class="section-note">今日は<strong>スプシ関数</strong>と<strong>未知の知識の調べ方</strong>に絞って体験。</p>
+        </div>
+      </details>
+
+      <details open>
+        <summary>スライド5：AI質問の黄金ルール</summary>
+        <div class="card">
+          <ol>
+            <li><strong>目的＋条件＋形式</strong>で聞く</li>
+            <li>最初は大まか→徐々に具体化</li>
+            <li>条件は漏れなく短く（箇条書き歓迎）</li>
+            <li>最後は<strong>公式情報</strong>で確認</li>
+          </ol>
+          <pre class="card"><code>例）「Googleスプレッドシートで、A1の<span aria-label="日付">日付</span>から<span aria-label="曜日">曜日</span>を<span aria-label="日本語の短縮形">日本語の短縮形</span>で表示する<span aria-label="関数">関数</span>と注意点を教えて。
+形式はステップ＋関数例＋よくあるミスでお願いします。」</code></pre>
+        </div>
+      </details>
+
+      <details open>
+        <summary>スライド6：実演① スプシ関数の調べ方</summary>
+        <div class="card">
+          <p><strong>例題：</strong>「日付から曜日を日本語で出すには？」 → <code>=TEXT(A1,"aaaa")</code></p>
+          <ul>
+            <li>質問を<strong>“やりたいこと”起点</strong>で作る</li>
+            <li>引数・注意点・代替案（<code>TEXT</code>/<code>TEXTJOIN</code>等）も一緒に聞く</li>
+            <li>サンプル表に関数を入れて実際に動作確認</li>
+          </ul>
+        </div>
+      </details>
+
+      <details open>
+        <summary>スライド7：実演② 未知の知識（助成金）を“自分用”に引っ張る</summary>
+        <div class="card">
+          <ol>
+            <li><strong>全体像</strong>：「日本の小規模事業者向け助成金の種類を表で」</li>
+            <li><strong>条件追加</strong>：「東京都／従業員2名／機材・広告OK」</li>
+            <li><strong>公式URL</strong>：「必ず募集要項のURL併記」</li>
+            <li><strong>比較</strong>：「金額・採択率・手軽さで比較表」</li>
+          </ol>
+          <div class="tip">ポイント：<strong>条件設計</strong>で“自分にフィット”が決まる。</div>
+        </div>
+      </details>
+
+      <details>
+        <summary>スライド8：ワークショップ</summary>
+        <div class="card">
+          <ol>
+            <li>ペアで関数をAIに聞いてスプシへ実装</li>
+            <li>未知の制度（例：助成金）を各自条件で検索</li>
+            <li>実務アイデアを1つ書き出し、1分共有</li>
+          </ol>
+          <p class="section-note">司会の動き：質問文の添削と“条件の言語化”支援に集中。</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>スライド9：まとめ・次のステップ</summary>
+        <div class="card">
+          <ul>
+            <li>今日の学びを1人1行で共有（チャットor口頭）</li>
+            <li>宿題：「今週AIに1回質問」→テーマをその場で宣言</li>
+            <li>次回予告：「GASで作る簡単自動化（メール下書き／定型処理）」</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+
+    <!-- 5. ワークシート -->
+    <section id="worksheets">
+      <h2>5. ワークシート雛形</h2>
+
+      <h3>ワークシート1：AI質問づくり練習（スプシ関数）</h3>
+      <table>
+        <thead><tr><th style="width:22%">ステップ</th><th>記入欄（例を消して自分用に）</th></tr></thead>
+        <tbody>
+          <tr><td>目的</td><td>日付から曜日を出したい</td></tr>
+          <tr><td>条件</td><td>日本語表示／短縮形／関数で</td></tr>
+          <tr><td>形式</td><td>ステップ→関数→注意点（箇条書き）</td></tr>
+          <tr><td>完成質問</td><td>Googleスプレッドシートで、A1の日付の曜日を日本語の短縮形で表示する関数と注意点を、ステップ＋関数例＋よくあるミスの順で教えて。</td></tr>
+          <tr><td>実装メモ</td><td>=TEXT(A1,"aaaa") など／検証結果と気づき</td></tr>
+        </tbody>
+      </table>
+
+      <h3>ワークシート2：未知の知識の検索（助成金）</h3>
+      <table>
+        <thead><tr><th style="width:22%">ステップ</th><th>記入欄（例を消して自分用に）</th></tr></thead>
+        <tbody>
+          <tr><td>全体像の質問</td><td>日本の小規模事業者向け助成金の種類を表で。</td></tr>
+          <tr><td>条件追加</td><td>東京都／従業員2名／機材導入・広告費可／締切の近い順</td></tr>
+          <tr><td>公式情報依頼</td><td>必ず公式募集要項のURLを併記</td></tr>
+          <tr><td>比較依頼</td><td>金額の多さ・採択率・申請の手軽さで比較表</td></tr>
+          <tr><td>最終メモ</td><td>候補A／B／Cの所感、次アクション（誰が・いつ）</td></tr>
+        </tbody>
+      </table>
+
+      <h3>ワークシート3：AI活用アイデアメモ</h3>
+      <table>
+        <thead><tr><th style="width:30%">活用場面</th><th>AIにお願いできそうなこと</th><th>最初の一歩</th></tr></thead>
+        <tbody>
+          <tr><td>書類作成</td><td>契約書や通知文のたたき台作成</td><td>既存文面を貼って「誤解なき表現に修正」</td></tr>
+          <tr><td>情報収集</td><td>業界トレンド／制度変更の要約</td><td>週1で「重要点3つ＋出典URL」を生成</td></tr>
+          <tr><td>データ整理</td><td>関数提案・整形・チェック式</td><td>対象表を貼って「検証式も一緒に」依頼</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 6. 付録 -->
+    <section id="appendix">
+      <h2>6. 付録：質問テンプレ＆話し方メモ</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>質問テンプレ（コピペ用）</h3>
+          <pre><code>【目的】◯◯をしたい
+【条件】（例）初心者向け／日本語／表で／例は3つ
+【形式】ステップ→例→注意点 の順で
+【質問】＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿</code></pre>
+          <p class="section-note">例：<em>「Googleスプレッドシートで、A1の日時から“日本語の曜日（短縮形）”を表示する関数と、よくあるエラーの回避策を教えて。」</em></p>
+        </div>
+        <div class="card">
+          <h3>話し方メモ（隊長向け）</h3>
+          <ul>
+            <li>最初に「正解は1つじゃない」前提を置く</li>
+            <li>実演→手元で再現→気づき共有の3拍子</li>
+            <li>わからなさは“設計不足”。条件を一緒に言語化</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      この資料は、初心者が「最初の成功体験」を得やすい順番に構成しています（<strong>会話で入口→型で整理→実演→ワーク→宣言</strong>）。<br/>
+      なぜこの再構成か：最初に“聞き方”を体験して不安を下げ、次に“型”で定着させると、その後の実演（関数／助成金）にスムーズに接続できるからです。
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>見やすいWEBアプリ用 カラーパレット集（全10種）</title>
+<style>
+  :root {
+    --radius: 16px;
+    --shadow: 0 6px 24px rgba(0,0,0,.08);
+    --border: 1px solid rgba(0,0,0,.08);
+    --gap: 16px;
+  }
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
+    margin: 0; background: #f7f7f9; color: #222; line-height: 1.6; }
+  header { padding: 40px 20px 16px; text-align: center; }
+  header h1 { margin: 0 0 8px; font-size: clamp(22px, 4vw, 32px); }
+  header p { margin: 0; color: #555; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 20px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--gap); }
+  .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+    border: var(--border); overflow: hidden; display: flex; flex-direction: column; }
+  .meta { padding: 16px 18px 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .meta h2 { font-size: 18px; margin: 0; } .meta small { color: #666; }
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); border-top: var(--border); border-bottom: var(--border); }
+  .swatch { padding: 20px 12px; min-height: 92px; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; gap: 6px; }
+  .swatch b { font-size: 12px; opacity: .9; } .swatch code { font-family: ui-monospace, monospace; font-size: 12px;
+    padding: 2px 6px; border-radius: 6px; background: rgba(255,255,255,.6); }
+  .preview { padding: 18px; display: grid; gap: 10px; }
+  .preview .title { font-weight: 700; } .preview .text { opacity: .95; }
+  .btn { display: inline-block; padding: 10px 14px; border-radius: 999px; font-weight: 600; border: none; cursor: pointer; }
+  .link { text-decoration: underline; font-weight: 600; }
+  .actions { display: flex; gap: 10px; padding: 12px 16px 18px; border-top: var(--border); }
+  .copy { margin-left: auto; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(0,0,0,.12);
+    background: #fafafa; cursor: pointer; font-size: 13px; }
+  .code { display:none; }
+  footer { max-width: 980px; margin: 10px auto 40px; color: #666; padding: 0 20px; font-size: 14px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>見やすいWEBアプリ用 カラーパレット集（全10種）</h1>
+    <p>「背景 / テキスト / アクセント / 補助」の4色構成。コピーしてすぐに使えるCSS変数付き。</p>
+  </header>
+
+  <main class="container">
+<section class="card">
+    <div class="meta"><h2>① シンプル＆モダン</h2><small>白背景ベース</small></div>
+    <div class="swatches"><div class="swatch" style="background:#FFFFFF;color:#1A1A1A"><b>背景</b><code>#FFFFFF</code></div><div class="swatch" style="background:#1A1A1A;color:#FFFFFF"><b>テキスト</b><code>#1A1A1A</code></div><div class="swatch" style="background:#007AFF;color:#FFFFFF"><b>アクセント</b><code>#007AFF</code></div><div class="swatch" style="background:#F2F2F2;color:#1A1A1A"><b>補助</b><code>#F2F2F2</code></div></div><div class="preview" style="background:#FFFFFF;color:#1A1A1A">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#007AFF;color:#FFFFFF;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#FFFFFF;--color-text:#1A1A1A;--color-accent:#007AFF;--color-muted:#F2F2F2;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>② ダークモード</h2><small>夜間利用</small></div>
+    <div class="swatches"><div class="swatch" style="background:#121212;color:#EAEAEA"><b>背景</b><code>#121212</code></div><div class="swatch" style="background:#EAEAEA;color:#121212"><b>テキスト</b><code>#EAEAEA</code></div><div class="swatch" style="background:#BB86FC;color:#121212"><b>アクセント</b><code>#BB86FC</code></div><div class="swatch" style="background:#03DAC6;color:#121212"><b>補助</b><code>#03DAC6</code></div></div><div class="preview" style="background:#121212;color:#EAEAEA">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#BB86FC;color:#121212;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#121212;--color-text:#EAEAEA;--color-accent:#BB86FC;--color-muted:#03DAC6;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>③ ナチュラル＆落ち着き</h2><small>教育・健康系</small></div>
+    <div class="swatches"><div class="swatch" style="background:#FDFBF7;color:#3E3E3E"><b>背景</b><code>#FDFBF7</code></div><div class="swatch" style="background:#3E3E3E;color:#FDFBF7"><b>テキスト</b><code>#3E3E3E</code></div><div class="swatch" style="background:#8FB996;color:#102015"><b>アクセント</b><code>#8FB996</code></div><div class="swatch" style="background:#E6C229;color:#3E3E3E"><b>補助</b><code>#E6C229</code></div></div><div class="preview" style="background:#FDFBF7;color:#3E3E3E">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#8FB996;color:#102015;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#FDFBF7;--color-text:#3E3E3E;--color-accent:#8FB996;--color-muted:#E6C229;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>④ ビジネス（信頼感重視）</h2><small>金融・管理系</small></div>
+    <div class="swatches"><div class="swatch" style="background:#F5F7FA;color:#2C3E50"><b>背景</b><code>#F5F7FA</code></div><div class="swatch" style="background:#2C3E50;color:#F5F7FA"><b>テキスト</b><code>#2C3E50</code></div><div class="swatch" style="background:#2980B9;color:#FFFFFF"><b>アクセント</b><code>#2980B9</code></div><div class="swatch" style="background:#27AE60;color:#FFFFFF"><b>補助</b><code>#27AE60</code></div></div><div class="preview" style="background:#F5F7FA;color:#2C3E50">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#2980B9;color:#FFFFFF;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#F5F7FA;--color-text:#2C3E50;--color-accent:#2980B9;--color-muted:#27AE60;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>⑤ ポップ＆フレンドリー</h2><small>SNS・コミュニティ系</small></div>
+    <div class="swatches"><div class="swatch" style="background:#FFF8E7;color:#333333"><b>背景</b><code>#FFF8E7</code></div><div class="swatch" style="background:#333333;color:#FFF8E7"><b>テキスト</b><code>#333333</code></div><div class="swatch" style="background:#FF6B6B;color:#2b0d0d"><b>アクセント</b><code>#FF6B6B</code></div><div class="swatch" style="background:#FFD93D;color:#333333"><b>補助</b><code>#FFD93D</code></div></div><div class="preview" style="background:#FFF8E7;color:#333333">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#FF6B6B;color:#2b0d0d;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#FFF8E7;--color-text:#333333;--color-accent:#FF6B6B;--color-muted:#FFD93D;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>⑥ エレガント＆ラグジュアリー</h2><small>高級感・上品</small></div>
+    <div class="swatches"><div class="swatch" style="background:#FAF7F2;color:#2C2C2C"><b>背景</b><code>#FAF7F2</code></div><div class="swatch" style="background:#2C2C2C;color:#FAF7F2"><b>テキスト</b><code>#2C2C2C</code></div><div class="swatch" style="background:#A67C52;color:#FFFFFF"><b>アクセント</b><code>#A67C52</code></div><div class="swatch" style="background:#6A5ACD;color:#FFFFFF"><b>補助</b><code>#6A5ACD</code></div></div><div class="preview" style="background:#FAF7F2;color:#2C2C2C">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#A67C52;color:#FFFFFF;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#FAF7F2;--color-text:#2C2C2C;--color-accent:#A67C52;--color-muted:#6A5ACD;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>⑦ エネルギッシュ＆スポーティ</h2><small>活発・元気</small></div>
+    <div class="swatches"><div class="swatch" style="background:#FFFFFF;color:#202020"><b>背景</b><code>#FFFFFF</code></div><div class="swatch" style="background:#202020;color:#FFFFFF"><b>テキスト</b><code>#202020</code></div><div class="swatch" style="background:#FF3B30;color:#FFFFFF"><b>アクセント</b><code>#FF3B30</code></div><div class="swatch" style="background:#34C759;color:#FFFFFF"><b>補助</b><code>#34C759</code></div></div><div class="preview" style="background:#FFFFFF;color:#202020">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#FF3B30;color:#FFFFFF;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#FFFFFF;--color-text:#202020;--color-accent:#FF3B30;--color-muted:#34C759;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>⑧ フレッシュ＆クリーン</h2><small>自然・安心感</small></div>
+    <div class="swatches"><div class="swatch" style="background:#E8F5E9;color:#1B5E20"><b>背景</b><code>#E8F5E9</code></div><div class="swatch" style="background:#1B5E20;color:#E8F5E9"><b>テキスト</b><code>#1B5E20</code></div><div class="swatch" style="background:#00C853;color:#FFFFFF"><b>アクセント</b><code>#00C853</code></div><div class="swatch" style="background:#81D4FA;color:#1B5E20"><b>補助</b><code>#81D4FA</code></div></div><div class="preview" style="background:#E8F5E9;color:#1B5E20">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#00C853;color:#FFFFFF;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#E8F5E9;--color-text:#1B5E20;--color-accent:#00C853;--color-muted:#81D4FA;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>⑨ ウォーム＆カジュアル</h2><small>親しみやすい</small></div>
+    <div class="swatches"><div class="swatch" style="background:#FFF3E0;color:#4E342E"><b>背景</b><code>#FFF3E0</code></div><div class="swatch" style="background:#4E342E;color:#FFF3E0"><b>テキスト</b><code>#4E342E</code></div><div class="swatch" style="background:#FF7043;color:#FFFFFF"><b>アクセント</b><code>#FF7043</code></div><div class="swatch" style="background:#FFB74D;color:#4E342E"><b>補助</b><code>#FFB74D</code></div></div><div class="preview" style="background:#FFF3E0;color:#4E342E">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#FF7043;color:#FFFFFF;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#FFF3E0;--color-text:#4E342E;--color-accent:#FF7043;--color-muted:#FFB74D;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section><section class="card">
+    <div class="meta"><h2>⑩ クール＆テック</h2><small>IT・開発ツール</small></div>
+    <div class="swatches"><div class="swatch" style="background:#0D1117;color:#C9D1D9"><b>背景</b><code>#0D1117</code></div><div class="swatch" style="background:#C9D1D9;color:#0D1117"><b>テキスト</b><code>#C9D1D9</code></div><div class="swatch" style="background:#58A6FF;color:#0D1117"><b>アクセント</b><code>#58A6FF</code></div><div class="swatch" style="background:#1F6FEB;color:#FFFFFF"><b>補助</b><code>#1F6FEB</code></div></div><div class="preview" style="background:#0D1117;color:#C9D1D9">
+      <div class="title">見出し</div><div class="text">本文サンプル</div>
+      <button class="btn" style="background:#58A6FF;color:#0D1117;">ボタン</button>
+    </div><pre class="code">:root{--color-bg:#0D1117;--color-text:#C9D1D9;--color-accent:#58A6FF;--color-muted:#1F6FEB;}</pre>
+    <div class="actions"><button class="copy">CSS変数をコピー</button></div>
+    </section></main>
+<footer><p>好みのパレットをコピーして <code>:root</code> に貼り付けてください。</p></footer>
+<script>
+  document.querySelectorAll('.card').forEach(card => {
+    const btn = card.querySelector('.copy');
+    const code = card.querySelector('.code');
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(code.textContent.trim());
+        btn.textContent = 'コピーしました ✔';
+        setTimeout(()=> btn.textContent = 'CSS変数をコピー', 1500);
+      } catch(e) { alert('コピーに失敗しました: ' + e); }
+    });
+  });
+</script>
+</body></html>

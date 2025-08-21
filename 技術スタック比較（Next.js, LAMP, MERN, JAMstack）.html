@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>技術スタック比較（リッチ版）</title>
+  <meta name="description" content="Next.js+React / LAMP / MERN / JAMstack を、構成・特徴・利用シーン・例えで直感比較できるリッチな単一HTMLページ"/>
+  <style>
+    :root{
+      --bg:#0b0c10; --bg-soft:#111318; --panel:#141822; --text:#e8eaf0; --muted:#b6bcc8;
+      --accent:#7c9cff; --accent-2:#8be0c7; --chip:#1f2431; --border:#232838; --warn:#ffd26a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    [data-theme="light"]{
+      --bg:#f7f8fb; --bg-soft:#ffffff; --panel:#ffffff; --text:#1f2937; --muted:#556070;
+      --accent:#3b82f6; --accent-2:#10b981; --chip:#eef2ff; --border:#e5e7eb; --warn:#f59e0b;
+      --shadow: 0 10px 24px rgba(16,24,40,.08);
+    }
+    html,body{height:100%;}
+    body{margin:0; background:var(--bg); color:var(--text); font:16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, "Hiragino Kaku Gothic ProN", "BIZ UDPGothic", Meiryo, sans-serif;}
+    .container{max-width:1100px; margin:0 auto; padding:24px;}
+    header{position:sticky; top:0; z-index:3; backdrop-filter: blur(6px); background:color-mix(in oklab, var(--bg) 80%, transparent); border-bottom:1px solid var(--border);} 
+    header .wrap{display:flex; gap:16px; align-items:center; justify-content:space-between; padding:10px 24px;}
+    h1{font-size:clamp(20px, 2vw + 12px, 32px); margin:0; letter-spacing:.02em}
+    .lead{color:var(--muted); margin:6px 0 0; font-size:14px}
+    .controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+    .btn{border:1px solid var(--border); background:var(--panel); color:var(--text); padding:8px 12px; border-radius:12px; cursor:pointer; box-shadow:var(--shadow);}
+    .btn:hover{transform:translateY(-1px);} 
+    .btn.primary{background:var(--accent); border-color:transparent; color:white}
+    .btn.ghost{background:transparent}
+    .switch{display:inline-flex; align-items:center; gap:8px}
+    .switch input{appearance:none; width:44px; height:24px; border-radius:999px; background:var(--border); position:relative; outline:none; cursor:pointer;}
+    .switch input:checked{background:var(--accent)}
+    .switch input:after{content:""; position:absolute; width:18px; height:18px; background:#fff; border-radius:50%; top:3px; left:3px; transition:all .2s}
+    .switch input:checked:after{left:23px}
+
+    .toolbar{display:grid; grid-template-columns:1fr auto; gap:12px; margin:22px 0; align-items:center}
+    .search{display:flex; align-items:center; gap:10px; background:var(--bg-soft); border:1px solid var(--border); padding:10px 12px; border-radius:14px;}
+    .search input{flex:1; background:transparent; border:none; color:var(--text); outline:none}
+    .chips{display:flex; flex-wrap:wrap; gap:8px}
+    .chip{padding:6px 10px; border-radius:999px; background:var(--chip); border:1px solid var(--border); font-size:12px; cursor:pointer}
+    .chip.active{outline:2px solid var(--accent); background:color-mix(in oklab, var(--chip) 80%, var(--accent) 20%)}
+
+    .view-toggle{display:flex; gap:8px}
+
+    .table-wrap{overflow:auto; border:1px solid var(--border); border-radius:16px; background:var(--panel); box-shadow:var(--shadow)}
+    table{width:100%; border-collapse:collapse; min-width:860px}
+    th, td{padding:14px 16px; border-bottom:1px solid var(--border); vertical-align:top}
+    th{position:sticky; top:0; background:color-mix(in oklab, var(--panel) 92%, var(--bg) 8%); text-align:left; font-weight:700}
+    tbody tr:hover{background:color-mix(in oklab, var(--panel) 85%, var(--accent) 5%)}
+    .stack{display:flex; gap:10px; align-items:center}
+    .badge{font-size:11px; padding:3px 8px; border:1px solid var(--border); border-radius:999px; background:var(--bg-soft)}
+    .tags{display:flex; flex-wrap:wrap; gap:6px}
+
+    .cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-top:18px}
+    .card{border:1px solid var(--border); border-radius:18px; background:var(--panel); padding:16px; box-shadow:var(--shadow)}
+    .card h3{margin:0 0 6px; font-size:18px}
+    .card .row{margin:8px 0}
+
+    footer{margin:36px 0 60px; color:var(--muted); text-align:center}
+    kbd{border:1px solid var(--border); border-bottom-width:2px; padding:0 6px; border-radius:6px; background:var(--bg-soft); font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div>
+        <h1>技術スタック比較（Next.js, LAMP, MERN, JAMstack）</h1>
+        <p class="lead">構成 / 特徴 / 利用シーン / 例え で “直感比較”。視点を切り替えながら最適な選択を見つけましょう。</p>
+      </div>
+      <div class="controls">
+        <label class="switch" title="ダークモード">
+          <span>🌙</span>
+          <input id="themeSwitch" type="checkbox"/>
+        </label>
+        <button id="copyMd" class="btn ghost" title="Markdownでコピー">📋 表をMarkdownコピー</button>
+        <button id="exportCsv" class="btn ghost" title="CSVでエクスポート">⬇️ CSV</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="toolbar">
+      <div class="search">
+        <span>🔎</span>
+        <input id="q" type="search" placeholder="キーワード検索（例: SEO, CMS, API, EC…）" aria-label="検索"/>
+      </div>
+      <div class="view-toggle">
+        <button id="toTable" class="btn">表ビュー</button>
+        <button id="toCards" class="btn">カードビュー</button>
+      </div>
+      <div class="chips" id="chips" aria-label="利用シーンでフィルタ">
+        <!-- 動的生成 -->
+      </div>
+    </section>
+
+    <section class="table-wrap" id="tableWrap" role="region" aria-labelledby="tblTitle">
+      <table id="tbl" aria-describedby="tblDesc">
+        <caption id="tblTitle" style="position:absolute;left:-9999px">技術スタック比較テーブル</caption>
+        <thead>
+          <tr>
+            <th scope="col">スタック名 <button class="btn ghost" id="sortName" aria-label="名前でソート">↕</button></th>
+            <th scope="col">構成技術</th>
+            <th scope="col">主な特徴</th>
+            <th scope="col">利用シーン</th>
+            <th scope="col">例え</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="tblDesc" style="position:absolute;left:-9999px">4種類の代表的なWeb技術スタックを比較します。</p>
+    </section>
+
+    <section class="cards" id="cards" hidden>
+      <!-- 動的生成 -->
+    </section>
+
+    <section style="margin-top:28px">
+      <details open>
+        <summary><strong>使い方のヒント</strong></summary>
+        <ul>
+          <li>検索ボックスで複数ワードの AND 検索。例: <kbd>SEO</kbd> <kbd>EC</kbd></li>
+          <li>チップをクリックして利用シーンで絞り込み。</li>
+          <li>「表ビュー」「カードビュー」を切り替え。ダークモードもどうぞ。</li>
+          <li>ワンクリックで <em>Markdown コピー</em> と <em>CSV出力</em> ができます。</li>
+        </ul>
+      </details>
+    </section>
+
+    <footer>© 2025 スタック比較サンプル — 単一HTMLでそのまま配布・保存OK</footer>
+  </main>
+
+  <script>
+    const DATA = [
+      {
+        name: "Next.js + React（現代フロントエンド）",
+        components: ["Next.js","React","（周辺: Vercel / SWC / Turbopack など）"],
+        features: ["SSR/SSG対応で高速","開発体験が良い","SEOに強い"],
+        scenes: ["マーケティングサイト","ECサイト","ダッシュボード","ポートフォリオ"],
+        analogy: "最新設備を備えたスマート住宅"
+      },
+      {
+        name: "LAMPスタック",
+        components: ["Linux","Apache","MySQL","PHP"],
+        features: ["長年の実績と安定性","WordPressなどCMSの基盤","サーバーサイド中心"],
+        scenes: ["CMS（WordPress）","企業サイト","予約システム"],
+        analogy: "昔ながらの信頼できる工務店"
+      },
+      {
+        name: "MERNスタック",
+        components: ["MongoDB","Express","React","Node.js"],
+        features: ["フロント〜DBまでJSで統一","SPAやWebアプリに強い"],
+        scenes: ["SNS","チャットアプリ","タスク管理ツール"],
+        analogy: "設計から施工までワンストップの建築会社"
+      },
+      {
+        name: "JAMstack",
+        components: ["JavaScript","APIs","Markup"],
+        features: ["静的生成で超高速","高セキュリティ","CDN配信と相性◎"],
+        scenes: ["ブログ","ランディングページ","静的EC（ヘッドレスCMS）"],
+        analogy: "プレハブ建築（事前に部品を作って現地で組み立て）"
+      }
+    ];
+
+    const chipsRoot = document.getElementById('chips');
+    const q = document.getElementById('q');
+    const tblBody = document.querySelector('#tbl tbody');
+    const cards = document.getElementById('cards');
+    const tableWrap = document.getElementById('tableWrap');
+
+    const allScenes = [...new Set(DATA.flatMap(d=>d.scenes))];
+    const activeScenes = new Set();
+    let sortAsc = true;
+
+    function renderChips(){
+      chipsRoot.innerHTML = '';
+      allScenes.forEach(s=>{
+        const btn = document.createElement('button');
+        btn.className = 'chip';
+        btn.textContent = s;
+        btn.onclick = ()=>{ btn.classList.toggle('active');
+          if(activeScenes.has(s)) activeScenes.delete(s); else activeScenes.add(s);
+          render();
+        };
+        chipsRoot.appendChild(btn);
+      });
+    }
+
+    function matchText(d, terms){
+      const hay = [d.name, ...d.components, ...d.features, ...d.scenes, d.analogy].join(' ').toLowerCase();
+      return terms.every(t=>hay.includes(t));
+    }
+
+    function filtered(){
+      const terms = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      let list = DATA.filter(d=> matchText(d, terms));
+      if(activeScenes.size){ list = list.filter(d=> d.scenes.some(s=>activeScenes.has(s))); }
+      list.sort((a,b)=> sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
+      return list;
+    }
+
+    function renderTable(list){
+      tblBody.innerHTML = '';
+      list.forEach(d=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><div class="stack"><strong>${d.name}</strong> <span class="badge">${d.components.length} comps</span></div></td>
+          <td>${d.components.map(c=>`<span class="badge">${c}</span>`).join(' ')}</td>
+          <td><ul style="margin:0; padding-left:18px">${d.features.map(f=>`<li>${f}</li>`).join('')}</ul></td>
+          <td class="tags">${d.scenes.map(s=>`<span class="badge">${s}</span>`).join('')}</td>
+          <td>${d.analogy}</td>
+        `;
+        tblBody.appendChild(tr);
+      });
+    }
+
+    function renderCards(list){
+      cards.innerHTML = '';
+      list.forEach(d=>{
+        const el = document.createElement('article');
+        el.className = 'card';
+        el.innerHTML = `
+          <h3>${d.name}</h3>
+          <div class="row"><strong>構成</strong><br>${d.components.map(c=>`<span class="badge">${c}</span>`).join(' ')}</div>
+          <div class="row"><strong>特徴</strong>
+            <ul style="margin:6px 0 0; padding-left:18px">${d.features.map(f=>`<li>${f}</li>`).join('')}</ul>
+          </div>
+          <div class="row"><strong>利用シーン</strong><br>${d.scenes.map(s=>`<span class="badge">${s}</span>`).join(' ')}</div>
+          <div class="row"><strong>例え</strong><br>${d.analogy}</div>
+        `;
+        cards.appendChild(el);
+      });
+    }
+
+    function render(){
+      const list = filtered();
+      renderTable(list);
+      renderCards(list);
+    }
+
+    // Markdown コピー
+    function toMarkdown(list){
+      const header = `| スタック名 | 構成技術 | 主な特徴 | 利用シーン | 例え |\n|---|---|---|---|---|`;
+      const rows = list.map(d=>{
+        const comp = d.components.join(', ');
+        const feat = d.features.join(' / ');
+        const sc = d.scenes.join(', ');
+        return `| ${d.name} | ${comp} | ${feat} | ${sc} | ${d.analogy} |`;
+      });
+      return [header, ...rows].join('\n');
+    }
+
+    // CSV出力
+    function toCSV(list){
+      const esc = s => '"'+ String(s).replace(/"/g,'""') +'"';
+      const header = ['スタック名','構成技術','主な特徴','利用シーン','例え'];
+      const rows = list.map(d=>[
+        d.name,
+        d.components.join('; '),
+        d.features.join('; '),
+        d.scenes.join('; '),
+        d.analogy
+      ]);
+      const lines = [header, ...rows].map(r=> r.map(esc).join(','));
+      return lines.join('\r\n');
+    }
+
+    // Events
+    document.getElementById('sortName').onclick = ()=>{ sortAsc = !sortAsc; render(); };
+    q.addEventListener('input', render);
+
+    document.getElementById('toTable').onclick = ()=>{ tableWrap.hidden = false; cards.hidden = true; };
+    document.getElementById('toCards').onclick = ()=>{ tableWrap.hidden = true; cards.hidden = false; };
+
+    document.getElementById('copyMd').onclick = async ()=>{
+      const md = toMarkdown(filtered());
+      try{ await navigator.clipboard.writeText(md); alert('Markdownをコピーしました'); }
+      catch(e){
+        const ta = document.createElement('textarea'); ta.value = md; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); alert('Markdownをコピーしました（フォールバック）');
+      }
+    };
+
+    document.getElementById('exportCsv').onclick = ()=>{
+      const csv = toCSV(filtered());
+      const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'tech-stack-comparison.csv'; a.click();
+      setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    };
+
+    // Theme
+    const themeSwitch = document.getElementById('themeSwitch');
+    function applyTheme(t){ document.documentElement.setAttribute('data-theme', t); }
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initial = saved || (prefersDark ? 'dark':'light');
+    applyTheme(initial); themeSwitch.checked = (initial === 'dark');
+    themeSwitch.addEventListener('change', ()=>{
+      const t = themeSwitch.checked ? 'dark':'light';
+      applyTheme(t); localStorage.setItem('theme', t);
+    });
+
+    // Boot
+    renderChips();
+    render();
+  </script>
+</body>
+</html>

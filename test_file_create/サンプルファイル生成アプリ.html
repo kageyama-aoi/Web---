@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>サンプルファイル生成アプリ（統合版）</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>🧪 サンプルファイル生成アプリ（統合版） <span class="small muted">CSV / TSV / JSON / YAML / XML / Markdown / TXT / HTML / SQL / 固定長（EDI対応）</span></h1>
+  </header>
+
+  <div class="wrap">
+    <!-- Left controls -->
+    <div class="card">
+      <h2>⚙️ 設定</h2>
+      <div class="body grid">
+        <div class="row">
+          <label for="preset">プリセット</label>
+          <select id="preset">
+            <option value="1600_19_1">1600_19_1｜講師謝礼追加</option>
+            <option value="2000_1_1" selected>2000_1_1｜EDI新規会員データ取込</option>
+            <option value="4000_3_1">4000_3_1｜SMBC買取状態読込（ダミー）</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <label>フォーマット</label>
+          <div class="flex" id="fmtGroup">
+            <label class="switch"><input type="radio" name="fmt" value="CSV">CSV</label>
+            <label class="switch"><input type="radio" name="fmt" value="TSV">TSV</label>
+            <label class="switch"><input type="radio" name="fmt" value="JSON">JSON</label>
+            <label class="switch"><input type="radio" name="fmt" value="YAML">YAML</label>
+            <label class="switch"><input type="radio" name="fmt" value="XML">XML</label>
+            <label class="switch"><input type="radio" name="fmt" value="Markdown">MD</label>
+            <label class="switch"><input type="radio" name="fmt" value="TXT">TXT</label>
+            <label class="switch"><input type="radio" name="fmt" value="HTML">HTML</label>
+            <label class="switch"><input type="radio" name="fmt" value="SQL">SQL</label>
+            <label class="switch"><input type="radio" name="fmt" value="FIXED" checked>固定長</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>区切り</label>
+          <div class="flex">
+            <label class="switch"><input type="radio" name="delim" value="," checked>,（カンマ）</label>
+            <label class="switch"><input type="radio" name="delim" value="\t">\t（タブ）</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>ヘッダ行</label>
+          <div class="flex">
+            <label class="switch"><input type="checkbox" id="withHeader" checked>出力にヘッダを含める</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>改行コード</label>
+          <div class="flex">
+            <label class="switch"><input type="radio" name="nl" value="LF" checked>LF (\n)</label>
+            <label class="switch"><input type="radio" name="nl" value="CRLF">CRLF (\r\n)</label>
+            <label class="switch"><input type="radio" name="nl" value="CR">CR (\r)</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <label>プレビュー</label>
+          <div class="flex">
+            <button class="btn" id="btnPreview">再生成</button>
+            <button class="btn primary" id="btnDownload">ダウンロード</button>
+          </div>
+        </div>
+
+        <div class="grid small muted">
+          <div>ヒント：<span class="kbd">固定長</span> は 2000_1_1 のとき <span class="hl">EDI仕様（100桁・ヘッダ/データ/トレーラー/エンド）</span> を自動適用します。</div>
+        </div>
+      </div>
+      <div class="foot small">v0.2 – 統合版 / EDI対応・TSV/CSV/他各形式</div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="card">
+      <h2>🧾 出力プレビュー</h2>
+      <div class="body grid">
+        <div class="stat">
+          <span class="pill">ファイル名: <span id="fileName" class="mono"></span></span>
+          <span class="pill">サイズ: <span id="fileSize" class="mono"></span></span>
+          <span class="pill">行数: <span id="lineCount" class="mono"></span></span>
+        </div>
+        <textarea id="preview" class="mono" spellcheck="false"></textarea>
+
+        <div id="panelChecks" class="grid">
+          <div class="small muted">メタチェック（先頭レコード基準）</div>
+          <div id="checksArea"></div>
+        </div>
+
+        <div id="panelWarn" class="grid" style="display:none">
+          <div class="small warn">⚠️ バリデーション警告（EDI）</div>
+          <div id="warnArea" class="mono small"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script type="module" src="src/script.js"></script>
+</body>
+</html>
