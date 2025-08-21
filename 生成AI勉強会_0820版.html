@@ -87,6 +87,19 @@ header {
   code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
   kbd{background:var(--kbd);border:1px solid var(--line);border-bottom-color:#374151;border-radius:6px;padding:.1rem .35rem}
   pre{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.8rem;overflow:auto}
+  .code-block{position:relative;margin:1rem 0}
+  .code-block pre{margin:0}
+  .copy-btn{
+    position:absolute;top:.5rem;right:.5rem;
+    background:var(--card);border:1px solid var(--line);
+    color:var(--muted);border-radius:6px;
+    padding:.2rem .5rem;cursor:pointer;font-size:.8rem;
+    opacity:.7;transition:opacity .2s, background-color .2s;
+  }
+  .copy-btn:hover{
+    opacity:1;
+    background:var(--bg);
+  }
   .tip{border-left:4px solid var(--brand);padding:.5rem .8rem;background:var(--tip);margin:.8rem 0;border-radius:8px}
   details{border:1px dashed var(--line);border-radius:10px;padding:.8rem;background:var(--bg)}
   details>summary{cursor:pointer;font-weight:600}
@@ -141,6 +154,22 @@ header {
         document.querySelectorAll("[data-theme-set]").forEach(btn=>btn.classList.remove("active"));
         t.classList.add("active");
       }
+
+      // コピーボタンのロジック
+      const copyBtn = t.closest('.copy-btn');
+      if (copyBtn) {
+        const block = copyBtn.closest('.code-block');
+        const pre = block?.querySelector('pre');
+        if (pre) {
+          navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = '✔';
+            setTimeout(() => { copyBtn.textContent = originalText; }, 1500);
+          }).catch(err => {
+            console.error('コピーに失敗しました', err);
+          });
+        }
+      }
     });
     const current = document.documentElement.getAttribute("data-theme") || "system";
     const btn = document.querySelector(`[data-theme-set="${current}"]`);
@@ -159,7 +188,7 @@ header {
       <span class="sep" aria-hidden="true"></span>
       <button type="button" data-theme-set="system" aria-label="システム設定">🖥 System</button>
     </div>
-    <h1>AI初心者向け勉強会<br>スライド台本＋ワークシート（v3 再構成）</h1>
+    <h1>AI初心者向け勉強会</h1>
     <p class="muted">対象：AIの扱い方がまだ分からない方向け／所要：90分想定／目的：AIを「怖い未知」から「頼れる相棒」に</p>
   </header>
 
@@ -178,7 +207,7 @@ header {
       </ol>
     </nav>
 
-    <details id="agenda" open>
+    <details id="agenda">
       <summary class="section-summary">1. 勉強会の全体構成（90分）</summary>
 
       <div class="grid cols-2">
@@ -209,7 +238,7 @@ header {
       </div>
     </details>
 
-    <details id="intro-script" open>
+    <details id="intro-script">
       <summary class="section-summary">2. 導入（アイスブレイク台本）</summary>
       <div class="card">
         <p><span class="label">進行</span>「みなさん、こんにちは！集まってくれてありがとうございます！」</p>
@@ -221,7 +250,7 @@ header {
       </div>
     </details>
 
-    <details id="drama-script" open>
+    <details id="drama-script">
       <summary class="section-summary">3. 会話劇：職場シーン風の台本作成例</summary>
         <div class="card">
           <h3>登場人物</h3>
@@ -267,18 +296,21 @@ header {
         </div>
     </details>
 
-    <details id="prompt-intro" open>
+    <details id="prompt-intro">
       <summary class="section-summary">4. プロンプトの工夫（入口体験：<span class="badge">整理型</span>／<span class="badge">会話型</span>）</summary>
 
       <div class="grid cols-2">
         <div class="card">
           <h3>1A. 整理型（目的・条件・形式で書く）</h3>
           <p>しっかり言語化してから依頼したい人向け。後で資料にも残しやすい。</p>
-          <pre><code>【目的】◯◯をしたい
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>【目的】◯◯をしたい
 【対象】中学生向け／社会人向け／初心者向け
 【形式】会話形式／表形式／箇条書き
 【条件】例を3つ／公式URLを添えて／よくある注意点も
 【質問】＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿</code></pre>
+          </div>
           <div class="tip">
             <strong>例（スプシ関数）：</strong><br>
             <span class="label">目的</span>日付から曜日を日本語の短縮形で表示したい<br>
@@ -290,11 +322,17 @@ header {
         <div class="card">
           <h3>1B. 会話型（先生と生徒のやりとり）</h3>
           <p>“目的とか書くのめんどくさい派”はこちら。会話で進めて理解する。</p>
-          <pre><code>会話形式で説明してください。
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>会話形式で説明してください。
 あなたは先生役、私は生徒役です。
 スプレッドシートで日付から曜日を出す方法を、質問と答えのやり取りで教えてください。</code></pre>
-          <pre><code>助成金について説明してください。
+          </div>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>助成金について説明してください。
 社会人向けに、3分で読める要点だけ。表形式で「制度名／対象／金額／URL」を整理してください。</code></pre>
+          </div>
           <p class="section-note">※ 会話型で理解 → 必要に応じて整理型に「転記」すると再利用が楽。</p>
         </div>
       </div>
@@ -322,7 +360,7 @@ header {
       </div>
     </details>
 
-    <details id="prep" open>
+    <details id="prep">
       <summary class="section-summary">5. 当日までの準備</summary>
       <div class="grid cols-2">
         <div class="card">
@@ -345,9 +383,9 @@ header {
       <p class="section-note">※ スクリーン共有とフォントサイズ拡大（130%目安）を当日すぐ切り替えられるように。</p>
     </details>
 
-    <details id="slides" open>
+    <details id="slides">
       <summary class="section-summary">6. スライド台本（実演・ワーク・まとめ）</summary>
-      <details open>
+      <details>
         <summary>スライド1：タイトル</summary>
         <div class="card">
           <p><strong>タイトル：</strong>AI初心者向け勉強会～今日から使える！AIで仕事と調べものを効率化～</p>
@@ -358,7 +396,7 @@ header {
         </div>
       </details>
 
-      <details open>
+      <details>
         <summary>スライド2：今日のゴール</summary>
         <div class="card">
           <ul>
@@ -389,7 +427,7 @@ header {
         </div>
       </details>
 
-      <details open>
+      <details>
         <summary>スライド5：AI質問の黄金ルール</summary>
         <div class="card">
           <ol>
@@ -398,12 +436,15 @@ header {
             <li>条件は漏れなく短く（箇条書き歓迎）</li>
             <li>最後は<strong>公式情報</strong>で確認</li>
           </ol>
-          <pre class="card"><code>例）「Googleスプレッドシートで、A1の<span aria-label="日付">日付</span>から<span aria-label="曜日">曜日</span>を<span aria-label="日本語の短縮形">日本語の短縮形</span>で表示する<span aria-label="関数">関数</span>と注意点を教えて。
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre class="card"><code>例）「Googleスプレッドシートで、A1の<span aria-label="日付">日付</span>から<span aria-label="曜日">曜日</span>を<span aria-label="日本語の短縮形">日本語の短縮形</span>で表示する<span aria-label="関数">関数</span>と注意点を教えて。
 形式はステップ＋関数例＋よくあるミスでお願いします。」</code></pre>
+          </div>
         </div>
       </details>
 
-      <details open>
+      <details>
         <summary>スライド6：実演① スプシ関数の調べ方</summary>
         <div class="card">
           <p><strong>例題：</strong>「日付から曜日を日本語で出すには？」 → <code>=TEXT(A1,"aaaa")</code></p>
@@ -415,7 +456,7 @@ header {
         </div>
       </details>
 
-      <details open>
+      <details>
         <summary>スライド7：実演② 未知の知識（助成金）を“自分用”に引っ張る</summary>
         <div class="card">
           <ol>
@@ -452,7 +493,7 @@ header {
       </details>
     </details>
 
-    <details id="worksheets" open>
+    <details id="worksheets">
       <summary class="section-summary">7. ワークシート雛形</summary>
 
       <h3>ワークシート1：AI質問づくり練習（スプシ関数）</h3>
@@ -490,15 +531,18 @@ header {
       </table>
     </details>
 
-    <details id="appendix" open>
+    <details id="appendix">
       <summary class="section-summary">8. 付録：質問テンプレ＆話し方メモ</summary>
       <div class="grid cols-2">
         <div class="card">
           <h3>質問テンプレ（コピペ用）</h3>
-          <pre><code>【目的】◯◯をしたい
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>【目的】◯◯をしたい
 【条件】（例）初心者向け／日本語／表で／例は3つ
 【形式】ステップ→例→注意点 の順で
 【質問】＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿</code></pre>
+          </div>
           <p class="section-note">例：<em>「Googleスプレッドシートで、A1の日時から“日本語の曜日（短縮形）”を表示する関数と、よくあるエラーの回避策を教えて。」</em></p>
         </div>
         <div class="card">
