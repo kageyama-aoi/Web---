@@ -31,6 +31,8 @@ export function applyPresetDefaults(){
   $("#withHeader").checked = (p.default?.withHeader ?? true);
   // encoding
   $$('input[name="enc"]').forEach(r => r.checked = (r.value === (p.default?.encoding || "UTF-8")));
+  // newline
+  $$('input[name="nl"]').forEach(r => r.checked = (r.value === (p.default?.newline || "LF")));
   updateControlAvailability();
 }
 

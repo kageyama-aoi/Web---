@@ -4,8 +4,8 @@ import { onlyDigits, padLeftZero, padRightSpace, padLeftSpace } from '../../src/
 function ediHeader(){ return "1" + " ".repeat(99); }
 function ediEnd(){ return "9" + " ".repeat(99); }
 function storeCode3(value){
-  const noLeadingZero = String(value ?? "").replace(/^0+/, ""); // 001→1
-  return padLeftSpace(noLeadingZero, 3); // 右寄せ（左スペース）
+  // プリセットの値をそのまま使い、3桁になるよう左をスペースで埋める
+  return padLeftSpace(value, 3);
 }
 function ediDataRow(obj){
   // obj には 審査フラグ/カード番号/カード有効期限(YYMM)/13桁会員番号/カナ氏名/性別/生年月日(YYYYMMDD)/入会申込日(YYYYMMDD)/受付店舗コード

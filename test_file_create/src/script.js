@@ -32,37 +32,39 @@ function getRowsAsObjects(){
 }
 
 const formatters = {
-  CSV: (rowsObj, p) => {
+  CSV: (rowsObj, p, NL) => {
     const delim = getDelimiter();
-    return toCSVTSV(rowsObj, delim, withHeader(), headerLabels());
+    return toCSVTSV(rowsObj, delim, withHeader(), headerLabels(), NL);
   },
-  TSV: (rowsObj, p) => {
-    return toCSVTSV(rowsObj, '\t', withHeader(), headerLabels());
+  TSV: (rowsObj, p, NL) => {
+    return toCSVTSV(rowsObj, '\t', withHeader(), headerLabels(), NL);
   },
-  JSON: (rowsObj, p) => toJSON(rowsObj),
-  YAML: (rowsObj, p) => toYAML(rowsObj),
-  XML: (rowsObj, p) => toXML(rowsObj, headerLabels()),
-  Markdown: (rowsObj, p) => toMarkdown(rowsObj, headerLabels()),
-  TXT: (rowsObj, p) => toTXT(rowsObj),
-  HTML: (rowsObj, p) => toHTML(rowsObj, headerLabels()),
-  SQL: (rowsObj, p) => toSQL(rowsObj, headerLabels()),
-  FIXED: (rowsObj, p) => {
+  JSON: (rowsObj, p, NL) => toJSON(rowsObj, NL),
+  YAML: (rowsObj, p, NL) => toYAML(rowsObj, NL),
+  XML: (rowsObj, p, NL) => toXML(rowsObj, headerLabels(), NL),
+  Markdown: (rowsObj, p, NL) => toMarkdown(rowsObj, headerLabels(), NL),
+  TXT: (rowsObj, p, NL) => toTXT(rowsObj, NL),
+  HTML: (rowsObj, p, NL) => toHTML(rowsObj, headerLabels(), NL),
+  SQL: (rowsObj, p, NL) => toSQL(rowsObj, headerLabels(), NL),
+  FIXED: (rowsObj, p, NL) => {
     if (p.id === '2000_1_1') {
-      return generateEDI2000Fixed(rowsObj, getNewline());
+      // generateEDI2000Fixed already takes NL
+      return generateEDI2000Fixed(rowsObj, NL);
     }
-    return toFIXED_generic(rowsObj, getPreset);
+    return toFIXED_generic(rowsObj, getPreset, NL);
   },
 };
 
 function generate() {
   const p = getPreset();
   const fmt = getFormat();
+  const NL = getNewline();
   const rowsObj = getRowsAsObjects();
   let text = '', ext = extFor(fmt), warn = [];
 
   const formatter = formatters[fmt];
   if (formatter) {
-    text = formatter(rowsObj, p);
+    text = formatter(rowsObj, p, NL);
   }
 
   if (fmt === 'FIXED' && p.id === '2000_1_1') {
@@ -79,17 +81,21 @@ function updateUI(text, p, ext, warn) {
   $('#preview').value = text;
   $('#fileName').textContent = `sample_${p.id}.${ext}`;
 
-  // ファイルサイズは選択中のエンコーディングで計算
   const encoding = getEncoding();
   let blob;
-  if (encoding === 'SJIS' && window.encoding) {
-    const sjisArray = window.encoding.convert(text, { to: 'SJIS', from: 'UNICODE' });
-    blob = new Blob([new Uint8Array(sjisArray)]);
+  if (encoding === 'SJIS') {
+    if (window.encoding) {
+      const sjisArray = window.encoding.convert(text, { to: 'SJIS', from: 'UNICODE' });
+      blob = new Blob([new Uint8Array(sjisArray)]);
+    } else {
+      console.warn('encoding.js is not loaded. File size calculation for SJIS may be incorrect.');
+      blob = new Blob([text]); // Fallback to UTF-8 size
+    }
   } else {
     blob = new Blob([text]);
   }
   $('#fileSize').textContent = `${blob.size.toLocaleString()} bytes`;
-  $('#lineCount').textContent = (text.match(/\n/g)?.length ?? 0) + 1;
+  $('#lineCount').textContent = (text.match(/\r\n|\r|\n/g)?.length ?? 0) + 1;
 
   // メタチェック（先頭行を schema で見る：固定長系のみ）
   renderChecks(getRowsAsObjects(), p, getFormat());
@@ -132,12 +138,19 @@ function doDownload(){
   const { text, ext } = generate();
   const name = $("#fileName").textContent || `sample.${ext}`;
   const encoding = getEncoding();
-  const mimeType = `text/plain;charset=${encoding.toLowerCase()}`;
-
   let blob;
-  if (encoding === 'SJIS' && window.encoding) {
-    const sjisArray = window.encoding.convert(text, { to: 'SJIS', from: 'UNICODE' });
-    blob = new Blob([new Uint8Array(sjisArray)], { type: mimeType });
+  let mimeType = `text/plain;charset=${encoding.toLowerCase()}`;
+
+  if (encoding === 'SJIS') {
+    if (window.encoding) {
+      const sjisArray = window.encoding.convert(text, { to: 'SJIS', from: 'UNICODE' });
+      mimeType = 'text/plain;charset=shift_jis';
+      blob = new Blob([new Uint8Array(sjisArray)], { type: mimeType });
+    } else {
+      alert('Shift-JISへの変換ライブラリが読み込めませんでした。オフライン環境でないか確認してください。\nファイルをUTF-8でダウンロードします。');
+      mimeType = 'text/plain;charset=utf-8';
+      blob = new Blob([text], { type: mimeType });
+    }
   } else {
     // UTF-8
     blob = new Blob([text], { type: mimeType });
@@ -184,7 +197,22 @@ function initEventListeners() {
   });
 }
 
+function checkExternalLibraries() {
+  // encoding.js が読み込めていない場合、Shift-JISの選択肢を無効化する
+  if (!window.encoding) {
+    const sjisRadio = $('#enc_sjis');
+    const sjisLabel = $('#label_enc_sjis');
+    if (sjisRadio && sjisLabel) {
+      sjisRadio.disabled = true;
+      sjisLabel.style.opacity = '0.5';
+      sjisLabel.style.cursor = 'not-allowed';
+      sjisLabel.title = 'Shift-JIS変換ライブラリが読み込めませんでした。オフライン環境でないか確認してください。';
+    }
+  }
+}
+
 // 初期化
 applyPresetDefaults();
 generate();
 initEventListeners();
+checkExternalLibraries();

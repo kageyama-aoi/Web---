@@ -1,7 +1,7 @@
 const PRESETS = {
   "1600_19_1": {
     id: "1600_19_1", name: "講師謝礼追加",
-    default: { format: "CSV", delimiter: ",", withHeader: true, encoding: "SJIS" },
+    default: { format: "CSV", delimiter: ",", withHeader: true, encoding: "SJIS", newline: "LF" },
     // 汎用20項目のサンプル（簡略）
     fields: [
       { key:"講師ID",type:"text",len:36 },{ key:"ID番号",type:"text",len:32 },
@@ -24,7 +24,7 @@ const PRESETS = {
 
   "2000_1_1": {
     id: "2000_1_1", name: "EDI新規会員データ取込",
-    default: { format: "FIXED", delimiter: "\t", withHeader: true, encoding: "UTF-8" },
+    default: { format: "FIXED", delimiter: "\t", withHeader: true, encoding: "SJIS", newline: "CRLF" },
     // このプリセットのスキーマ（CSV/JSON等でも使うヘッダ名）
     fields: [
       { key:"レコード区分", type:"number", len:1 },
@@ -50,7 +50,7 @@ const PRESETS = {
 
   "4000_3_1": {
     id:"4000_3_1", name:"SMBC買取状態読込（ダミー）",
-    default:{ format:"CSV", delimiter:",", withHeader:true, encoding: "SJIS" },
+    default:{ format:"CSV", delimiter:",", withHeader:true, encoding: "SJIS", newline: "LF" },
     fields:[
       { key:"取引ID",type:"text",len:32 },
       { key:"状態",type:"text",len:8 },
