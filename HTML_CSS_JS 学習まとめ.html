@@ -1,0 +1,1108 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>まとめ：1〜19（ページネーション＋サイドバー目次／クラシック配色／プレビュー全幅＋コード縦並び）</title>
+  <style>
+    /* ====== 全体（固定配色） ====== */
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, "Noto Sans JP", sans-serif;
+      background:#fafafa;
+      color:#222;
+      line-height:1.65;
+    }
+    a{color:#2563eb; text-decoration:underline}
+    a:hover{ text-decoration:none }
+
+    /* ヘッダー */
+    header{
+      position:sticky; top:0; z-index:5;
+      background:#3949ab;
+      color:#fff;
+      padding:.8rem 1rem;
+      border-bottom:1px solid #2c3b8a;
+    }
+    .brand{display:flex; align-items:center; gap:.6rem}
+    .brand h1{margin:0; font-size:1.1rem}
+
+    /* レイアウト */
+    .layout{
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      min-height:calc(100vh - 60px);
+    }
+
+    /* サイドバー */
+    nav.sidebar{
+      background:#f7f7f7;
+      border-right:1px solid #ddd;
+      padding:.8rem;
+      overflow:auto;
+    }
+    .toc-title{margin:.2rem 0 .6rem; font-weight:700; font-size:.95rem}
+    .toc-search{
+      width:100%; padding:.45rem .6rem;
+      border:1px solid #ddd; border-radius:8px;
+      background:#fff; color:#222; margin-bottom:.6rem;
+    }
+    .toc{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:.2rem}
+    .toc li a{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.35rem .5rem; border-radius:8px; text-decoration:none; color:inherit;
+      border:1px solid transparent;
+    }
+    .toc li a .num{font-variant-numeric:tabular-nums; min-width:2ch; text-align:right; color:#666}
+    .toc li a.active{background:#e8eefc; border-color:#cdd8ff}
+    .toc li a:hover{background:#f0f4ff}
+
+    /* メイン */
+    main{padding:1rem; overflow:auto}
+    section.card{
+      display:none;
+      background:#fff;
+      border:1px solid #ddd;
+      border-radius:12px;
+      padding:1rem;
+      margin:0 0 1rem 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,.05);
+    }
+    section.card.active{display:block}
+    h2{margin:.2rem 0 1rem 0; font-size:1.15rem}
+
+    /* メモボックス */
+    .note{
+      background:#f1f5f9;
+      border-left:4px solid #3949ab;
+      border-radius:6px;
+      padding:.55rem .75rem;
+      margin:.7rem 0;
+    }
+
+    /* プレビューは全幅、コードは下に縦並び */
+    .example{display:block}
+    .example .preview{
+      background:#fdfdfd;
+      border:1px solid #ddd;
+      border-radius:8px;
+      padding:1rem;
+      margin-bottom:1rem;
+    }
+    .example .preview h3{margin:.2rem 0 .6rem 0; font-size:1rem}
+    .example .code-block{position:relative}
+    .example .code-copy{
+      position:absolute; top:.5rem; right:.5rem; border:1px solid #ddd; background:#fff;
+      border-radius:6px; padding:.2rem .5rem; cursor:pointer; color:#333; font-size:.85rem
+    }
+
+    /* コード表示 */
+    pre{
+      background:#272822; color:#f8f8f2;
+      padding:1rem; border-radius:8px; overflow:auto; margin:0;
+      max-height:60vh;
+    }
+    code{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size:.95em}
+
+    .split-note{font-size:.9rem; color:#555; margin:.4rem 0 .2rem}
+
+    /* ページネーション */
+    .pagination{
+      display:flex; justify-content:space-between; align-items:center; gap:.6rem;
+      background:#fff; border:1px solid #ddd; border-radius:10px; padding:.5rem .6rem;
+      position:sticky; bottom:0; z-index:4;
+    }
+    .pagination button{
+      border:1px solid #ddd; background:#fff; color:#222;
+      padding:.45rem .8rem; border-radius:8px; cursor:pointer;
+    }
+    .pagination button:hover{ background:#f7f7f7 }
+    .pagination button:disabled{opacity:.5; cursor:not-allowed}
+    .page-info{font-variant-numeric:tabular-nums; color:#666}
+
+    /* kbd 表示 */
+    kbd{border:1px solid #ddd; border-radius:6px; padding:.08rem .35rem; background:#fff}
+
+    /* モバイル：サイドバー折りたたみ */
+    .sidebar-toggle{display:none}
+    @media (max-width: 900px){
+      .layout{grid-template-columns: 1fr}
+      nav.sidebar{position:fixed; inset:60px 0 auto 0; height:calc(100vh - 60px); transform:translateX(-100%); transition:transform .2s ease}
+      nav.sidebar.open{transform:translateX(0)}
+      .sidebar-toggle{display:inline-flex; border:1px solid #ddd; background:#fff; color:#fff;
+        border-radius:8px; padding:.35rem .6rem; cursor:pointer}
+    }
+
+    /* ====== プレビュー用の共通UI ====== */
+    /* preview: グリッド用 */
+    .grid-demo{display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem}
+    .demo-card{border:1px solid #ddd; border-radius:10px; background:#fff; padding:1rem; box-shadow:0 2px 10px rgba(0,0,0,.05)}
+
+    /* preview: 会話吹き出し */
+    .chat-container{display:flex; flex-direction:column; gap:.75rem}
+    .chat-line{max-width:92%}
+    .bubble{ position:relative; padding:.6rem .85rem; border:1px solid #ddd; border-radius:14px; background:#fff }
+    .bubble::after{ content:""; position:absolute; left:-10px; top:14px; width:12px; height:12px; background:#fff; border-left:1px solid #ddd; border-bottom:1px solid #ddd; transform:rotate(45deg) }
+    .right{ align-self:flex-end }
+    .right.bubble::after{ left:auto; right:-10px; border-left:none; border-right:1px solid #ddd }
+
+    /* preview: テーマトグルのミニ版（スコープ付き） */
+    .theme-mini{border:1px dashed #ddd; border-radius:8px; padding:.6rem}
+    .theme-mini .box{padding:.8rem; border:1px solid #ddd; border-radius:8px}
+    .theme-mini .toolbar{display:flex; gap:.4rem; margin-bottom:.5rem}
+    .theme-mini .toolbar button{border:1px solid #ddd; background:#fff; padding:.25rem .5rem; border-radius:6px; cursor:pointer}
+    .theme-mini[data-theme="light"] .box{ background:#ffffff; color:#222 }
+    .theme-mini[data-theme="dark"] .box{ background:#222; color:#eee }
+    .theme-mini .toolbar button.active{outline:2px solid #3949ab}
+
+    /* preview: コピーボックス */
+    .copy-demo{position:relative}
+    .copy-demo .copy-btn{ position:absolute; top:.5rem; right:.5rem; border:1px solid #ddd; background:#fff; border-radius:6px; padding:.2rem .5rem; cursor:pointer }
+    .copy-demo pre{ margin:0 }
+
+    /* preview: 表 */
+    .tbl{width:100%; border-collapse:collapse}
+    .tbl th,.tbl td{border:1px solid #ddd; padding:.5rem; vertical-align:top}
+    .tbl th{background:#f4f6fb; text-align:start}
+
+    /* 14: アコーディオン */
+    .acc{border:1px solid #ddd; border-radius:8px; padding:.4rem .6rem; background:#fff; margin:.5rem 0}
+    .acc > summary{cursor:pointer; list-style:none; font-weight:600}
+    .acc > summary::-webkit-details-marker{display:none}
+    .acc .acc-content{overflow:clip}
+
+    /* 15: ボタン＆フォーム */
+    .btn{border:1px solid #ddd; border-radius:8px; padding:.45rem .8rem; background:#fff; cursor:pointer}
+    .btn-primary{background:#3949ab; border-color:#2c3b8a; color:#fff}
+    .btn-secondary{background:#eef1f7}
+    .btn-ghost{background:transparent}
+    .btn-link{background:transparent; color:#2563eb; text-decoration:underline; border-color:transparent}
+    .btn-danger{background:#e53935; color:#fff; border-color:#c62828}
+    .btn:hover{filter:brightness(0.98)}
+    .btn:active{transform:translateY(1px)}
+    .form-demo{display:grid; gap:.6rem; max-width:520px}
+    .form-demo label{display:grid; gap:.35rem; font-size:.95rem}
+    .form-demo input{
+      padding:.55rem .6rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff;
+      outline: none;
+    }
+    .form-demo input:focus{ border-color:#3949ab; box-shadow:0 0 0 2px rgba(57,73,171,.15) }
+    .form-demo input:user-invalid{ border-color:#e11d48; background:#fff7f7 }
+    .form-demo input:user-valid{ border-color:#16a34a; background:#f6fffa }
+
+    /* 16: タブ UI */
+    .tabs{border:1px solid #ddd; border-radius:8px; background:#fff}
+    .tabs .tablist{display:flex; gap:.25rem; border-bottom:1px solid #ddd; padding:.4rem}
+    .tabs .tab{border:1px solid #ddd; background:#fff; border-radius:6px; padding:.4rem .7rem; cursor:pointer}
+    .tabs .tab[aria-selected="true"]{background:#e8eefc; border-color:#cdd8ff}
+    .tabs .tabpanel{padding:1rem}
+    .tabs .tabpanel[hidden]{display:none}
+
+    /* 17: トースト */
+    .toast-area{position:fixed; inset:auto 1rem 1rem auto; display:flex; flex-direction:column; gap:.5rem; z-index:50; pointer-events:none}
+    .toast{pointer-events:auto; border:1px solid #ddd; background:#fff; border-radius:8px; padding:.6rem .8rem; box-shadow:0 6px 20px rgba(0,0,0,.15)}
+    .toast.success{border-color:#16a34a33}
+    .toast.error{border-color:#e11d4833}
+
+    /* 18: モーダル(dialog) */
+    dialog.modal{ border:1px solid #ddd; border-radius:12px; padding:0; width:min(560px, 90vw) }
+    dialog.modal::backdrop{ background:rgba(0,0,0,.35) }
+    .modal-head{ padding:.8rem 1rem; border-bottom:1px solid #eee; font-weight:600; background:#f7f7f7; border-radius:12px 12px 0 0 }
+    .modal-body{ padding:1rem }
+    .modal-foot{ padding:.8rem 1rem; border-top:1px solid #eee; text-align:right; background:#fafafa; border-radius:0 0 12px 12px }
+
+    /* 19: トグルスイッチ */
+    .switch{display:inline-flex; align-items:center; gap:.6rem}
+    .switch input{position:absolute; opacity:0; pointer-events:none}
+    .switch .track{width:44px; height:26px; border-radius:999px; background:#e5e7eb; position:relative; transition:.15s}
+    .switch .thumb{position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:.2s}
+    .switch input:checked + .track{ background:#3949ab }
+    .switch input:checked + .track .thumb{ transform:translateX(18px) }
+    .switch .label{user-select:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <button class="sidebar-toggle" aria-controls="sidebar" aria-expanded="false">☰ 目次</button>
+      <h1>HTML/CSS/JS 学習まとめ（1〜19）— プレビュー全幅＋コード縦並び</h1>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav id="sidebar" class="sidebar" aria-label="サイドバー目次">
+      <div class="toc-title">目次</div>
+      <input id="tocSearch" class="toc-search" type="search" placeholder="キーワードで絞り込み… (例: テーマ, コピー, タブ)" aria-label="目次を検索">
+      <ol class="toc" id="tocList">
+        <li><a href="#" data-index="0"><span class="num">1.</span> HTML：折りたたみ</a></li>
+        <li><a href="#" data-index="1"><span class="num">2.</span> CSS：テーマカラー</a></li>
+        <li><a href="#" data-index="2"><span class="num">3.</span> JS：テーマ切替</a></li>
+        <li><a href="#" data-index="3"><span class="num">4.</span> JS：コピー機能</a></li>
+        <li><a href="#" data-index="4"><span class="num">5.</span> レイアウト</a></li>
+        <li><a href="#" data-index="5"><span class="num">6.</span> UI部品</a></li>
+        <li><a href="#" data-index="6"><span class="num">7.</span> コード＋コピー</a></li>
+        <li><a href="#" data-index="7"><span class="num">8.</span> 会話劇（吹き出し）</a></li>
+        <li><a href="#" data-index="8"><span class="num">9.</span> 表・コード・kbd</a></li>
+        <li><a href="#" data-index="9"><span class="num">10.</span> 印刷最適化</a></li>
+        <li><a href="#" data-index="10"><span class="num">11.</span> アクセシビリティ</a></li>
+        <li><a href="#" data-index="11"><span class="num">12.</span> テーマ優先</a></li>
+        <li><a href="#" data-index="12"><span class="num">13.</span> ミニ演習</a></li>
+        <li><a href="#" data-index="13"><span class="num">14.</span> アコーディオン(animate)</a></li>
+        <li><a href="#" data-index="14"><span class="num">15.</span> 定番UIパーツ</a></li>
+        <li><a href="#" data-index="15"><span class="num">16.</span> タブ UI</a></li>
+        <li><a href="#" data-index="16"><span class="num">17.</span> トースト</a></li>
+        <li><a href="#" data-index="17"><span class="num">18.</span> モーダル</a></li>
+        <li><a href="#" data-index="18"><span class="num">19.</span> トグル</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <!-- 1 -->
+      <section class="card active">
+        <h2>1) HTML：折りたたみセクション</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー</h3>
+            <details id="demo-details">
+              <summary>アジェンダ</summary>
+              <ol>
+                <li><a href="#intro">導入</a></li>
+                <li><a href="#hands">ハンズオン</a></li>
+              </ol>
+            </details>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>&lt;details class="sec" id="agenda"&gt;
+  &lt;summary&gt;アジェンダ&lt;/summary&gt;
+  &lt;ol&gt;
+    &lt;li&gt;&lt;a href="#intro"&gt;導入&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#hands"&gt;ハンズオン&lt;/a&gt;&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/details&gt;</code></pre>
+          </div>
+        </div>
+        <div class="note">ネイティブ開閉UI。JS不要で動作します。</div>
+      </section>
+
+      <!-- 2 -->
+      <section class="card">
+        <h2>2) CSS：テーマカラー（カスタムプロパティ）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（スコープ内で Light / Dark 切替）</h3>
+            <div class="theme-mini" id="mini-theme-variables" data-theme="light">
+              <div class="toolbar">
+                <button type="button" data-mini-theme="light" class="active">Light</button>
+                <button type="button" data-mini-theme="dark">Dark</button>
+              </div>
+              <div class="box">
+                これはプレビュー用のボックスです。<br>
+                <a href="#">リンク色</a> や 背景/文字色 が切り替わります。
+              </div>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>:root{ --bg:#fff; --fg:#000; --link:#3366cc }
+[data-theme="dark"]{ --bg:#1e1e1e; --fg:#f5f5f5; --link:#99ccff }
+body{ background:var(--bg); color:var(--fg) }</code></pre>
+          </div>
+        </div>
+        <div class="note">このプレビューはコンテナ内の data-theme を切替えています。</div>
+      </section>
+
+      <!-- 3 -->
+      <section class="card">
+        <h2>3) JavaScript：テーマ切替（ミニ版・保存なし）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（保存なし）</h3>
+            <div class="theme-mini" id="mini-theme-switch" data-theme="light">
+              <div class="toolbar">
+                <button type="button" data-mini-theme="light" class="active">Light</button>
+                <button type="button" data-mini-theme="dark">Dark</button>
+              </div>
+              <div class="box">
+                現在: <strong>Light</strong>（このミニ領域内だけ切替／保存なし）
+              </div>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>(function(){
+  document.querySelectorAll("[data-mini-theme]").forEach(btn =&gt; {
+    btn.addEventListener("click", () =&gt; {
+      const wrap = btn.closest(".theme-mini");
+      const mode = btn.dataset.miniTheme;
+      wrap.setAttribute("data-theme", mode);
+      wrap.querySelectorAll("[data-mini-theme].active").forEach(b =&gt; b.classList.remove("active"));
+      btn.classList.add("active");
+      const label = wrap.querySelector(".box strong");
+      if(label) label.textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
+    });
+  });
+})();</code></pre>
+          </div>
+        </div>
+        <div class="note">プレビュー領域だけに作用するスコープ設計を推奨。</div>
+      </section>
+
+      <!-- 4 -->
+      <section class="card">
+        <h2>4) JavaScript：コピー機能（Clipboard API）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（コピー動作）</h3>
+            <div class="copy-demo">
+              <button class="copy-btn" data-demo-copy>📋</button>
+              <pre><code id="copy-target-1">【目的】社内ドキュメントのフォーマット統一
+【対象】新任の現場リーダー
+【雛形】
+- 前提：＿＿＿＿＿＿＿＿＿＿
+- 決定：＿＿＿＿＿＿＿＿＿＿
+- 宿題：＿＿＿＿＿＿＿＿＿＿</code></pre>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>document.addEventListener("click", e =&gt; {
+  if(e.target.classList.contains("copy-btn")){
+    const text = e.target.closest(".copy-demo").querySelector("code").innerText;
+    navigator.clipboard.writeText(text).then(() =&gt; {
+      const old = e.target.textContent;
+      e.target.textContent = "✔ コピーしました";
+      setTimeout(() =&gt; e.target.textContent = old, 1200);
+    });
+  }
+});</code></pre>
+          </div>
+        </div>
+        <div class="note">ボタン押下で code 内のテキストのみをコピー。</div>
+      </section>
+
+      <!-- 5 -->
+      <section class="card">
+        <h2>5) レイアウト（中央寄せ＋グリッド）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（レスポンシブグリッド）</h3>
+            <div class="grid-demo">
+              <div class="demo-card">カードA：内容</div>
+              <div class="demo-card">カードB：内容</div>
+              <div class="demo-card">カードC：内容</div>
+              <div class="demo-card">カードD：内容</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>.wrap{max-width:960px;margin-inline:auto;padding:1rem}
+.grid{display:grid;gap:1rem}
+.grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}</code></pre>
+          </div>
+        </div>
+        <div class="note">ウィンドウ幅で列数が自動調整されます。</div>
+      </section>
+
+      <!-- 6 -->
+      <section class="card">
+        <h2>6) UI部品（カード／Tip／バッジ）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー</h3>
+            <div class="demo-card">これは .card 相当のボックスです。</div>
+            <div class="note">これは .tip 相当の補足ボックスです。</div>
+            <span class="badge" style="display:inline-block;border:1px solid #ddd;border-radius:999px;padding:.15rem .5rem;background:#fff;color:#555">badge</span>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>.card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:1rem}
+.tip{border-left:4px solid #3949ab;background:#f1f5f9;padding:.6rem .8rem}
+.badge{border:1px solid #ddd;border-radius:999px;padding:.15rem .5rem}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 -->
+      <section class="card">
+        <h2>7) コードブロック＋コピー</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（コピーつきコード）</h3>
+            <div class="copy-demo">
+              <button class="copy-btn" data-demo-copy>📋</button>
+              <pre><code>&lt;div class="code-block"&gt;
+  &lt;button class="copy-btn"&gt;📋&lt;/button&gt;
+  &lt;pre&gt;&lt;code&gt;echo "Hello"&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>&lt;div class="code-block"&gt;
+  &lt;button class="copy-btn"&gt;📋&lt;/button&gt;
+  &lt;pre&gt;&lt;code&gt;echo "Hello"&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8 -->
+      <section class="card">
+        <h2>8) 会話劇（吹き出し）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（左右の吹き出し）</h3>
+            <div class="chat-container">
+              <p class="chat-line bubble"><strong>課長</strong>：生成AIの検討、進めよう。</p>
+              <p class="chat-line bubble right"><strong>久保</strong>：了解です。まず何から？</p>
+              <p class="chat-line bubble"><strong>篠原</strong>：議事録要約から始めましょう！</p>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>.chat-line.bubble{ position:relative; border:1px solid #ddd; border-radius:14px; padding:.6rem .85rem; background:#fff }
+.chat-line.bubble::after{ content:""; position:absolute; left:-10px; top:14px; width:12px; height:12px; transform:rotate(45deg); background:#fff; border-left:1px solid #ddd; border-bottom:1px solid #ddd }
+.right{ align-self:flex-end }
+.right.bubble::after{ left:auto; right:-10px; border-left:none; border-right:1px solid #ddd }</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9 -->
+      <section class="card">
+        <h2>9) 表・コード・<code>kbd</code> の可読性</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（表）</h3>
+            <table class="tbl">
+              <thead><tr><th>項目</th><th>内容</th><th>メモ</th></tr></thead>
+              <tbody>
+                <tr><td>導入目的</td><td>議事録要約の自動化</td><td>読み手の時間削減</td></tr>
+                <tr><td>評価指標</td><td>作成時間 -50%</td><td>品質レビューを併用</td></tr>
+                <tr><td>操作</td><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>送信ショートカット</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:.6rem}
+kbd{border:1px solid #ddd;border-radius:6px;padding:.1rem .35rem}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10 -->
+      <section class="card">
+        <h2>10) 印刷最適化（@media print）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー</h3>
+            <p>ここは見た目だけ（印刷プレビューはブラウザ依存）。</p>
+            <ul>
+              <li>リンク色は印刷時に黒へ</li>
+              <li>画面専用UI（目次・しっぽなど）を非表示</li>
+            </ul>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>@media print{
+  a{color:inherit;text-decoration:none}
+  .theme-toggle{display:none}
+  .chat-line.bubble::after{display:none}
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11 -->
+      <section class="card">
+        <h2>11) アクセシビリティ（ARIA）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー</h3>
+            <div role="group" aria-label="テーマ切替の例" class="theme-mini" data-theme="light">
+              <div class="toolbar">
+                <button type="button" data-mini-theme="light" class="active" aria-label="ライトモードに切替">Light</button>
+                <button type="button" data-mini-theme="dark" aria-label="ダークモードに切替">Dark</button>
+              </div>
+              <div class="box">支援技術に伝わるラベルの付与例</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>&lt;div role="group" aria-label="テーマ切替"&gt;
+  &lt;button aria-label="ライト"&gt;Light&lt;/button&gt;
+  &lt;button aria-label="ダーク"&gt;Dark&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12 -->
+      <section class="card">
+        <h2>12) JS：テーマの優先順位（ミニ版・保存あり）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（保存あり）</h3>
+            <div class="theme-mini" id="mini-theme-persist" data-theme="light" data-key="mini-theme-demo">
+              <div class="toolbar">
+                <button type="button" data-mini-theme="light" class="active">Light</button>
+                <button type="button" data-mini-theme="dark">Dark</button>
+              </div>
+              <div class="box">選択は localStorage に保存され、再読込で復元されます。</div>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>(function(){
+  const wrap = document.getElementById("mini-theme-persist");
+  const key = wrap.dataset.key || "mini-theme";
+  const saved = localStorage.getItem(key);
+  if(saved) wrap.setAttribute("data-theme", saved);
+  wrap.querySelectorAll("[data-mini-theme]").forEach(btn =&gt; {
+    btn.addEventListener("click", () =&gt; {
+      const mode = btn.dataset.miniTheme;
+      wrap.setAttribute("data-theme", mode);
+      localStorage.setItem(key, mode);
+      wrap.querySelectorAll("[data-mini-theme].active").forEach(b =&gt; b.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
+})();</code></pre>
+          </div>
+        </div>
+        <div class="note">保存キーを data-key で変えれば、他のプレビューと衝突しません。</div>
+      </section>
+
+      <!-- 13 -->
+      <section class="card">
+        <h2>13) ミニ演習（超最小テンプレ）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（iframeで完全分離）</h3>
+            <iframe id="mini-iframe" title="ミニ演習プレビュー" style="width:100%;height:260px;border:1px solid #ddd;border-radius:8px;background:#fff"></iframe>
+            <div class="split-note">※ 中のソースは下のコードと同一です（srcdocで埋め込み）</div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>&lt;!doctype html&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;style&gt;
+:root{--bg:#fff;--fg:#222}[data-theme=dark]{--bg:#222;--fg:#eee}
+body{background:var(--bg);color:var(--fg);font-family:sans-serif}
+.code-block{position:relative}
+.copy-btn{position:absolute;top:.5rem;right:.5rem}
+&lt;/style&gt;
+&lt;div&gt;
+  &lt;button data-theme-set="light"&gt;Light&lt;/button&gt;
+  &lt;button data-theme-set="dark"&gt;Dark&lt;/button&gt;
+&lt;/div&gt;
+&lt;div class="code-block"&gt;
+  &lt;button class="copy-btn"&gt;📋&lt;/button&gt;
+  &lt;pre&gt;&lt;code&gt;echo "Hello"&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;script&gt;
+(function(){
+  function apply(t){document.documentElement.setAttribute("data-theme",t)}
+  document.addEventListener("click",e=&gt;{
+    if(e.target.dataset.themeSet){apply(e.target.dataset.themeSet)}
+    if(e.target.classList.contains("copy-btn")){
+      navigator.clipboard.writeText(e.target.closest(".code-block").querySelector("code").innerText)
+    }
+  });
+})();
+&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 14 -->
+      <section class="card">
+        <h2>14) details/summary アコーディオン＋スムースアニメ（アクセシブル）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（クリックで開閉・アニメーション）</h3>
+            <details class="acc js-acc" id="acc-1">
+              <summary>アコーディオン1：概要</summary>
+              <div class="acc-content">
+                <p>HTMLの <code>&lt;details&gt;&lt;summary&gt;</code> を使った、アクセシブルなアコーディオンです。キーボード（Enter/Space）でも開閉できます。</p>
+              </div>
+            </details>
+            <details class="acc js-acc" id="acc-2">
+              <summary>アコーディオン2：仕様</summary>
+              <div class="acc-content">
+                <ul>
+                  <li>ネイティブの開閉UI（スクリーンリーダー対応）</li>
+                  <li>Web Animations API で高さをアニメーション</li>
+                  <li>開閉途中の連打に対するキャンセル処理</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>/* HTML */
+&lt;details class="acc js-acc"&gt;
+  &lt;summary&gt;見出し&lt;/summary&gt;
+  &lt;div class="acc-content"&gt;中身...&lt;/div&gt;
+&lt;/details&gt;
+
+/* CSS（見た目） */
+.acc{border:1px solid #ddd; border-radius:8px; padding:.4rem .6rem; background:#fff; margin:.5rem 0}
+.acc &gt; summary{cursor:pointer; list-style:none; font-weight:600}
+.acc &gt; summary::-webkit-details-marker{display:none}
+.acc .acc-content{overflow:clip} /* WAAPIでheightをアニメするのでクリップ */
+
+/* JS（アニメーション） */
+(function(){
+  const EASING = 'cubic-bezier(.2,.6,.2,1)';
+  const DURATION = 200;
+  function setup(details){
+    let anim = null;
+    const content = details.querySelector('.acc-content');
+    details.addEventListener('click', (e)=>{
+      if(e.target.tagName.toLowerCase() !== 'summary') return;
+      e.preventDefault();
+      if(!details.open){ open(); } else { close(); }
+    });
+    function close(){
+      const start = content.offsetHeight, end = 0;
+      anim?.cancel();
+      anim = content.animate([{height:start+'px'},{height:end+'px'}], {duration:DURATION, easing:EASING});
+      anim.onfinish = ()=>{ details.open = false; content.style.height=''; };
+    }
+    function open(){
+      details.open = true;
+      requestAnimationFrame(()=>{
+        const start = 0, end = content.offsetHeight;
+        content.style.height = start+'px';
+        anim?.cancel();
+        anim = content.animate([{height:start+'px'},{height:end+'px'}], {duration:DURATION, easing:EASING});
+        anim.onfinish = ()=>{ content.style.height=''; };
+      });
+    }
+  }
+  document.querySelectorAll('.js-acc').forEach(setup);
+})();</code></pre>
+          </div>
+        </div>
+        <div class="note">details/summaryはデフォルトでアクセシビリティに優れます。ここではWeb Animations APIで“高さ”を補間して、自然な開閉にしています。</div>
+      </section>
+
+      <!-- 15 -->
+      <section class="card">
+        <h2>15) UIパーツ定番パターン（ボタン／フォーム入力の基礎）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（ボタンと入力）</h3>
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.6rem">
+              <button class="btn btn-primary" type="button">Primary</button>
+              <button class="btn btn-secondary" type="button">Secondary</button>
+              <button class="btn btn-ghost" type="button">Ghost</button>
+              <button class="btn btn-link" type="button">Link</button>
+              <button class="btn btn-danger" type="button">Danger</button>
+            </div>
+            <form class="form-demo" onsubmit="event.preventDefault()">
+              <label>メール<input type="email" placeholder="you@example.com" required></label>
+              <label>パスワード<input type="password" placeholder="8文字以上" minlength="8" required></label>
+              <button class="btn btn-primary" type="submit">送信</button>
+            </form>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>/* ボタン */
+.btn{border:1px solid #ddd; border-radius:8px; padding:.45rem .8rem; background:#fff; cursor:pointer}
+.btn-primary{background:#3949ab; border-color:#2c3b8a; color:#fff}
+.btn-secondary{background:#eef1f7}
+.btn-ghost{background:transparent}
+.btn-link{background:transparent; color:#2563eb; text-decoration:underline; border-color:transparent}
+.btn-danger{background:#e53935; color:#fff; border-color:#c62828}
+.btn:hover{filter:brightness(0.98)}
+.btn:active{transform:translateY(1px)}
+
+/* フォーム */
+.form-demo{display:grid; gap:.6rem; max-width:520px}
+.form-demo label{display:grid; gap:.35rem; font-size:.95rem}
+.form-demo input{
+  padding:.55rem .6rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff;
+  outline: none;
+}
+.form-demo input:focus{
+  border-color:#3949ab; box-shadow:0 0 0 2px rgba(57,73,171,.15);
+}
+.form-demo input:user-invalid{ border-color:#e11d48; background:#fff7f7 }
+.form-demo input:user-valid{ border-color:#16a34a; background:#f6fffa }</code></pre>
+          </div>
+        </div>
+        <div class="note">“定番UIの粒度”で設計。バリエーションはトークン化（クラス化）し、フォーカスや検証状態も視覚で伝わるようにしています。</div>
+      </section>
+
+      <!-- 16 -->
+      <section class="card">
+        <h2>16) タブ UI（ARIA対応・ボタン＋tabpanel）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（クリックでタブ切替）</h3>
+            <div class="tabs" data-tabs>
+              <div class="tablist" role="tablist" aria-label="サンプルタブ">
+                <button class="tab" role="tab" aria-selected="true" aria-controls="tab-panel-1" id="tab-1">概要</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="tab-panel-2" id="tab-2">使い方</button>
+                <button class="tab" role="tab" aria-selected="false" aria-controls="tab-panel-3" id="tab-3">注意点</button>
+              </div>
+              <div class="tabpanel" role="tabpanel" id="tab-panel-1" aria-labelledby="tab-1">
+                <p>ARIAロール（<code>tablist/tab/tabpanel</code>）で構造を示し、選択中タブに <code>aria-selected="true"</code> を付けます。</p>
+              </div>
+              <div class="tabpanel" role="tabpanel" id="tab-panel-2" aria-labelledby="tab-2" hidden>
+                <ul><li>ボタンに <code>aria-controls</code> で対象パネルIDを紐づけ。</li><li>選択切替で <code>hidden</code> の出し入れ。</li></ul>
+              </div>
+              <div class="tabpanel" role="tabpanel" id="tab-panel-3" aria-labelledby="tab-3" hidden>
+                <p>キーボード操作（←→）を付けるとより親切です。今回はクリック切替の最小実装。</p>
+              </div>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>&lt;div class="tabs" data-tabs&gt;
+  &lt;div class="tablist" role="tablist"&gt;
+    &lt;button class="tab" role="tab" aria-selected="true" aria-controls="p1" id="t1"&gt;概要&lt;/button&gt;
+    &lt;button class="tab" role="tab" aria-selected="false" aria-controls="p2" id="t2"&gt;使い方&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class="tabpanel" role="tabpanel" id="p1" aria-labelledby="t1"&gt;...&lt;/div&gt;
+  &lt;div class="tabpanel" role="tabpanel" id="p2" aria-labelledby="t2" hidden&gt;...&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+document.addEventListener("click", (e)=&gt;{
+  const btn = e.target.closest(".tabs [role='tab']");
+  if(!btn) return;
+  const wrap = btn.closest(".tabs");
+  wrap.querySelectorAll("[role='tab']").forEach(t =&gt; t.setAttribute("aria-selected", String(t===btn)));
+  wrap.querySelectorAll("[role='tabpanel']").forEach(p =&gt; p.hidden = true);
+  const id = btn.getAttribute("aria-controls");
+  wrap.querySelector("#"+id).hidden = false;
+});
+&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 17 -->
+      <section class="card">
+        <h2>17) トースト通知（自動クローズ・ARIAライブ）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（通知を表示）</h3>
+            <div class="toast-demo" data-toast-area>
+              <div class="controls" style="display:flex; gap:.5rem; margin-bottom:.6rem">
+                <button class="btn" data-toast="info">Info</button>
+                <button class="btn" data-toast="success">Success</button>
+                <button class="btn" data-toast="error">Error</button>
+              </div>
+              <!-- トーストがここに追加されます -->
+              <div class="toast-area" aria-live="polite" aria-atomic="true"></div>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>&lt;div class="toast-area" aria-live="polite" aria-atomic="true"&gt;&lt;/div&gt;
+&lt;script&gt;
+function spawnToast(area, message, type="info"){
+  const el = document.createElement("div");
+  el.className = "toast " + type;
+  el.role = "status";
+  el.textContent = message;
+  area.appendChild(el);
+  setTimeout(() =&gt; el.remove(), 2500);
+}
+document.addEventListener("click", (e)=&gt;{
+  const btn = e.target.closest("[data-toast]");
+  if(!btn) return;
+  const area = btn.closest("[data-toast-area]").querySelector(".toast-area");
+  spawnToast(area, btn.dataset.toast.toUpperCase()+" Toast", btn.dataset.toast);
+});
+&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 18 -->
+      <section class="card">
+        <h2>18) モーダル（&lt;dialog&gt; / showModal / 閉じる）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（ダイアログ）</h3>
+            <div class="modal-demo">
+              <button class="btn btn-primary" data-open-modal>Open Modal</button>
+              <dialog class="modal" data-modal>
+                <div class="modal-head">設定</div>
+                <div class="modal-body">
+                  <p>HTML の <code>&lt;dialog&gt;</code> を使ったモーダルです。</p>
+                  <label class="switch">
+                    <input type="checkbox" id="opt1">
+                    <span class="track"><span class="thumb"></span></span>
+                    <span class="label">オプション1</span>
+                  </label>
+                </div>
+                <div class="modal-foot">
+                  <button class="btn" data-close-modal>キャンセル</button>
+                  <button class="btn btn-primary" data-close-modal>OK</button>
+                </div>
+              </dialog>
+            </div>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>&lt;button data-open-modal&gt;Open&lt;/button&gt;
+&lt;dialog data-modal&gt;...&lt;/dialog&gt;
+&lt;script&gt;
+document.addEventListener("click", (e)=&gt;{
+  if(e.target.matches("[data-open-modal]")){
+    e.target.closest(".modal-demo").querySelector("[data-modal]").showModal();
+  }
+  if(e.target.matches("[data-close-modal]")){
+    e.target.closest("dialog")?.close();
+  }
+});
+&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- 19 -->
+      <section class="card">
+        <h2>19) トグルスイッチ（checkboxベース）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（クリック/キーボード操作可）</h3>
+            <label class="switch">
+              <input type="checkbox" aria-label="通知を有効にする" id="toggle-1">
+              <span class="track"><span class="thumb"></span></span>
+              <span class="label">通知</span>
+            </label>
+          </div>
+          <div class="code-block">
+            <button class="code-copy" data-copy="code">コピー</button>
+            <pre><code>&lt;label class="switch"&gt;
+  &lt;input type="checkbox" aria-label="..."&gt;
+  &lt;span class="track"&gt;&lt;span class="thumb"&gt;&lt;/span&gt;&lt;/span&gt;
+  &lt;span class="label"&gt;通知&lt;/span&gt;
+&lt;/label&gt;</code></pre>
+          </div>
+        </div>
+        <div class="note">ネイティブのcheckboxなのでアクセシブル。見た目だけCSSでスイッチ化しています。</div>
+      </section>
+
+      <div class="pagination" role="navigation" aria-label="ページナビゲーション">
+        <button id="prevBtn">◀ 前へ <kbd>←</kbd></button>
+        <span class="page-info" id="pageInfo">1 / 19</span>
+        <button id="nextBtn">次へ ▶ <kbd>→</kbd></button>
+      </div>
+    </main>
+  </div>
+
+<script>
+  // ===== ページネーション & 目次 =====
+  const sections = Array.from(document.querySelectorAll('main section.card'));
+  const tocLinks = Array.from(document.querySelectorAll('#tocList a'));
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const pageInfo = document.getElementById('pageInfo');
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.querySelector('.sidebar-toggle');
+  const tocSearch = document.getElementById('tocSearch');
+  let current = 0;
+
+  function activate(index, {scroll=true}={}){
+    if(index < 0 || index >= sections.length) return;
+    current = index;
+    sections.forEach((s,i)=> s.classList.toggle('active', i===current));
+    tocLinks.forEach((a,i)=> a.classList.toggle('active', i===current));
+    pageInfo.textContent = (current+1) + ' / ' + sections.length;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === sections.length - 1;
+    if(scroll) window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  prevBtn.addEventListener('click', ()=> activate(current-1));
+  nextBtn.addEventListener('click', ()=> activate(current+1));
+
+  window.addEventListener('keydown', (e)=>{
+    if (e.target && ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+    if(e.key === 'ArrowLeft') activate(current-1);
+    if(e.key === 'ArrowRight') activate(current+1);
+  });
+
+  tocLinks.forEach(a => {
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const idx = Number(a.dataset.index);
+      activate(idx);
+      if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const open = sidebar.classList.toggle('open');
+    toggleBtn.setAttribute('aria-expanded', String(open));
+  });
+
+  tocSearch.addEventListener('input', ()=>{
+    const q = tocSearch.value.trim().toLowerCase();
+    tocLinks.forEach(link => {
+      const visible = link.textContent.toLowerCase().includes(q);
+      link.parentElement.style.display = visible ? '' : 'none';
+    });
+  });
+
+  // ===== プレビューのJS =====
+  // mini theme toggles（2,3,11,12）
+  document.querySelectorAll("[data-mini-theme]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const wrap = btn.closest(".theme-mini");
+      if(!wrap) return;
+      const mode = btn.dataset.miniTheme;
+      wrap.setAttribute("data-theme", mode);
+      wrap.querySelectorAll("[data-mini-theme].active").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const label = wrap.querySelector(".box strong");
+      if(label) label.textContent = mode.charAt(0).toUpperCase() + mode.slice(1);
+      const key = wrap.dataset.key;
+      if(key) { try { localStorage.setItem(key, mode); } catch(e){} }
+    });
+  });
+  // 12: 初期復元
+  (function(){
+    const wrap = document.getElementById("mini-theme-persist");
+    if(!wrap) return;
+    const key = wrap.dataset.key || "mini-theme";
+    try{
+      const saved = localStorage.getItem(key);
+      if(saved){
+        wrap.setAttribute("data-theme", saved);
+        const btn = wrap.querySelector(`[data-mini-theme="${saved}"]`);
+        if(btn){
+          wrap.querySelectorAll("[data-mini-theme].active").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+        }
+      }
+    }catch(e){}
+  })();
+
+  // 4,7: copy demo buttons
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    if(!(t instanceof HTMLElement)) return;
+    if(t.hasAttribute("data-demo-copy")){
+      const codeEl = t.closest(".copy-demo")?.querySelector("code");
+      if(!codeEl) return;
+      const text = codeEl.innerText;
+      navigator.clipboard.writeText(text).then(()=>{
+        const old = t.textContent;
+        t.textContent = "✔ コピーしました";
+        setTimeout(()=> t.textContent = old || "📋", 1200);
+      });
+    }
+    if(t.matches(".code-copy,[data-copy='code']")){
+      const codeEl = t.closest(".code-block")?.querySelector("code");
+      if(!codeEl) return;
+      const text = codeEl.innerText;
+      navigator.clipboard.writeText(text).then(()=>{
+        const old = t.textContent;
+        t.textContent = "✔ コピー";
+        setTimeout(()=> t.textContent = old || "コピー", 900);
+      });
+    }
+  });
+
+  // 13: iframe srcdoc for mini exercise
+  (function(){
+    const iframe = document.getElementById("mini-iframe");
+    if(!iframe) return;
+    const src = `<!doctype html>
+<meta charset="utf-8">
+<style>
+:root{--bg:#fff;--fg:#222}[data-theme=dark]{--bg:#222;--fg:#eee}
+body{background:var(--bg);color:var(--fg);font-family:sans-serif;margin:0;padding:10px}
+.code-block{position:relative;margin-top:10px}
+.copy-btn{position:absolute;top:.5rem;right:.5rem;border:1px solid #ccc;background:#fff;border-radius:6px;padding:.2rem .5rem;cursor:pointer}
+pre{background:#272822;color:#f8f8f2;padding:.6rem;border-radius:6px;margin:0}
+</style>
+<div>
+  <button data-theme-set="light">Light</button>
+  <button data-theme-set="dark">Dark</button>
+</div>
+<div class="code-block">
+  <button class="copy-btn">📋</button>
+  <pre><code>echo "Hello"</code></pre>
+</div>
+<script>
+(function(){
+  function apply(t){document.documentElement.setAttribute("data-theme",t)}
+  document.addEventListener("click",e=>{
+    const el=e.target;
+    if(el.dataset && el.dataset.themeSet){apply(el.dataset.themeSet)}
+    if(el.classList && el.classList.contains("copy-btn")){
+      const text = el.closest(".code-block").querySelector("code").innerText;
+      navigator.clipboard.writeText(text).then(()=>{
+        const old = el.textContent;
+        el.textContent = "✔";
+        setTimeout(()=> el.textContent = old || "📋", 900);
+      });
+    }
+  });
+  apply("light");
+})();
+<\/script>`;
+    iframe.srcdoc = src;
+  })();
+
+  // 16: タブ UI
+  document.addEventListener("click", (e)=>{
+    const btn = e.target.closest(".tabs [role='tab']");
+    if(!btn) return;
+    const wrap = btn.closest(".tabs");
+    wrap.querySelectorAll("[role='tab']").forEach(t => t.setAttribute("aria-selected", String(t===btn)));
+    wrap.querySelectorAll("[role='tabpanel']").forEach(p => p.hidden = true);
+    const id = btn.getAttribute("aria-controls");
+    const panel = wrap.querySelector("#"+id);
+    if(panel) panel.hidden = false;
+  });
+
+  // 17: トースト通知
+  function spawnToast(area, message, type="info"){
+    const el = document.createElement("div");
+    el.className = "toast " + type;
+    el.setAttribute("role","status");
+    el.textContent = message;
+    area.appendChild(el);
+    setTimeout(() => el.remove(), 2500);
+  }
+  document.addEventListener("click", (e)=>{
+    const btn = e.target.closest("[data-toast]");
+    if(!btn) return;
+    const area = btn.closest("[data-toast-area]").querySelector(".toast-area");
+    spawnToast(area, btn.dataset.toast.toUpperCase()+" Toast", btn.dataset.toast);
+  });
+
+  // 18: モーダル（dialog）
+  document.addEventListener("click", (e)=>{
+    if(e.target.matches("[data-open-modal]")){
+      const dialog = e.target.closest(".modal-demo").querySelector("[data-modal]");
+      dialog?.showModal();
+    }
+    if(e.target.matches("[data-close-modal]")){
+      e.target.closest("dialog")?.close();
+    }
+  });
+
+  // 初期表示
+  activate(0, {scroll:false});
+</script>
+</body>
+</html>
