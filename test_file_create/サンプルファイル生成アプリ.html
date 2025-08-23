@@ -7,13 +7,57 @@
   <script src="https://cdn.jsdelivr.net/npm/encoding-japanese@2.1.0/encoding.min.js"></script>
   <link rel="stylesheet" href="style.css">
   <style>
+    /* --- カラーテーマ（CSS変数） --- */
+    :root {
+      --bg-color: #f4f7f9;
+      --text-color: #212529;
+      --muted-text-color: #6c757d;
+      --card-bg-color: #ffffff;
+      --card-border-color: #dee2e6;
+      --input-bg-color: #ffffff;
+      --input-border-color: #ced4da;
+      --mono-bg-color: #f8f9fa;
+      --pill-bg-color: #e9ecef;
+      --primary-bg-color: #0d6efd;
+      --primary-text-color: #ffffff;
+      --primary-shadow-color: rgba(0, 90, 210, 0.2);
+      --memo-bg-color: #fef9e7;
+      --memo-border-color: #fceea7;
+      --memo-text-color: #664d03;
+      --warn-text-color: #dc3545;
+    }
+
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #e0e0e0;
+      --muted-text-color: #a0a0a0;
+      --card-bg-color: #1e1e1e;
+      --card-border-color: #444444;
+      --input-bg-color: #2c2c2c;
+      --input-border-color: #555555;
+      --mono-bg-color: #222222;
+      --pill-bg-color: #333333;
+      --primary-bg-color: #0d6efd;
+      --primary-text-color: #ffffff;
+      --primary-shadow-color: rgba(13, 110, 253, 0.2);
+      --memo-bg-color: #332e1e;
+      --memo-border-color: #58513a;
+      --memo-text-color: #f0e6c8;
+      --warn-text-color: #ff8a8a;
+    }
+
+    /* --- 基本スタイル（変数適用） --- */
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
     /* ボタンの操作感を向上させるスタイル */
     .btn {
       transition: transform 0.1s ease, box-shadow 0.1s ease;
     }
     .btn.primary {
       /* プライマリボタンには少し影をつけて立体感を出す */
-      box-shadow: 0 2px 5px rgba(0, 90, 210, 0.2);
+      box-shadow: 0 2px 5px var(--primary-shadow-color);
     }
     .btn:hover {
       /* ホバー時に少し浮き上がる */
@@ -26,12 +70,119 @@
       box-shadow: none;
       filter: brightness(0.95);
     }
+
+    /* 折りたたみメモ用のスタイル */
+    .memo-card {
+      background-color: var(--memo-bg-color);
+      border: 1px solid var(--memo-border-color);
+      color: var(--memo-text-color);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .memo-card summary {
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      font-weight: bold;
+      list-style: none; /* markerを消す (標準) */
+    }
+    .memo-card summary::-webkit-details-marker { /* markerを消す (Chrome/Safari) */
+      display: none;
+    }
+    .memo-card h2, .memo-card h3 {
+      color: var(--memo-text-color);
+    }
+
+    /* --- style.cssの上書きと変数適用 --- */
+    .card {
+      background-color: var(--card-bg-color);
+      border-color: var(--card-border-color);
+    }
+    h1, h2, h3, h4, h5, h6 { color: var(--text-color); }
+    .muted { color: var(--muted-text-color) !important; }
+    .warn { color: var(--warn-text-color) !important; }
+    select, textarea {
+      background-color: var(--input-bg-color);
+      border-color: var(--input-border-color);
+      color: var(--text-color);
+    }
+    textarea { background-color: var(--mono-bg-color); }
+    .pill { background-color: var(--pill-bg-color); }
+    .btn.primary { background-color: var(--primary-bg-color); color: var(--primary-text-color); }
+
+    /* --- テーマ切り替えスイッチ --- */
+    .theme-switcher {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    .theme-switcher .switch-label {
+      margin-right: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--muted-text-color);
+      cursor: pointer;
+    }
+    .theme-switcher .switch-toggle {
+      position: relative;
+      width: 40px;
+      height: 20px;
+      background-color: #ccc;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .theme-switcher .switch-toggle::before {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background-color: white;
+      top: 2px; left: 2px;
+      transition: transform 0.2s;
+    }
+    .theme-switcher input:checked + .switch-toggle { background-color: var(--primary-bg-color); }
+    .theme-switcher input:checked + .switch-toggle::before { transform: translateX(20px); }
   </style>
 </head>
 <body>
   <header>
     <h1>🧪 サンプルファイル生成アプリ（統合版） <span class="small muted">CSV / TSV / JSON / YAML / XML / Markdown / TXT / HTML / SQL / 固定長（EDI対応）</span></h1>
+    <div class="theme-switcher">
+      <label for="theme-toggle" class="switch-label">Dark Mode</label>
+      <input type="checkbox" id="theme-toggle" style="display:none">
+      <label for="theme-toggle" class="switch-toggle"></label>
+    </div>
   </header>
+
+  <!-- 左右のカードと同じ幅で中央に配置し、元のレイアウトに影響を与えないようにする -->
+  <details class="memo-card" style="display: block; max-width: 1200px; margin: 0 auto 1rem;">
+    <summary>📝 今後の改良指示（クリックで開閉）</summary>
+    <div class="body grid" style="padding: 0 1.5rem 1.5rem;">
+      <h2 style="margin-top: 1rem;">📌 Webアプリ改良指示書（サンプルファイル生成アプリ）</h2>
+
+      <h3>1. デザイン面の改良</h3>
+      <ul>
+        <li><strong>プルダウンの改善</strong><br>プリセットの項目名が切れてしまっているため、表示幅やスタイルを調整する。</li>
+        <li><strong>フォーマット区切りヘッダーの見やすさ</strong><br>ヘッダー部分のデザインを整理し、ユーザーが直感的に区切りを認識できるようにする。</li>
+      </ul>
+
+      <h3>2. 入力操作の簡略化</h3>
+      <ul>
+        <li><strong>パラメータ設定の手間削減</strong><br>現状では各パラメータ入力が煩雑。<br>入力補助やプリセット、ワンクリック設定などの工夫を導入する。</li>
+      </ul>
+
+      <h3>3. ユーザーモードの切替</h3>
+      <ul>
+        <li><strong>ダークモード対応</strong><br>ダークモード／通常モードを切り替え可能にする。<br>ユーザーが好みに応じて選べる UI を用意する。</li>
+      </ul>
+
+      <h3>4. サンプルデータ生成の柔軟性</h3>
+      <ul>
+        <li><strong>データ数の調整機能</strong><br>サンプルファイルに出力するデータ件数をユーザーが自由に変更できるようにする。</li>
+      </ul>
+    </div>
+  </details>
 
   <div class="wrap">
     <!-- Left controls -->
@@ -134,6 +285,38 @@
     </div>
   </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    const applyTheme = (theme) => {
+      if (theme === 'dark') {
+        body.classList.add('dark-mode');
+        themeToggle.checked = true;
+      } else {
+        body.classList.remove('dark-mode');
+        themeToggle.checked = false;
+      }
+    };
+
+    // 1. ローカルストレージ > 2. OSの設定 > 3. デフォルト(light) の優先順位でテーマを適用
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      applyTheme(prefersDark ? 'dark' : 'light');
+    }
+
+    themeToggle.addEventListener('change', () => {
+      const newTheme = themeToggle.checked ? 'dark' : 'light';
+      localStorage.setItem('theme', newTheme);
+      applyTheme(newTheme);
+    });
+  });
+</script>
 <script type="module" src="src/script.js"></script>
 </body>
 </html>
