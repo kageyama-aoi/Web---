@@ -336,6 +336,36 @@
     }
     @keyframes progress-stripes { from { background-position: 40px 0; } to { background-position: 0 0; } }
     .progress-text { font-size: .9em; color: #555; text-align: right; }
+
+    /* 13: プログレスバー（円形＋ステップ） */
+    .progress-advanced-demo {
+      --accent:#10B981; --track:#E5E7EB; --text:#111827; --muted:#6B7280; --node-size:34px; --stroke:8; --circle-size:60px; --radius:42; --ease:cubic-bezier(.2,.8,.2,1); --shadow:0 1px 2px rgba(0,0,0,.05); --surface:#fff;
+      font-family: system-ui, sans-serif; color: var(--text);
+      max-width: 420px; margin: 1rem auto 0; background: var(--surface); border-radius: 16px; box-shadow: var(--shadow);
+    }
+    .progress-advanced-demo .header{display:flex;align-items:center;gap:12px;padding:16px 16px 8px;}
+    .progress-advanced-demo .back{width:18px;height:18px;border-left:2px solid #4b5563;border-bottom:2px solid #4b5563;transform:rotate(45deg)}
+    .progress-advanced-demo .title{font-weight:700;font-size:18px}
+    .progress-advanced-demo .subtitle{color:var(--muted);font-size:12px;margin-top:2px}
+    .progress-advanced-demo .content{padding:16px}
+    .progress-advanced-demo .circular{width:var(--circle-size);height:var(--circle-size);position:relative;display:inline-grid;place-items:center;}
+    .progress-advanced-demo .circular svg{width:100%;height:100%;transform:rotate(-90deg)}
+    .progress-advanced-demo .circular .track{stroke:var(--track);opacity:.85}
+    .progress-advanced-demo .circular .bar{stroke:var(--accent);transition:stroke-dashoffset .28s var(--ease);}
+    .progress-advanced-demo .circular .bar, .progress-advanced-demo .circular .track{stroke-linecap:round;fill:none;stroke-width:var(--stroke);}
+    .progress-advanced-demo .circular .center{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;font-size:14px;color:#059669;}
+    .progress-advanced-demo .stepper{display:flex;align-items:center;gap:8px}
+    .progress-advanced-demo .step{display:flex;flex-direction:column;align-items:center;min-width:0}
+    .progress-advanced-demo .node{width:var(--node-size);height:var(--node-size);border-radius:999px;border:2px solid var(--track);display:grid;place-items:center;background:#fff;color:var(--muted);font-weight:700;transition:all .2s var(--ease);box-shadow:var(--shadow);}
+    .progress-advanced-demo .node.done{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .progress-advanced-demo .node.current{border-color:var(--accent);color:#059669;box-shadow:0 0 0 3px rgba(16,185,129,.15)}
+    .progress-advanced-demo .label{margin-top:6px;font-size:11px;color:#374151;text-align:center;line-height:1.2}
+    .progress-advanced-demo .connector{height:2px;flex:1 1 auto;background:var(--track);margin:0 2px;border-radius:2px;transition:background .2s var(--ease);}
+    .progress-advanced-demo .connector.active{background:linear-gradient(90deg,var(--accent) 60%,var(--track) 60%)}
+    .progress-advanced-demo .controls{display:flex;gap:8px;margin:16px}
+    .progress-advanced-demo .btn{padding:10px 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;transition:transform .1s var(--ease), background .2s var(--ease);}
+    .progress-advanced-demo .btn:active{transform:translateY(1px)}
+    .progress-advanced-demo .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   </style>
 </head>
 <body>
@@ -916,44 +946,105 @@ document<span class="token punctuation">.</span><span class="token function">add
               <div id="progress-timer-text" class="progress-text">処理を開始します...</div>
               <button id="progress-start-btn" class="btn" style="margin-top: .5rem;">開始</button>
             </div>
+
+            <h3 style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem;">プレビュー（円形＋ステップ）</h3>
+            <div class="progress-advanced-demo" id="progress-app-demo">
+              <div class="header">
+                <span class="back"></span>
+                <div>
+                  <div class="title">ご注文内容の確認</div>
+                  <div class="subtitle">お間違いないか、ご確認ください</div>
+                </div>
+                <div id="circular" class="circular" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="3">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="track" cx="50" cy="50" r="42"></circle>
+                    <circle class="bar" cx="50" cy="50" r="42"></circle>
+                  </svg>
+                  <div class="center"><span id="circleText">3/4</span></div>
+                </div>
+              </div>
+              <div class="content">
+                <div id="stepper" class="stepper" role="progressbar" aria-valuemin="0" aria-valuemax="4" aria-valuenow="3"></div>
+              </div>
+              <div class="controls">
+                <button class="btn" id="prev">戻る</button>
+                <button class="btn primary" id="next">次へ</button>
+              </div>
+            </div>
           </div>
           <div class="tabs" data-tabs>
             <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-20-html" id="code-tab-20-html">HTML</button>
-              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-20-css" id="code-tab-20-css">CSS</button>
-              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-20-js" id="code-tab-20-js">JavaScript</button>
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-13-html" id="code-tab-13-html">HTML</button>
+              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-13-css" id="code-tab-13-css">CSS</button>
+              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-13-js" id="code-tab-13-js">JavaScript</button>
             </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-20-html" aria-labelledby="code-tab-20-html">
-              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">progress-bar</span>"&gt;</span>
-  <span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">progress-bar-value</span>"&gt;</span><span class="token tag">&lt;/div&gt;</span>
+            <div class="tabpanel" role="tabpanel" id="code-panel-13-html" aria-labelledby="code-tab-13-html">
+              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token comment">&lt;!-- タイマー付きプログレスバー --&gt;</span>
+<span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">progress-bar</span>"&gt;</span>
+  <span class="token tag">&lt;div <span class="token attr-name">id</span>="<span class="token attr-value">progress-timer-bar</span>" <span class="token attr-name">class</span>="<span class="token attr-value">progress-bar-value</span>"&gt;</span><span class="token tag">&lt;/div&gt;</span>
 <span class="token tag">&lt;/div&gt;</span>
-<span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">progress-text</span>"&gt;</span>残り時間: ...<span class="token tag">&lt;/div&gt;</span></code></pre></div>
+<span class="token tag">&lt;div <span class="token attr-name">id</span>="<span class="token attr-value">progress-timer-text</span>" <span class="token attr-name">class</span>="<span class="token attr-value">progress-text</span>"&gt;</span>...<span class="token tag">&lt;/div&gt;</span>
+<span class="token tag">&lt;button <span class="token attr-name">id</span>="<span class="token attr-value">progress-start-btn</span>"&gt;</span>開始<span class="token tag">&lt;/button&gt;</span>
+
+<span class="token comment">&lt;!-- 円形＋ステップ プログレスバー --&gt;</span>
+<span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">progress-advanced-demo</span>"&gt;</span>
+  <span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">circular</span>"&gt;</span>
+    <span class="token tag">&lt;svg <span class="token attr-name">viewBox</span>="<span class="token attr-value">0 0 100 100</span>"&gt;</span>
+      <span class="token tag">&lt;circle <span class="token attr-name">class</span>="<span class="token attr-value">track</span>" <span class="token attr-name">cx</span>="<span class="token attr-value">50</span>" <span class="token attr-name">cy</span>="<span class="token attr-value">50</span>" <span class="token attr-name">r</span>="<span class="token attr-value">42</span>"&gt;</span><span class="token tag">&lt;/circle&gt;</span>
+      <span class="token tag">&lt;circle <span class="token attr-name">class</span>="<span class="token attr-value">bar</span>" <span class="token attr-name">cx</span>="<span class="token attr-value">50</span>" <span class="token attr-name">cy</span>="<span class="token attr-value">50</span>" <span class="token attr-name">r</span>="<span class="token attr-value">42</span>"&gt;</span><span class="token tag">&lt;/circle&gt;</span>
+    <span class="token tag">&lt;/svg&gt;</span>
+  <span class="token tag">&lt;/div&gt;</span>
+  <span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">stepper</span>"&gt;</span><span class="token comment">&lt;!-- JSで生成 --&gt;</span><span class="token tag">&lt;/div&gt;</span>
+  <span class="token tag">&lt;button <span class="token attr-name">id</span>="<span class="token attr-value">prev</span>"&gt;</span>戻る<span class="token tag">&lt;/button&gt;</span>
+  <span class="token tag">&lt;button <span class="token attr-name">id</span>="<span class="token attr-value">next</span>"&gt;</span>次へ<span class="token tag">&lt;/button&gt;</span>
+<span class="token tag">&lt;/div&gt;</span></code></pre></div>
             </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-20-css" aria-labelledby="code-tab-20-css" hidden>
-              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token selector">.progress-bar</span> <span class="token punctuation">{</span> <span class="token property">height</span><span class="token punctuation">:</span> 20px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span> #e9ecef<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span> 999px<span class="token punctuation">;</span> <span class="token punctuation">}</span>
-<span class="token selector">.progress-bar-value</span> <span class="token punctuation">{</span> <span class="token property">height</span><span class="token punctuation">:</span> 100%<span class="token punctuation">;</span> <span class="token property">background-color</span><span class="token punctuation">:</span> #3949ab<span class="token punctuation">;</span> <span class="token punctuation">}</span>
-<span class="token selector">.progress-bar-value.animated</span> <span class="token punctuation">{</span>
-  <span class="token property">background-image</span><span class="token punctuation">:</span> <span class="token function">linear-gradient</span><span class="token punctuation">(</span>...<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token property">animation</span><span class="token punctuation">:</span> progress-stripes 1s linear infinite<span class="token punctuation">;</span>
+            <div class="tabpanel" role="tabpanel" id="code-panel-13-css" aria-labelledby="code-tab-13-css" hidden>
+              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token comment">/* タイマー付きプログレスバー */</span>
+<span class="token selector">.progress-bar</span> <span class="token punctuation">{</span> <span class="token property">height</span><span class="token punctuation">:</span> 20px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span> #e9ecef<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span> 999px<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.progress-bar-value</span> <span class="token punctuation">{</span> <span class="token property">height</span><span class="token punctuation">:</span> 100%<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span> #3949ab<span class="token punctuation">;</span> <span class="token property">transition</span><span class="token punctuation">:</span> width .3s ease<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.progress-bar-value.animated</span> <span class="token punctuation">{</span> <span class="token property">animation</span><span class="token punctuation">:</span> progress-stripes 1s linear infinite<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+
+<span class="token comment">/* 円形＋ステップ プログレスバー */</span>
+<span class="token selector">.progress-advanced-demo</span> <span class="token punctuation">{</span> <span class="token property">--accent</span><span class="token punctuation">:</span>#10B981<span class="token punctuation">;</span> <span class="token property">--track</span><span class="token punctuation">:</span>#E5E7EB<span class="token punctuation">;</span> ... <span class="token punctuation">}</span>
+<span class="token selector">.progress-advanced-demo .circular .bar, .circular .track</span> <span class="token punctuation">{</span>
+  <span class="token property">fill</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span>
+  <span class="token property">stroke-width</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--stroke<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token property">stroke-linecap</span><span class="token punctuation">:</span> round<span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
-<span class="token keyword">@keyframes</span> progress-stripes <span class="token punctuation">{</span> <span class="token selector">from</span> <span class="token punctuation">{</span> <span class="token property">background-position</span><span class="token punctuation">:</span> 40px 0<span class="token punctuation">;</span> <span class="token punctuation">}</span> <span class="token selector">to</span> <span class="token punctuation">{</span> <span class="token property">background-position</span><span class="token punctuation">:</span> 0 0<span class="token punctuation">;</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span></code></pre></div>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-20-js" aria-labelledby="code-tab-20-js" hidden>
-              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token comment">// 5秒間のタイマーをセット</span>
-<span class="token keyword">const</span> DURATION <span class="token punctuation">=</span> <span class="token number">5</span><span class="token punctuation">;</span>
-<span class="token keyword">let</span> intervalId <span class="token punctuation">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
-<span class="token keyword">function</span> <span class="token function">startTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  <span class="token function">clearInterval</span><span class="token punctuation">(</span>intervalId<span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token keyword">let</span> remaining <span class="token punctuation">=</span> DURATION<span class="token punctuation">;</span>
-  <span class="token keyword">const</span> tick <span class="token punctuation">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">=></span> <span class="token punctuation">{</span>
-    <span class="token keyword">const</span> progress <span class="token punctuation">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>DURATION <span class="token punctuation">-</span> remaining<span class="token punctuation">)</span> <span class="token punctuation">/</span> DURATION<span class="token punctuation">)</span> <span class="token punctuation">*</span> <span class="token number">100</span><span class="token punctuation">;</span>
-    bar.style.width <span class="token punctuation">=</span> <span class="token string">`</span><span class="token interpolation"><span class="token punctuation">${</span>progress<span class="token punctuation">}</span></span><span class="token string">%</span><span class="token string">`</span><span class="token punctuation">;</span>
-    text.textContent <span class="token punctuation">=</span> <span class="token string">`残り時間: </span><span class="token interpolation"><span class="token punctuation">${</span>remaining<span class="token punctuation">}</span></span><span class="token string">秒`</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>remaining<span class="token punctuation">--</span> <span class="token punctuation">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">clearInterval</span><span class="token punctuation">(</span>intervalId<span class="token punctuation">)</span><span class="token punctuation">;</span> text.textContent <span class="token punctuation">=</span> <span class="token string">'完了！'</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">;</span>
-  intervalId <span class="token punctuation">=</span> <span class="token function">setInterval</span><span class="token punctuation">(</span>tick<span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token function">tick</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token selector">.progress-advanced-demo .circular .bar</span> <span class="token punctuation">{</span>
+  <span class="token property">stroke</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--accent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token property">transition</span><span class="token punctuation">:</span> stroke-dashoffset .28s <span class="token function">var</span><span class="token punctuation">(</span>--ease<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.progress-advanced-demo .node.current</span> <span class="token punctuation">{</span>
+  <span class="token property">border-color</span><span class="token punctuation">:</span> <span class="token function">var</span><span class="token punctuation">(</span>--accent<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token property">box-shadow</span><span class="token punctuation">:</span> 0 0 0 3px <span class="token function">rgba</span><span class="token punctuation">(</span>16,185,129,.15<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span></code></pre></div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-13-js" aria-labelledby="code-tab-13-js" hidden>
+              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token comment">// タイマー付きプログレスバーのロジック</span>
+<span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token keyword">const</span> startBtn <span class="token punctuation">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'progress-start-btn'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// ... (中略) ...</span>
+  startBtn<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">'click'</span><span class="token punctuation">,</span> startTimer<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// 円形＋ステップ プログレスバーのロジック</span>
+<span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token keyword">const</span> demo <span class="token punctuation">=</span> document<span class="token punctuation">.</span><span class="token function">getElementById</span><span class="token punctuation">(</span><span class="token string">'progress-app-demo'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token punctuation">!</span>demo<span class="token punctuation">)</span> <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> state <span class="token punctuation">=</span> <span class="token punctuation">{</span>current<span class="token punctuation">:</span><span class="token number">3</span><span class="token punctuation">,</span> total<span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">,</span> labels<span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token string">'情報入力'</span><span class="token punctuation">,</span><span class="token string">'方法指定'</span><span class="token punctuation">,</span><span class="token string">'内容確認'</span><span class="token punctuation">,</span><span class="token string">'注文完了'</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> R<span class="token punctuation">=</span><span class="token number">42</span><span class="token punctuation">;</span><span class="token keyword">const</span> CIRC<span class="token punctuation">=</span><span class="token number">2</span><span class="token punctuation">*</span>Math<span class="token punctuation">.</span>PI<span class="token punctuation">*</span>R<span class="token punctuation">;</span>
+  <span class="token keyword">function</span> <span class="token function">updateAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token comment">// 円形バーの更新</span>
+    <span class="token keyword">const</span> frac<span class="token punctuation">=</span>Math<span class="token punctuation">.</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span>Math<span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span>state<span class="token punctuation">.</span>current<span class="token punctuation">/</span>state<span class="token punctuation">.</span>total<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    bar<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">'stroke-dashoffset'</span><span class="token punctuation">,</span> CIRC<span class="token punctuation">*</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">-</span>frac<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">// ステッパーの更新</span>
+    <span class="token comment">// ...</span>
+  <span class="token punctuation">}</span>
+  demo<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'#prev'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>onclick<span class="token punctuation">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">=&gt;</span><span class="token punctuation">{</span>state<span class="token punctuation">.</span>current<span class="token punctuation">=</span>Math<span class="token punctuation">.</span><span class="token function">max</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span>state<span class="token punctuation">.</span>current<span class="token punctuation">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token function">updateAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token punctuation">}</span>
+  demo<span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">'#next'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>onclick<span class="token punctuation">=</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">=&gt;</span><span class="token punctuation">{</span>state<span class="token punctuation">.</span>current<span class="token punctuation">=</span>Math<span class="token punctuation">.</span><span class="token function">min</span><span class="token punctuation">(</span>state<span class="token punctuation">.</span>total<span class="token punctuation">,</span>state<span class="token punctuation">.</span>current<span class="token punctuation">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token function">updateAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre></div>
             </div>
           </div>
         </div>
@@ -1531,6 +1622,44 @@ pre{background:#272822;color:#f8f8f2;padding:.6rem;border-radius:6px;margin:0}
       tick(); // Start immediately
     }
     startBtn.addEventListener('click', startTimer);
+  })();
+
+  // 13: プログレスバー（円形＋ステップ）
+  (function(){
+    const demo = document.getElementById('progress-app-demo');
+    if (!demo) return;
+
+    const state = {current:3,total:4,labels:['ご注文者情報入力','お支払い方法の指定','内容確認','注文完了']};
+
+    const circle=demo.querySelector('#circular');
+    const bar=circle.querySelector('.bar');
+    const track=circle.querySelector('.track');
+    const circleTxt=demo.querySelector('#circleText');
+
+    const R=42;const CIRC=2*Math.PI*R;
+    [bar,track].forEach(el=>el.setAttribute('stroke-dasharray',CIRC));
+
+    function updateCircular(){
+      const frac=Math.max(0,Math.min(1,state.current/state.total));
+      const offset=CIRC*(1-frac);
+      bar.setAttribute('stroke-dashoffset',offset);
+      circleTxt.textContent=`${state.current}/${state.total}`;
+      circle.setAttribute('aria-valuemax',state.total);
+      circle.setAttribute('aria-valuenow',state.current);
+    }
+
+    const stepper=demo.querySelector('#stepper');
+    function renderStepper(){
+      stepper.innerHTML='';
+      for(let i=1;i<=state.total;i++){
+        const step=document.createElement('div');step.className='step';const node=document.createElement('div');node.className='node';node.textContent=i;if(i<state.current)node.classList.add('done');else if(i===state.current)node.classList.add('current');const label=document.createElement('div');label.className='label';label.textContent=state.labels[i-1]||`ステップ${i}`;step.appendChild(node);step.appendChild(label);stepper.appendChild(step);if(i<state.total){const conn=document.createElement('div');conn.className='connector'+(i<state.current?' active':'');stepper.appendChild(conn);}}
+    }
+
+    function updateAll(){updateCircular();renderStepper();}
+    updateAll();
+
+    demo.querySelector('#prev').onclick=()=>{state.current=Math.max(1,state.current-1);updateAll();}
+    demo.querySelector('#next').onclick=()=>{state.current=Math.min(state.total,state.current+1);updateAll();}
   })();
 
   // ===== 70: 参考サイトURL集 =====
