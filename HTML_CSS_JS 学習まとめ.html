@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>まとめ：1〜19（ページネーション＋サイドバー目次／クラシック配色／プレビュー全幅＋コード縦並び）</title>
+  <title>まとめ：1〜20（ページネーション＋サイドバー目次／クラシック配色／プレビュー全幅＋コード縦並び）</title>
   <style>
     /* ====== 全体（固定配色） ====== */
     *{box-sizing:border-box}
@@ -277,13 +277,72 @@
     .switch input:checked + .track{ background:#3949ab }
     .switch input:checked + .track .thumb{ transform:translateX(18px) }
     .switch .label{user-select:none}
+
+    /* 70: 参考サイトURL集 */
+    .link-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+    .link-form input {
+      padding:.55rem .6rem; border:1px solid #cbd5e1; border-radius:8px; background:#fff;
+      outline: none;
+    }
+    .link-form input:focus{ border-color:#3949ab; box-shadow:0 0 0 2px rgba(57,73,171,.15) }
+    .link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+    .link-list li {
+      display: flex; align-items: center; gap: .5rem; background: #f7f7f7;
+      padding: .6rem .8rem; border-radius: 8px; border: 1px solid #eee;
+    }
+    .link-list a { flex-grow: 1; text-decoration: none; color: #2563eb; word-break: break-all; }
+    .link-list a:hover { text-decoration: underline; }
+    .link-list .link-title { color: #555; font-size: .9em; }
+    .link-list .delete-btn { border: 1px solid #ddd; background: #fff; color: #e53935; padding: .2rem .5rem; border-radius: 6px; cursor: pointer; flex-shrink: 0; }
+    .link-list .delete-btn:hover { background: #fef2f2; }
+    .link-actions {
+      display: flex;
+      gap: .5rem;
+      margin-top: 1rem;
+      border-top: 1px solid #eee;
+      padding-top: 1rem;
+    }
+
+    /* 20: プログレスバー */
+    .progress-bar {
+      height: 20px;
+      background-color: #e9ecef;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: .5rem;
+    }
+    .progress-bar-value {
+      height: 100%;
+      background-color: #3949ab;
+      border-radius: 999px;
+      transition: width .3s ease;
+    }
+    .progress-bar-value.animated {
+      background-image: linear-gradient(45deg, rgba(255,255,255,.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,.15) 50%, rgba(255,255,255,.15) 75%, transparent 75%, transparent);
+      background-size: 40px 40px;
+      animation: progress-stripes 1s linear infinite;
+    }
+    @keyframes progress-stripes { from { background-position: 40px 0; } to { background-position: 0 0; } }
+    .progress-text { font-size: .9em; color: #555; text-align: right; }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">
       <button class="sidebar-toggle" aria-controls="sidebar" aria-expanded="false">☰ 目次</button>
-      <h1>HTML/CSS/JS 学習まとめ（1〜19）— プレビュー全幅＋コード縦並び</h1>
+      <h1>HTML/CSS/JS 学習まとめ（1〜20）— プレビュー全幅＋コード縦並び</h1>
     </div>
   </header>
 
@@ -292,67 +351,121 @@
       <div class="toc-title">目次</div>
       <input id="tocSearch" class="toc-search" type="search" placeholder="キーワードで絞り込み… (例: テーマ, コピー, タブ)" aria-label="目次を検索">
       <ol class="toc" id="tocList">
-        <li><a href="#" data-index="0"><span class="num">1.</span> HTML：折りたたみ</a></li>
-        <li><a href="#" data-index="1"><span class="num">2.</span> CSS：テーマカラー</a></li>
-        <li><a href="#" data-index="2"><span class="num">3.</span> JS：テーマ切替</a></li>
-        <li><a href="#" data-index="3"><span class="num">4.</span> JS：コピー機能</a></li>
-        <li><a href="#" data-index="4"><span class="num">5.</span> レイアウト</a></li>
-        <li><a href="#" data-index="5"><span class="num">6.</span> UI部品</a></li>
-        <li><a href="#" data-index="6"><span class="num">7.</span> コード＋コピー</a></li>
-        <li><a href="#" data-index="7"><span class="num">8.</span> 会話劇（吹き出し）</a></li>
-        <li><a href="#" data-index="8"><span class="num">9.</span> 表・コード・kbd</a></li>
-        <li><a href="#" data-index="9"><span class="num">10.</span> 印刷最適化</a></li>
-        <li><a href="#" data-index="10"><span class="num">11.</span> アクセシビリティ</a></li>
-        <li><a href="#" data-index="11"><span class="num">12.</span> テーマ優先</a></li>
-        <li><a href="#" data-index="12"><span class="num">13.</span> ミニ演習</a></li>
-        <li><a href="#" data-index="13"><span class="num">14.</span> アコーディオン(animate)</a></li>
-        <li><a href="#" data-index="14"><span class="num">15.</span> 定番UIパーツ</a></li>
-        <li><a href="#" data-index="15"><span class="num">16.</span> タブ UI</a></li>
-        <li><a href="#" data-index="16"><span class="num">17.</span> トースト</a></li>
-        <li><a href="#" data-index="17"><span class="num">18.</span> モーダル</a></li>
-        <li><a href="#" data-index="18"><span class="num">19.</span> トグル</a></li>
+        <li><a href="#" data-index="0"><span class="num">1.</span> レイアウトの基礎（グリッド）</a></li>
+        <li><a href="#" data-index="1"><span class="num">2.</span> 基本UI（カード・バッジ）</a></li>
+        <li><a href="#" data-index="2"><span class="num">3.</span> テキスト要素（表・コード）</a></li>
+        <li><a href="#" data-index="3"><span class="num">4.</span> テーマ設計（CSS変数）</a></li>
+        <li><a href="#" data-index="4"><span class="num">5.</span> テーマ切替（JS基本）</a></li>
+        <li><a href="#" data-index="5"><span class="num">6.</span> テーマ切替（JS応用・保存）</a></li>
+        <li><a href="#" data-index="6"><span class="num">7.</span> フォーム部品（ボタン・入力）</a></li>
+        <li><a href="#" data-index="7"><span class="num">8.</span> 折りたたみ要素（details）</a></li>
+        <li><a href="#" data-index="8"><span class="num">9.</span> アコーディオン（アニメーション）</a></li>
+        <li><a href="#" data-index="9"><span class="num">10.</span> タブUI</a></li>
+        <li><a href="#" data-index="10"><span class="num">11.</span> モーダル（dialog要素）</a></li>
+        <li><a href="#" data-index="11"><span class="num">12.</span> トグルスイッチ</a></li>
+        <li><a href="#" data-index="12"><span class="num">13.</span> プログレスバー</a></li>
+        <li><a href="#" data-index="13"><span class="num">14.</span> トースト通知</a></li>
+        <li><a href="#" data-index="14"><span class="num">15.</span> 会話ふきだし</a></li>
+        <li><a href="#" data-index="15"><span class="num">16.</span> クリップボードコピー機能</a></li>
+        <li><a href="#" data-index="16"><span class="num">17.</span> コードブロック部品</a></li>
+        <li><a href="#" data-index="17"><span class="num">18.</span> アクセシビリティ（ARIA）</a></li>
+        <li><a href="#" data-index="18"><span class="num">19.</span> 印刷用スタイル</a></li>
+        <li><a href="#" data-index="19"><span class="num">20.</span> 演習用テンプレート（iframe）</a></li>
+        <li><a href="#" data-index="20"><span class="num">70.</span> 参考サイトURL集</a></li>
       </ol>
     </nav>
 
     <main>
       <!-- 1 -->
-      <section class="card active">
-        <h2>1) HTML：折りたたみセクション</h2>
+      <section class="card">
+        <h2>1. レイアウトの基礎（グリッド）</h2>
         <div class="example">
           <div class="preview">
-            <h3>プレビュー</h3>
-            <details id="demo-details">
-              <summary>アジェンダ</summary>
-              <ol>
-                <li><a href="#intro">導入</a></li>
-                <li><a href="#hands">ハンズオン</a></li>
-              </ol>
-            </details>
+            <h3>プレビュー（レスポンシブグリッド）</h3>
+            <div class="grid-demo">
+              <div class="demo-card">カードA：内容</div>
+              <div class="demo-card">カードB：内容</div>
+              <div class="demo-card">カードC：内容</div>
+              <div class="demo-card">カードD：内容</div>
+            </div>
           </div>
           <div class="tabs" data-tabs>
             <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-1-html" id="code-tab-1-html">HTML</button>
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-5-css" id="code-tab-5-css">CSS</button>
             </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-1-html" aria-labelledby="code-tab-1-html">
+            <div class="tabpanel" role="tabpanel" id="code-panel-5-css" aria-labelledby="code-tab-5-css">
               <div class="code-block">
                 <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token tag">&lt;details <span class="token attr-name">class</span>="<span class="token attr-value">sec</span>" <span class="token attr-name">id</span>="<span class="token attr-value">agenda</span>"&gt;</span>
-  <span class="token tag">&lt;summary&gt;</span>アジェンダ<span class="token tag">&lt;/summary&gt;</span>
-  <span class="token tag">&lt;ol&gt;</span>
-    <span class="token tag">&lt;li&gt;</span><span class="token tag">&lt;a <span class="token attr-name">href</span>="<span class="token attr-value">#intro</span>"&gt;</span>導入<span class="token tag">&lt;/a&gt;</span><span class="token tag">&lt;/li&gt;</span>
-    <span class="token tag">&lt;li&gt;</span><span class="token tag">&lt;a <span class="token attr-name">href</span>="<span class="token attr-value">#hands</span>"&gt;</span>ハンズオン<span class="token tag">&lt;/a&gt;</span><span class="token tag">&lt;/li&gt;</span>
-  <span class="token tag">&lt;/ol&gt;</span>
-<span class="token tag">&lt;/details&gt;</span></code></pre>
+                <pre><code><span class="token selector">.wrap</span><span class="token punctuation">{</span><span class="token property">max-width</span><span class="token punctuation">:</span>960px<span class="token punctuation">;</span><span class="token property">margin-inline</span><span class="token punctuation">:</span>auto<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>1rem<span class="token punctuation">}</span>
+<span class="token selector">.grid</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>grid<span class="token punctuation">;</span><span class="token property">gap</span><span class="token punctuation">:</span>1rem<span class="token punctuation">}</span>
+<span class="token selector">.grid.cols-2</span><span class="token punctuation">{</span><span class="token property">grid-template-columns</span><span class="token punctuation">:</span><span class="token function">repeat</span><span class="token punctuation">(</span>auto-fit<span class="token punctuation">,</span><span class="token function">minmax</span><span class="token punctuation">(</span>260px<span class="token punctuation">,</span>1fr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">}</span></code></pre>
               </div>
             </div>
           </div>
         </div>
-        <div class="note">ネイティブ開閉UI。JS不要で動作します。</div>
+        <div class="note">ウィンドウ幅で列数が自動調整されます。</div>
       </section>
 
       <!-- 2 -->
       <section class="card">
-        <h2>2) CSS：テーマカラー（カスタムプロパティ）</h2>
+        <h2>2. 基本UI（カード・バッジ）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー</h3>
+            <div class="demo-card">これは .card 相当のボックスです。</div>
+            <div class="note">これは .tip 相当の補足ボックスです。</div>
+            <span class="badge" style="display:inline-block;border:1px solid #ddd;border-radius:999px;padding:.15rem .5rem;background:#fff;color:#555">badge</span>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-6-css" id="code-tab-6-css">CSS</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-6-css" aria-labelledby="code-tab-6-css">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token selector">.card</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span><span class="token property">border-radius</span><span class="token punctuation">:</span>12px<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>1rem<span class="token punctuation">}</span>
+<span class="token selector">.tip</span><span class="token punctuation">{</span><span class="token property">border-left</span><span class="token punctuation">:</span>4px solid #3949ab<span class="token punctuation">;</span><span class="token property">background</span><span class="token punctuation">:</span>#f1f5f9<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>.6rem .8rem<span class="token punctuation">}</span>
+<span class="token selector">.badge</span><span class="token punctuation">{</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span><span class="token property">border-radius</span><span class="token punctuation">:</span>999px<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>.15rem .5rem<span class="token punctuation">}</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section class="card">
+        <h2>3. テキスト要素（表・コード）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（表）</h3>
+            <table class="tbl">
+              <thead><tr><th>項目</th><th>内容</th><th>メモ</th></tr></thead>
+              <tbody>
+                <tr><td>導入目的</td><td>議事録要約の自動化</td><td>読み手の時間削減</td></tr>
+                <tr><td>評価指標</td><td>作成時間 -50%</td><td>品質レビューを併用</td></tr>
+                <tr><td>操作</td><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>送信ショートカット</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-9-css" id="code-tab-9-css">CSS</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-9-css" aria-labelledby="code-tab-9-css">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token selector">table</span><span class="token punctuation">{</span><span class="token property">width</span><span class="token punctuation">:</span>100%<span class="token punctuation">;</span><span class="token property">border-collapse</span><span class="token punctuation">:</span>collapse<span class="token punctuation">}</span>
+<span class="token selector">th,td</span><span class="token punctuation">{</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>.6rem<span class="token punctuation">}</span>
+<span class="token selector">kbd</span><span class="token punctuation">{</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span><span class="token property">border-radius</span><span class="token punctuation">:</span>6px<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>.1rem .35rem<span class="token punctuation">}</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section class="card">
+        <h2>4. テーマ設計（CSS変数）</h2>
         <div class="example">
           <div class="preview">
             <h3>プレビュー（スコープ内で Light / Dark 切替）</h3>
@@ -384,9 +497,9 @@
         <div class="note">このプレビューはコンテナ内の data-theme を切替えています。</div>
       </section>
 
-      <!-- 3 -->
+      <!-- 5 -->
       <section class="card">
-        <h2>3) JavaScript：テーマ切替（ミニ版・保存なし）</h2>
+        <h2>5. テーマ切替（JS基本）</h2>
         <div class="example">
           <div class="preview">
             <h3>プレビュー（保存なし）</h3>
@@ -427,278 +540,9 @@
         <div class="note">プレビュー領域だけに作用するスコープ設計を推奨。</div>
       </section>
 
-      <!-- 4 -->
-      <section class="card">
-        <h2>4) JavaScript：コピー機能（Clipboard API）</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー（コピー動作）</h3>
-            <div class="copy-demo">
-              <button class="copy-btn" data-demo-copy>📋</button>
-              <pre><code id="copy-target-1">【目的】社内ドキュメントのフォーマット統一
-【対象】新任の現場リーダー
-【雛形】
-- 前提：＿＿＿＿＿＿＿＿＿＿
-- 決定：＿＿＿＿＿＿＿＿＿＿
-- 宿題：＿＿＿＿＿＿＿＿＿＿</code></pre>
-            </div>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-4-js" id="code-tab-4-js">JavaScript</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-4-js" aria-labelledby="code-tab-4-js">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code>document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span> <span class="token parameter">e</span> <span class="token punctuation">=&gt;</span> <span class="token punctuation">{</span>
-  <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>classList<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"copy-btn"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    <span class="token keyword">const</span> text <span class="token punctuation">=</span> e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">closest</span><span class="token punctuation">(</span><span class="token string">".copy-demo"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">"code"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerText<span class="token punctuation">;</span>
-    navigator<span class="token punctuation">.</span>clipboard<span class="token punctuation">.</span><span class="token function">writeText</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">=&gt;</span> <span class="token punctuation">{</span>
-      <span class="token keyword">const</span> old <span class="token punctuation">=</span> e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>textContent<span class="token punctuation">;</span>
-      e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>textContent <span class="token punctuation">=</span> <span class="token string">"✔ コピーしました"</span><span class="token punctuation">;</span>
-      <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">=&gt;</span> e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>textContent <span class="token punctuation">=</span> old<span class="token punctuation">,</span> <span class="token number">1200</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="note">ボタン押下で code 内のテキストのみをコピー。</div>
-      </section>
-
-      <!-- 5 -->
-      <section class="card">
-        <h2>5) レイアウト（中央寄せ＋グリッド）</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー（レスポンシブグリッド）</h3>
-            <div class="grid-demo">
-              <div class="demo-card">カードA：内容</div>
-              <div class="demo-card">カードB：内容</div>
-              <div class="demo-card">カードC：内容</div>
-              <div class="demo-card">カードD：内容</div>
-            </div>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-5-css" id="code-tab-5-css">CSS</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-5-css" aria-labelledby="code-tab-5-css">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token selector">.wrap</span><span class="token punctuation">{</span><span class="token property">max-width</span><span class="token punctuation">:</span>960px<span class="token punctuation">;</span><span class="token property">margin-inline</span><span class="token punctuation">:</span>auto<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>1rem<span class="token punctuation">}</span>
-<span class="token selector">.grid</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>grid<span class="token punctuation">;</span><span class="token property">gap</span><span class="token punctuation">:</span>1rem<span class="token punctuation">}</span>
-<span class="token selector">.grid.cols-2</span><span class="token punctuation">{</span><span class="token property">grid-template-columns</span><span class="token punctuation">:</span><span class="token function">repeat</span><span class="token punctuation">(</span>auto-fit<span class="token punctuation">,</span><span class="token function">minmax</span><span class="token punctuation">(</span>260px<span class="token punctuation">,</span>1fr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">}</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="note">ウィンドウ幅で列数が自動調整されます。</div>
-      </section>
-
       <!-- 6 -->
       <section class="card">
-        <h2>6) UI部品（カード／Tip／バッジ）</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー</h3>
-            <div class="demo-card">これは .card 相当のボックスです。</div>
-            <div class="note">これは .tip 相当の補足ボックスです。</div>
-            <span class="badge" style="display:inline-block;border:1px solid #ddd;border-radius:999px;padding:.15rem .5rem;background:#fff;color:#555">badge</span>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-6-css" id="code-tab-6-css">CSS</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-6-css" aria-labelledby="code-tab-6-css">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token selector">.card</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span><span class="token property">border-radius</span><span class="token punctuation">:</span>12px<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>1rem<span class="token punctuation">}</span>
-<span class="token selector">.tip</span><span class="token punctuation">{</span><span class="token property">border-left</span><span class="token punctuation">:</span>4px solid #3949ab<span class="token punctuation">;</span><span class="token property">background</span><span class="token punctuation">:</span>#f1f5f9<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>.6rem .8rem<span class="token punctuation">}</span>
-<span class="token selector">.badge</span><span class="token punctuation">{</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span><span class="token property">border-radius</span><span class="token punctuation">:</span>999px<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>.15rem .5rem<span class="token punctuation">}</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 7 -->
-      <section class="card">
-        <h2>7) コードブロック＋コピー</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー（コピーつきコード）</h3>
-            <div class="copy-demo">
-              <button class="copy-btn" data-demo-copy>📋</button>
-              <pre><code>&lt;div class="code-block"&gt;
-  &lt;button class="copy-btn"&gt;📋&lt;/button&gt;
-  &lt;pre&gt;&lt;code&gt;echo "Hello"&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;</code></pre>
-            </div>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-7-html" id="code-tab-7-html">HTML</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-7-html" aria-labelledby="code-tab-7-html">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">code-block</span>"&gt;</span>
-  <span class="token tag">&lt;button <span class="token attr-name">class</span>="<span class="token attr-value">copy-btn</span>"&gt;</span>📋<span class="token tag">&lt;/button&gt;</span>
-  <span class="token tag">&lt;pre&gt;</span><span class="token tag">&lt;code&gt;</span>echo "Hello"<span class="token tag">&lt;/code&gt;</span><span class="token tag">&lt;/pre&gt;</span>
-<span class="token tag">&lt;/div&gt;</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 8 -->
-      <section class="card">
-        <h2>8) 会話劇（吹き出し）</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー（左右の吹き出し）</h3>
-            <div class="chat-container">
-              <p class="chat-line bubble chat-kacho"><strong>課長</strong>：生成AIの検討、進めよう。</p>
-              <p class="chat-line bubble right chat-kubo"><strong>久保</strong>：了解です。まず何から？</p>
-              <p class="chat-line bubble chat-shinohara"><strong>篠原</strong>：議事録要約から始めましょう！</p>
-            </div>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-8-html" id="code-tab-8-html">HTML</button>
-              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-8-css" id="code-tab-8-css">CSS</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-8-html" aria-labelledby="code-tab-8-html">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token comment">&lt;!-- 話者ごとにクラスを付与 --&gt;</span>
-<span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">chat-container</span>"&gt;</span>
-  <span class="token tag">&lt;p <span class="token attr-name">class</span>="<span class="token attr-value">chat-line bubble chat-kacho</span>"&gt;</span><span class="token tag">&lt;strong&gt;</span>課長<span class="token tag">&lt;/strong&gt;</span>：...<span class="token tag">&lt;/p&gt;</span>
-  <span class="token tag">&lt;p <span class="token attr-name">class</span>="<span class="token attr-value">chat-line bubble right chat-kubo</span>"&gt;</span><span class="token tag">&lt;strong&gt;</span>久保<span class="token tag">&lt;/strong&gt;</span>：...<span class="token tag">&lt;/p&gt;</span>
-<span class="token tag">&lt;/div&gt;</span></code></pre>
-              </div>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-8-css" aria-labelledby="code-tab-8-css" hidden>
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token comment">/* 基本の吹き出しスタイル */</span>
-<span class="token selector">.bubble</span><span class="token punctuation">{</span> <span class="token property">position</span><span class="token punctuation">:</span>relative<span class="token punctuation">;</span> <span class="token property">padding</span><span class="token punctuation">:</span>.8rem 1.2rem<span class="token punctuation">;</span> <span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span>16px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff <span class="token punctuation">}</span>
-<span class="token selector">.bubble::after</span><span class="token punctuation">{</span> <span class="token property">content</span><span class="token punctuation">:</span><span class="token string">""</span><span class="token punctuation">;</span> <span class="token property">position</span><span class="token punctuation">:</span>absolute<span class="token punctuation">;</span> <span class="token property">top</span><span class="token punctuation">:</span>16px<span class="token punctuation">;</span> <span class="token property">width</span><span class="token punctuation">:</span>12px<span class="token punctuation">;</span> <span class="token property">height</span><span class="token punctuation">:</span>12px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span> <span class="token property">transform</span><span class="token punctuation">:</span><span class="token function">rotate</span><span class="token punctuation">(</span>45deg<span class="token punctuation">)</span> <span class="token punctuation">}</span>
-<span class="token selector">.bubble:not(.right)::after</span><span class="token punctuation">{</span> <span class="token property">left</span><span class="token punctuation">:</span>-7px<span class="token punctuation">;</span> <span class="token property">border-left</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span> <span class="token property">border-bottom</span><span class="token punctuation">:</span>1px solid #ddd <span class="token punctuation">}</span>
-<span class="token selector">.right</span><span class="token punctuation">{</span> <span class="token property">align-self</span><span class="token punctuation">:</span>flex-end <span class="token punctuation">}</span>
-<span class="token selector">.right.bubble::after</span><span class="token punctuation">{</span> <span class="token property">right</span><span class="token punctuation">:</span>-7px<span class="token punctuation">;</span> <span class="token property">border-right</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span> <span class="token property">border-top</span><span class="token punctuation">:</span>1px solid #ddd <span class="token punctuation">}</span>
-
-<span class="token comment">/* 話者ごとの色分け */</span>
-<span class="token selector">.chat-kacho</span> <span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span> #e57373<span class="token punctuation">;</span> <span class="token punctuation">}</span>
-<span class="token selector">.chat-kacho strong</span> <span class="token punctuation">{</span> <span class="token property">color</span><span class="token punctuation">:</span> #d32f2f<span class="token punctuation">;</span> <span class="token punctuation">}</span>
-<span class="token selector">.chat-kacho::after</span> <span class="token punctuation">{</span> <span class="token property">border-left-color</span><span class="token punctuation">:</span> #e57373<span class="token punctuation">;</span> <span class="token property">border-bottom-color</span><span class="token punctuation">:</span> #e57373<span class="token punctuation">;</span> <span class="token punctuation">}</span>
-<span class="token selector">.chat-kubo</span> <span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span> #64b5f6<span class="token punctuation">;</span> <span class="token punctuation">}</span>
-<span class="token selector">.chat-kubo strong</span> <span class="token punctuation">{</span> <span class="token property">color</span><span class="token punctuation">:</span> #1976d2<span class="token punctuation">;</span> <span class="token punctuation">}</span>
-<span class="token selector">.right.chat-kubo::after</span> <span class="token punctuation">{</span> <span class="token property">border-right-color</span><span class="token punctuation">:</span> #64b5f6<span class="token punctuation">;</span> <span class="token property">border-top-color</span><span class="token punctuation">:</span> #64b5f6<span class="token punctuation">;</span> <span class="token punctuation">}</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 9 -->
-      <section class="card">
-        <h2>9) 表・コード・<code>kbd</code> の可読性</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー（表）</h3>
-            <table class="tbl">
-              <thead><tr><th>項目</th><th>内容</th><th>メモ</th></tr></thead>
-              <tbody>
-                <tr><td>導入目的</td><td>議事録要約の自動化</td><td>読み手の時間削減</td></tr>
-                <tr><td>評価指標</td><td>作成時間 -50%</td><td>品質レビューを併用</td></tr>
-                <tr><td>操作</td><td><kbd>Ctrl</kbd> + <kbd>Enter</kbd></td><td>送信ショートカット</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-9-css" id="code-tab-9-css">CSS</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-9-css" aria-labelledby="code-tab-9-css">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token selector">table</span><span class="token punctuation">{</span><span class="token property">width</span><span class="token punctuation">:</span>100%<span class="token punctuation">;</span><span class="token property">border-collapse</span><span class="token punctuation">:</span>collapse<span class="token punctuation">}</span>
-<span class="token selector">th,td</span><span class="token punctuation">{</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>.6rem<span class="token punctuation">}</span>
-<span class="token selector">kbd</span><span class="token punctuation">{</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span><span class="token property">border-radius</span><span class="token punctuation">:</span>6px<span class="token punctuation">;</span><span class="token property">padding</span><span class="token punctuation">:</span>.1rem .35rem<span class="token punctuation">}</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 10 -->
-      <section class="card">
-        <h2>10) 印刷最適化（@media print）</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー</h3>
-            <p>ここは見た目だけ（印刷プレビューはブラウザ依存）。</p>
-            <ul>
-              <li>リンク色は印刷時に黒へ</li>
-              <li>画面専用UI（目次・しっぽなど）を非表示</li>
-            </ul>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-10-css" id="code-tab-10-css">CSS</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-10-css" aria-labelledby="code-tab-10-css">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token keyword">@media</span> print<span class="token punctuation">{</span>
-  <span class="token selector">a</span><span class="token punctuation">{</span><span class="token property">color</span><span class="token punctuation">:</span>inherit<span class="token punctuation">;</span><span class="token property">text-decoration</span><span class="token punctuation">:</span>none<span class="token punctuation">}</span>
-  <span class="token selector">.theme-toggle</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>none<span class="token punctuation">}</span>
-  <span class="token selector">.chat-line.bubble::after</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>none<span class="token punctuation">}</span>
-<span class="token punctuation">}</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 11 -->
-      <section class="card">
-        <h2>11) アクセシビリティ（ARIA）</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー</h3>
-            <div role="group" aria-label="テーマ切替の例" class="theme-mini" data-theme="light">
-              <div class="toolbar">
-                <button type="button" data-mini-theme="light" class="active" aria-label="ライトモードに切替">Light</button>
-                <button type="button" data-mini-theme="dark" aria-label="ダークモードに切替">Dark</button>
-              </div>
-              <div class="box">支援技術に伝わるラベルの付与例</div>
-            </div>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-11-html" id="code-tab-11-html">HTML</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-11-html" aria-labelledby="code-tab-11-html">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token tag">&lt;div <span class="token attr-name">role</span>="<span class="token attr-value">group</span>" <span class="token attr-name">aria-label</span>="<span class="token attr-value">テーマ切替</span>"&gt;</span>
-  <span class="token tag">&lt;button <span class="token attr-name">aria-label</span>="<span class="token attr-value">ライト</span>"&gt;</span>Light<span class="token tag">&lt;/button&gt;</span>
-  <span class="token tag">&lt;button <span class="token attr-name">aria-label</span>="<span class="token attr-value">ダーク</span>"&gt;</span>Dark<span class="token tag">&lt;/button&gt;</span>
-<span class="token tag">&lt;/div&gt;</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 12 -->
-      <section class="card">
-        <h2>12) JS：テーマの優先順位（ミニ版・保存あり）</h2>
+        <h2>6. テーマ切替（JS応用・保存）</h2>
         <div class="example">
           <div class="preview">
             <h3>プレビュー（保存あり）</h3>
@@ -739,58 +583,99 @@
         <div class="note">保存キーを data-key で変えれば、他のプレビューと衝突しません。</div>
       </section>
 
-      <!-- 13 -->
+      <!-- 7 -->
       <section class="card">
-        <h2>13) ミニ演習（超最小テンプレ）</h2>
+        <h2>7. フォーム部品（ボタン・入力）</h2>
         <div class="example">
           <div class="preview">
-            <h3>プレビュー（iframeで完全分離）</h3>
-            <iframe id="mini-iframe" title="ミニ演習プレビュー" style="width:100%;height:260px;border:1px solid #ddd;border-radius:8px;background:#fff"></iframe>
-            <div class="split-note">※ 中のソースは下のコードと同一です（srcdocで埋め込み）</div>
+            <h3>プレビュー（ボタンと入力）</h3>
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.6rem">
+              <button class="btn btn-primary" type="button">Primary</button>
+              <button class="btn btn-secondary" type="button">Secondary</button>
+              <button class="btn btn-ghost" type="button">Ghost</button>
+              <button class="btn btn-link" type="button">Link</button>
+              <button class="btn btn-danger" type="button">Danger</button>
+            </div>
+            <form class="form-demo" onsubmit="event.preventDefault()">
+              <label>メール<input type="email" placeholder="you@example.com" required=""></label>
+              <label>パスワード<input type="password" placeholder="8文字以上" minlength="8" required=""></label>
+              <button class="btn btn-primary" type="submit">送信</button>
+            </form>
           </div>
           <div class="tabs" data-tabs>
             <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-13-html" id="code-tab-13-html">HTML</button>
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-15-css" id="code-tab-15-css">CSS</button>
             </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-13-html" aria-labelledby="code-tab-13-html">
+            <div class="tabpanel" role="tabpanel" id="code-panel-15-css" aria-labelledby="code-tab-15-css">
               <div class="code-block">
                 <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token tag">&lt;!doctype html&gt;</span>
-<span class="token tag">&lt;meta <span class="token attr-name">charset</span>="<span class="token attr-value">utf-8</span>"&gt;</span>
-<span class="token tag">&lt;style&gt;</span>
-<span class="token selector">:root</span><span class="token punctuation">{</span><span class="token property">--bg</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span><span class="token property">--fg</span><span class="token punctuation">:</span>#222<span class="token punctuation">}</span><span class="token selector">[data-theme=dark]</span><span class="token punctuation">{</span><span class="token property">--bg</span><span class="token punctuation">:</span>#222<span class="token punctuation">;</span><span class="token property">--fg</span><span class="token punctuation">:</span>#eee<span class="token punctuation">}</span>
-<span class="token selector">body</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span><span class="token function">var</span><span class="token punctuation">(</span>--bg<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token property">color</span><span class="token punctuation">:</span><span class="token function">var</span><span class="token punctuation">(</span>--fg<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token property">font-family</span><span class="token punctuation">:</span>sans-serif<span class="token punctuation">}</span>
-<span class="token selector">.code-block</span><span class="token punctuation">{</span><span class="token property">position</span><span class="token punctuation">:</span>relative<span class="token punctuation">}</span>
-<span class="token selector">.copy-btn</span><span class="token punctuation">{</span><span class="token property">position</span><span class="token punctuation">:</span>absolute<span class="token punctuation">;</span><span class="token property">top</span><span class="token punctuation">:</span>.5rem<span class="token punctuation">;</span><span class="token property">right</span><span class="token punctuation">:</span>.5rem<span class="token punctuation">}</span>
-<span class="token tag">&lt;/style&gt;</span>
-<span class="token tag">&lt;div&gt;</span>
-  <span class="token tag">&lt;button <span class="token attr-name">data-theme-set</span>="<span class="token attr-value">light</span>"&gt;</span>Light<span class="token tag">&lt;/button&gt;</span>
-  <span class="token tag">&lt;button <span class="token attr-name">data-theme-set</span>="<span class="token attr-value">dark</span>"&gt;</span>Dark<span class="token tag">&lt;/button&gt;</span>
-<span class="token tag">&lt;/div&gt;</span>
-<span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">code-block</span>"&gt;</span>
-  <span class="token tag">&lt;button <span class="token attr-name">class</span>="<span class="token attr-value">copy-btn</span>"&gt;</span>📋<span class="token tag">&lt;/button&gt;</span>
-  <span class="token tag">&lt;pre&gt;</span><span class="token tag">&lt;code&gt;</span>echo "Hello"<span class="token tag">&lt;/code&gt;</span><span class="token tag">&lt;/pre&gt;</span>
-<span class="token tag">&lt;/div&gt;</span>
-<span class="token tag">&lt;script&gt;</span>
-<span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-  <span class="token keyword">function</span> <span class="token function">apply</span><span class="token punctuation">(</span><span class="token parameter">t</span><span class="token punctuation">)</span><span class="token punctuation">{</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">"data-theme"</span><span class="token punctuation">,</span>t<span class="token punctuation">)</span><span class="token punctuation">}</span>
-  document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span><span class="token parameter">e</span><span class="token punctuation">=&gt;</span><span class="token punctuation">{</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>themeSet<span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token function">apply</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>themeSet<span class="token punctuation">)</span><span class="token punctuation">}</span>
-    <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>classList<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"copy-btn"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-      navigator<span class="token punctuation">.</span>clipboard<span class="token punctuation">.</span><span class="token function">writeText</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">closest</span><span class="token punctuation">(</span><span class="token string">".code-block"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">"code"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerText<span class="token punctuation">)</span>
-    <span class="token punctuation">}</span>
-  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token tag">&lt;/script&gt;</span></code></pre>
+                <pre><code><span class="token comment">/* ボタン */</span>
+<span class="token selector">.btn</span><span class="token punctuation">{</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span>8px<span class="token punctuation">;</span> <span class="token property">padding</span><span class="token punctuation">:</span>.45rem .8rem<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span> <span class="token property">cursor</span><span class="token punctuation">:</span>pointer<span class="token punctuation">}</span>
+<span class="token selector">.btn-primary</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>#3949ab<span class="token punctuation">;</span> <span class="token property">border-color</span><span class="token punctuation">:</span>#2c3b8a<span class="token punctuation">;</span> <span class="token property">color</span><span class="token punctuation">:</span>#fff<span class="token punctuation">}</span>
+<span class="token selector">.btn-secondary</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>#eef1f7<span class="token punctuation">}</span>
+<span class="token selector">.btn-ghost</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>transparent<span class="token punctuation">}</span>
+<span class="token selector">.btn-link</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>transparent<span class="token punctuation">;</span> <span class="token property">color</span><span class="token punctuation">:</span>#2563eb<span class="token punctuation">;</span> <span class="token property">text-decoration</span><span class="token punctuation">:</span>underline<span class="token punctuation">;</span> <span class="token property">border-color</span><span class="token punctuation">:</span>transparent<span class="token punctuation">}</span>
+<span class="token selector">.btn-danger</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>#e53935<span class="token punctuation">;</span> <span class="token property">color</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span> <span class="token property">border-color</span><span class="token punctuation">:</span>#c62828<span class="token punctuation">}</span>
+<span class="token selector">.btn:hover</span><span class="token punctuation">{</span><span class="token property">filter</span><span class="token punctuation">:</span><span class="token function">brightness</span><span class="token punctuation">(</span>0.98<span class="token punctuation">)</span><span class="token punctuation">}</span>
+<span class="token selector">.btn:active</span><span class="token punctuation">{</span><span class="token property">transform</span><span class="token punctuation">:</span><span class="token function">translateY</span><span class="token punctuation">(</span>1px<span class="token punctuation">)</span><span class="token punctuation">}</span>
+
+<span class="token comment">/* フォーム */</span>
+<span class="token selector">.form-demo</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>grid<span class="token punctuation">;</span> <span class="token property">gap</span><span class="token punctuation">:</span>.6rem<span class="token punctuation">;</span> <span class="token property">max-width</span><span class="token punctuation">:</span>520px<span class="token punctuation">}</span>
+<span class="token selector">.form-demo label</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>grid<span class="token punctuation">;</span> <span class="token property">gap</span><span class="token punctuation">:</span>.35rem<span class="token punctuation">;</span> <span class="token property">font-size</span><span class="token punctuation">:</span>.95rem<span class="token punctuation">}</span>
+<span class="token selector">.form-demo input</span><span class="token punctuation">{</span>
+  <span class="token property">padding</span><span class="token punctuation">:</span>.55rem .6rem<span class="token punctuation">;</span> <span class="token property">border</span><span class="token punctuation">:</span>1px solid #cbd5e1<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span>8px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span>
+  <span class="token property">outline</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.form-demo input:focus</span><span class="token punctuation">{</span>
+  <span class="token property">border-color</span><span class="token punctuation">:</span>#3949ab<span class="token punctuation">;</span> <span class="token property">box-shadow</span><span class="token punctuation">:</span>0 0 0 2px <span class="token function">rgba</span><span class="token punctuation">(</span>57<span class="token punctuation">,</span>73<span class="token punctuation">,</span>171<span class="token punctuation">,</span>.15<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token selector">.form-demo input:user-invalid</span><span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span>#e11d48<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff7f7 <span class="token punctuation">}</span>
+<span class="token selector">.form-demo input:user-valid</span><span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span>#16a34a<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#f6fffa <span class="token punctuation">}</span></code></pre>
               </div>
             </div>
           </div>
         </div>
+        <div class="note">“定番UIの粒度”で設計。バリエーションはトークン化（クラス化）し、フォーカスや検証状態も視覚で伝わるようにしています。</div>
       </section>
 
-      <!-- 14 -->
+      <!-- 8 -->
       <section class="card">
-        <h2>14) details/summary アコーディオン＋スムースアニメ（アクセシブル）</h2>
+        <h2>8. 折りたたみ要素（details）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー</h3>
+            <details id="demo-details">
+              <summary>アジェンダ</summary>
+              <ol>
+                <li><a href="#intro">導入</a></li>
+                <li><a href="#hands">ハンズオン</a></li>
+              </ol>
+            </details>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-8-html" id="code-tab-8-html">HTML</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-8-html" aria-labelledby="code-tab-8-html">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token tag">&lt;details <span class="token attr-name">class</span>="<span class="token attr-value">sec</span>" <span class="token attr-name">id</span>="<span class="token attr-value">agenda</span>"&gt;</span>
+  <span class="token tag">&lt;summary&gt;</span>アジェンダ<span class="token tag">&lt;/summary&gt;</span>
+  <span class="token tag">&lt;ol&gt;</span>
+    <span class="token tag">&lt;li&gt;</span><span class="token tag">&lt;a <span class="token attr-name">href</span>="<span class="token attr-value">#intro</span>"&gt;</span>導入<span class="token tag">&lt;/a&gt;</span><span class="token tag">&lt;/li&gt;</span>
+    <span class="token tag">&lt;li&gt;</span><span class="token tag">&lt;a <span class="token attr-name">href</span>="<span class="token attr-value">#hands</span>"&gt;</span>ハンズオン<span class="token tag">&lt;/a&gt;</span><span class="token tag">&lt;/li&gt;</span>
+  <span class="token tag">&lt;/ol&gt;</span>
+<span class="token tag">&lt;/details&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="note">ネイティブの開閉UI。JS不要で動作します。</div>
+      </section>
+
+      <!-- 9 -->
+      <section class="card">
+        <h2>9. アコーディオン（アニメーション）</h2>
         <div class="example">
           <div class="preview">
             <h3>プレビュー（クリックで開閉・アニメーション）</h3>
@@ -868,64 +753,9 @@
         <div class="note">details/summaryはデフォルトでアクセシビリティに優れます。ここではWeb Animations APIで“高さ”を補間して、自然な開閉にしています。</div>
       </section>
 
-      <!-- 15 -->
+      <!-- 10 -->
       <section class="card">
-        <h2>15) UIパーツ定番パターン（ボタン／フォーム入力の基礎）</h2>
-        <div class="example">
-          <div class="preview">
-            <h3>プレビュー（ボタンと入力）</h3>
-            <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.6rem">
-              <button class="btn btn-primary" type="button">Primary</button>
-              <button class="btn btn-secondary" type="button">Secondary</button>
-              <button class="btn btn-ghost" type="button">Ghost</button>
-              <button class="btn btn-link" type="button">Link</button>
-              <button class="btn btn-danger" type="button">Danger</button>
-            </div>
-            <form class="form-demo" onsubmit="event.preventDefault()">
-              <label>メール<input type="email" placeholder="you@example.com" required=""></label>
-              <label>パスワード<input type="password" placeholder="8文字以上" minlength="8" required=""></label>
-              <button class="btn btn-primary" type="submit">送信</button>
-            </form>
-          </div>
-          <div class="tabs" data-tabs>
-            <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-15-css" id="code-tab-15-css">CSS</button>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-15-css" aria-labelledby="code-tab-15-css">
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token comment">/* ボタン */</span>
-<span class="token selector">.btn</span><span class="token punctuation">{</span><span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span>8px<span class="token punctuation">;</span> <span class="token property">padding</span><span class="token punctuation">:</span>.45rem .8rem<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span> <span class="token property">cursor</span><span class="token punctuation">:</span>pointer<span class="token punctuation">}</span>
-<span class="token selector">.btn-primary</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>#3949ab<span class="token punctuation">;</span> <span class="token property">border-color</span><span class="token punctuation">:</span>#2c3b8a<span class="token punctuation">;</span> <span class="token property">color</span><span class="token punctuation">:</span>#fff<span class="token punctuation">}</span>
-<span class="token selector">.btn-secondary</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>#eef1f7<span class="token punctuation">}</span>
-<span class="token selector">.btn-ghost</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>transparent<span class="token punctuation">}</span>
-<span class="token selector">.btn-link</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>transparent<span class="token punctuation">;</span> <span class="token property">color</span><span class="token punctuation">:</span>#2563eb<span class="token punctuation">;</span> <span class="token property">text-decoration</span><span class="token punctuation">:</span>underline<span class="token punctuation">;</span> <span class="token property">border-color</span><span class="token punctuation">:</span>transparent<span class="token punctuation">}</span>
-<span class="token selector">.btn-danger</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span>#e53935<span class="token punctuation">;</span> <span class="token property">color</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span> <span class="token property">border-color</span><span class="token punctuation">:</span>#c62828<span class="token punctuation">}</span>
-<span class="token selector">.btn:hover</span><span class="token punctuation">{</span><span class="token property">filter</span><span class="token punctuation">:</span><span class="token function">brightness</span><span class="token punctuation">(</span>0.98<span class="token punctuation">)</span><span class="token punctuation">}</span>
-<span class="token selector">.btn:active</span><span class="token punctuation">{</span><span class="token property">transform</span><span class="token punctuation">:</span><span class="token function">translateY</span><span class="token punctuation">(</span>1px<span class="token punctuation">)</span><span class="token punctuation">}</span>
-
-<span class="token comment">/* フォーム */</span>
-<span class="token selector">.form-demo</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>grid<span class="token punctuation">;</span> <span class="token property">gap</span><span class="token punctuation">:</span>.6rem<span class="token punctuation">;</span> <span class="token property">max-width</span><span class="token punctuation">:</span>520px<span class="token punctuation">}</span>
-<span class="token selector">.form-demo label</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>grid<span class="token punctuation">;</span> <span class="token property">gap</span><span class="token punctuation">:</span>.35rem<span class="token punctuation">;</span> <span class="token property">font-size</span><span class="token punctuation">:</span>.95rem<span class="token punctuation">}</span>
-<span class="token selector">.form-demo input</span><span class="token punctuation">{</span>
-  <span class="token property">padding</span><span class="token punctuation">:</span>.55rem .6rem<span class="token punctuation">;</span> <span class="token property">border</span><span class="token punctuation">:</span>1px solid #cbd5e1<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span>8px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span>
-  <span class="token property">outline</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token selector">.form-demo input:focus</span><span class="token punctuation">{</span>
-  <span class="token property">border-color</span><span class="token punctuation">:</span>#3949ab<span class="token punctuation">;</span> <span class="token property">box-shadow</span><span class="token punctuation">:</span>0 0 0 2px <span class="token function">rgba</span><span class="token punctuation">(</span>57<span class="token punctuation">,</span>73<span class="token punctuation">,</span>171<span class="token punctuation">,</span>.15<span class="token punctuation">)</span><span class="token punctuation">;</span>
-<span class="token punctuation">}</span>
-<span class="token selector">.form-demo input:user-invalid</span><span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span>#e11d48<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff7f7 <span class="token punctuation">}</span>
-<span class="token selector">.form-demo input:user-valid</span><span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span>#16a34a<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#f6fffa <span class="token punctuation">}</span></code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="note">“定番UIの粒度”で設計。バリエーションはトークン化（クラス化）し、フォーカスや検証状態も視覚で伝わるようにしています。</div>
-      </section>
-
-      <!-- 16 -->
-      <section class="card">
-        <h2>16) タブ UI（ARIA対応・ボタン＋tabpanel）</h2>
+        <h2>10. タブUI</h2>
         <div class="example">
           <div class="preview">
             <h3>プレビュー（クリックでタブ切替）</h3>
@@ -983,9 +813,156 @@ document<span class="token punctuation">.</span><span class="token function">add
         </div>
       </section>
 
-      <!-- 17 -->
+      <!-- 11 -->
       <section class="card">
-        <h2>17) トースト通知（自動クローズ・ARIAライブ）</h2>
+        <h2>11. モーダル（dialog要素）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（ダイアログ）</h3>
+            <div class="modal-demo">
+              <button class="btn btn-primary" data-open-modal>Open Modal</button>
+              <dialog class="modal" data-modal>
+                <div class="modal-head">設定</div>
+                <div class="modal-body">
+                  <p>HTML の <code>&lt;dialog&gt;</code> を使ったモーダルです。</p>
+                  <label class="switch">
+                    <input type="checkbox" id="opt1">
+                    <span class="track"><span class="thumb"></span></span>
+                    <span class="label">オプション1</span>
+                  </label>
+                </div>
+                <div class="modal-foot">
+                  <button class="btn" data-close-modal>キャンセル</button>
+                  <button class="btn btn-primary" data-close-modal>OK</button>
+                </div>
+              </dialog>
+            </div>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-18-html" id="code-tab-18-html">HTML</button>
+              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-18-js" id="code-tab-18-js">JavaScript</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-18-html" aria-labelledby="code-tab-18-html">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token tag">&lt;button <span class="token attr-name">data-open-modal</span>&gt;</span>Open<span class="token tag">&lt;/button&gt;</span>
+<span class="token tag">&lt;dialog <span class="token attr-name">data-modal</span>&gt;</span>...<span class="token tag">&lt;/dialog&gt;</span></code></pre>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-18-js" aria-labelledby="code-tab-18-js" hidden>
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code>document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span><span class="token punctuation">=&gt;</span><span class="token punctuation">{</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">matches</span><span class="token punctuation">(</span><span class="token string">"[data-open-modal]"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">closest</span><span class="token punctuation">(</span><span class="token string">".modal-demo"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">"[data-modal]"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">showModal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">matches</span><span class="token punctuation">(</span><span class="token string">"[data-close-modal]"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">closest</span><span class="token punctuation">(</span><span class="token string">"dialog"</span><span class="token punctuation">)</span><span class="token punctuation">?.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12 -->
+      <section class="card">
+        <h2>12. トグルスイッチ</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（クリック/キーボード操作可）</h3>
+            <label class="switch">
+              <input type="checkbox" aria-label="通知を有効にする" id="toggle-1">
+              <span class="track"><span class="thumb"></span></span>
+              <span class="label">通知</span>
+            </label>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-19-html" id="code-tab-19-html">HTML</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-19-html" aria-labelledby="code-tab-19-html">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token tag">&lt;label <span class="token attr-name">class</span>="<span class="token attr-value">switch</span>"&gt;</span>
+  <span class="token tag">&lt;input <span class="token attr-name">type</span>="<span class="token attr-value">checkbox</span>" <span class="token attr-name">aria-label</span>="<span class="token attr-value">...</span>"&gt;</span>
+  <span class="token tag">&lt;span <span class="token attr-name">class</span>="<span class="token attr-value">track</span>"&gt;</span><span class="token tag">&lt;span <span class="token attr-name">class</span>="<span class="token attr-value">thumb</span>"&gt;</span><span class="token tag">&lt;/span&gt;</span><span class="token tag">&lt;/span&gt;</span>
+  <span class="token tag">&lt;span <span class="token attr-name">class</span>="<span class="token attr-value">label</span>"&gt;</span>通知<span class="token tag">&lt;/span&gt;</span>
+<span class="token tag">&lt;/label&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="note">ネイティブのcheckboxなのでアクセシブル。見た目だけCSSでスイッチ化しています。</div>
+      </section>
+
+      <!-- 13 -->
+      <section class="card">
+        <h2>13. プログレスバー</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー</h3>
+            <div id="progress-demo">
+              <p>アニメーション付きプログレスバー</p>
+              <div class="progress-bar">
+                <div class="progress-bar-value animated" style="width: 75%;"></div>
+              </div>
+              <p style="margin-top: 1.5rem;">残り時間表示付きプログレスバー</p>
+              <div class="progress-bar">
+                <div id="progress-timer-bar" class="progress-bar-value"></div>
+              </div>
+              <div id="progress-timer-text" class="progress-text">処理を開始します...</div>
+              <button id="progress-start-btn" class="btn" style="margin-top: .5rem;">開始</button>
+            </div>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-20-html" id="code-tab-20-html">HTML</button>
+              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-20-css" id="code-tab-20-css">CSS</button>
+              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-20-js" id="code-tab-20-js">JavaScript</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-20-html" aria-labelledby="code-tab-20-html">
+              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">progress-bar</span>"&gt;</span>
+  <span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">progress-bar-value</span>"&gt;</span><span class="token tag">&lt;/div&gt;</span>
+<span class="token tag">&lt;/div&gt;</span>
+<span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">progress-text</span>"&gt;</span>残り時間: ...<span class="token tag">&lt;/div&gt;</span></code></pre></div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-20-css" aria-labelledby="code-tab-20-css" hidden>
+              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token selector">.progress-bar</span> <span class="token punctuation">{</span> <span class="token property">height</span><span class="token punctuation">:</span> 20px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span> #e9ecef<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span> 999px<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.progress-bar-value</span> <span class="token punctuation">{</span> <span class="token property">height</span><span class="token punctuation">:</span> 100%<span class="token punctuation">;</span> <span class="token property">background-color</span><span class="token punctuation">:</span> #3949ab<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.progress-bar-value.animated</span> <span class="token punctuation">{</span>
+  <span class="token property">background-image</span><span class="token punctuation">:</span> <span class="token function">linear-gradient</span><span class="token punctuation">(</span>...<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token property">animation</span><span class="token punctuation">:</span> progress-stripes 1s linear infinite<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">@keyframes</span> progress-stripes <span class="token punctuation">{</span> <span class="token selector">from</span> <span class="token punctuation">{</span> <span class="token property">background-position</span><span class="token punctuation">:</span> 40px 0<span class="token punctuation">;</span> <span class="token punctuation">}</span> <span class="token selector">to</span> <span class="token punctuation">{</span> <span class="token property">background-position</span><span class="token punctuation">:</span> 0 0<span class="token punctuation">;</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span></code></pre></div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-20-js" aria-labelledby="code-tab-20-js" hidden>
+              <div class="code-block"><button class="code-copy" data-copy="code">コピー</button><pre><code><span class="token comment">// 5秒間のタイマーをセット</span>
+<span class="token keyword">const</span> DURATION <span class="token punctuation">=</span> <span class="token number">5</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> intervalId <span class="token punctuation">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">startTimer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token function">clearInterval</span><span class="token punctuation">(</span>intervalId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">let</span> remaining <span class="token punctuation">=</span> DURATION<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> tick <span class="token punctuation">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> progress <span class="token punctuation">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>DURATION <span class="token punctuation">-</span> remaining<span class="token punctuation">)</span> <span class="token punctuation">/</span> DURATION<span class="token punctuation">)</span> <span class="token punctuation">*</span> <span class="token number">100</span><span class="token punctuation">;</span>
+    bar.style.width <span class="token punctuation">=</span> <span class="token string">`</span><span class="token interpolation"><span class="token punctuation">${</span>progress<span class="token punctuation">}</span></span><span class="token string">%</span><span class="token string">`</span><span class="token punctuation">;</span>
+    text.textContent <span class="token punctuation">=</span> <span class="token string">`残り時間: </span><span class="token interpolation"><span class="token punctuation">${</span>remaining<span class="token punctuation">}</span></span><span class="token string">秒`</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>remaining<span class="token punctuation">--</span> <span class="token punctuation">&lt;=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token function">clearInterval</span><span class="token punctuation">(</span>intervalId<span class="token punctuation">)</span><span class="token punctuation">;</span> text.textContent <span class="token punctuation">=</span> <span class="token string">'完了！'</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  intervalId <span class="token punctuation">=</span> <span class="token function">setInterval</span><span class="token punctuation">(</span>tick<span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">tick</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre></div>
+            </div>
+          </div>
+        </div>
+        <div class="note">進捗の視覚的提示。アニメーション＋残り時間表示が心理的ストレス緩和に効果的です。</div>
+      </section>
+
+      <!-- 14 -->
+      <section class="card">
+        <h2>14. トースト通知</h2>
         <div class="example">
           <div class="preview">
             <h3>プレビュー（通知を表示）</h3>
@@ -1056,54 +1033,152 @@ document<span class="token punctuation">.</span><span class="token function">add
         </div>
       </section>
 
-      <!-- 18 -->
+      <!-- 15 -->
       <section class="card">
-        <h2>18) モーダル（&lt;dialog&gt; / showModal / 閉じる）</h2>
+        <h2>15. 会話ふきだし</h2>
         <div class="example">
           <div class="preview">
-            <h3>プレビュー（ダイアログ）</h3>
-            <div class="modal-demo">
-              <button class="btn btn-primary" data-open-modal>Open Modal</button>
-              <dialog class="modal" data-modal>
-                <div class="modal-head">設定</div>
-                <div class="modal-body">
-                  <p>HTML の <code>&lt;dialog&gt;</code> を使ったモーダルです。</p>
-                  <label class="switch">
-                    <input type="checkbox" id="opt1">
-                    <span class="track"><span class="thumb"></span></span>
-                    <span class="label">オプション1</span>
-                  </label>
-                </div>
-                <div class="modal-foot">
-                  <button class="btn" data-close-modal>キャンセル</button>
-                  <button class="btn btn-primary" data-close-modal>OK</button>
-                </div>
-              </dialog>
+            <h3>プレビュー（左右の吹き出し）</h3>
+            <div class="chat-container">
+              <p class="chat-line bubble chat-kacho"><strong>課長</strong>：生成AIの検討、進めよう。</p>
+              <p class="chat-line bubble right chat-kubo"><strong>久保</strong>：了解です。まず何から？</p>
+              <p class="chat-line bubble chat-shinohara"><strong>篠原</strong>：議事録要約から始めましょう！</p>
+            </div>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-8-html" id="code-tab-8-html">HTML</button>
+              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-8-css" id="code-tab-8-css">CSS</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-8-html" aria-labelledby="code-tab-8-html">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token comment">&lt;!-- 話者ごとにクラスを付与 --&gt;</span>
+<span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">chat-container</span>"&gt;</span>
+  <span class="token tag">&lt;p <span class="token attr-name">class</span>="<span class="token attr-value">chat-line bubble chat-kacho</span>"&gt;</span><span class="token tag">&lt;strong&gt;</span>課長<span class="token tag">&lt;/strong&gt;</span>：...<span class="token tag">&lt;/p&gt;</span>
+  <span class="token tag">&lt;p <span class="token attr-name">class</span>="<span class="token attr-value">chat-line bubble right chat-kubo</span>"&gt;</span><span class="token tag">&lt;strong&gt;</span>久保<span class="token tag">&lt;/strong&gt;</span>：...<span class="token tag">&lt;/p&gt;</span>
+<span class="token tag">&lt;/div&gt;</span></code></pre>
+              </div>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-8-css" aria-labelledby="code-tab-8-css" hidden>
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token comment">/* 基本の吹き出しスタイル */</span>
+<span class="token selector">.bubble</span><span class="token punctuation">{</span> <span class="token property">position</span><span class="token punctuation">:</span>relative<span class="token punctuation">;</span> <span class="token property">padding</span><span class="token punctuation">:</span>.8rem 1.2rem<span class="token punctuation">;</span> <span class="token property">border</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span> <span class="token property">border-radius</span><span class="token punctuation">:</span>16px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff <span class="token punctuation">}</span>
+<span class="token selector">.bubble::after</span><span class="token punctuation">{</span> <span class="token property">content</span><span class="token punctuation">:</span><span class="token string">""</span><span class="token punctuation">;</span> <span class="token property">position</span><span class="token punctuation">:</span>absolute<span class="token punctuation">;</span> <span class="token property">top</span><span class="token punctuation">:</span>16px<span class="token punctuation">;</span> <span class="token property">width</span><span class="token punctuation">:</span>12px<span class="token punctuation">;</span> <span class="token property">height</span><span class="token punctuation">:</span>12px<span class="token punctuation">;</span> <span class="token property">background</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span> <span class="token property">transform</span><span class="token punctuation">:</span><span class="token function">rotate</span><span class="token punctuation">(</span>45deg<span class="token punctuation">)</span> <span class="token punctuation">}</span>
+<span class="token selector">.bubble:not(.right)::after</span><span class="token punctuation">{</span> <span class="token property">left</span><span class="token punctuation">:</span>-7px<span class="token punctuation">;</span> <span class="token property">border-left</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span> <span class="token property">border-bottom</span><span class="token punctuation">:</span>1px solid #ddd <span class="token punctuation">}</span>
+<span class="token selector">.right</span><span class="token punctuation">{</span> <span class="token property">align-self</span><span class="token punctuation">:</span>flex-end <span class="token punctuation">}</span>
+<span class="token selector">.right.bubble::after</span><span class="token punctuation">{</span> <span class="token property">right</span><span class="token punctuation">:</span>-7px<span class="token punctuation">;</span> <span class="token property">border-right</span><span class="token punctuation">:</span>1px solid #ddd<span class="token punctuation">;</span> <span class="token property">border-top</span><span class="token punctuation">:</span>1px solid #ddd <span class="token punctuation">}</span>
+
+<span class="token comment">/* 話者ごとの色分け */</span>
+<span class="token selector">.chat-kacho</span> <span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span> #e57373<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.chat-kacho strong</span> <span class="token punctuation">{</span> <span class="token property">color</span><span class="token punctuation">:</span> #d32f2f<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.chat-kacho::after</span> <span class="token punctuation">{</span> <span class="token property">border-left-color</span><span class="token punctuation">:</span> #e57373<span class="token punctuation">;</span> <span class="token property">border-bottom-color</span><span class="token punctuation">:</span> #e57373<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.chat-kubo</span> <span class="token punctuation">{</span> <span class="token property">border-color</span><span class="token punctuation">:</span> #64b5f6<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.chat-kubo strong</span> <span class="token punctuation">{</span> <span class="token property">color</span><span class="token punctuation">:</span> #1976d2<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token selector">.right.chat-kubo::after</span> <span class="token punctuation">{</span> <span class="token property">border-right-color</span><span class="token punctuation">:</span> #64b5f6<span class="token punctuation">;</span> <span class="token property">border-top-color</span><span class="token punctuation">:</span> #64b5f6<span class="token punctuation">;</span> <span class="token punctuation">}</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 16 -->
+      <section class="card">
+        <h2>16. クリップボードコピー機能</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（コピー動作）</h3>
+            <div class="copy-demo">
+              <button class="copy-btn" data-demo-copy>📋</button>
+              <pre><code id="copy-target-1">【目的】社内ドキュメントのフォーマット統一
+【対象】新任の現場リーダー
+【雛形】
+- 前提：＿＿＿＿＿＿＿＿＿＿
+- 決定：＿＿＿＿＿＿＿＿＿＿
+- 宿題：＿＿＿＿＿＿＿＿＿＿</code></pre>
+            </div>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-4-js" id="code-tab-4-js">JavaScript</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-4-js" aria-labelledby="code-tab-4-js">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code>document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span> <span class="token parameter">e</span> <span class="token punctuation">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>classList<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"copy-btn"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">const</span> text <span class="token punctuation">=</span> e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">closest</span><span class="token punctuation">(</span><span class="token string">".copy-demo"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">"code"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerText<span class="token punctuation">;</span>
+    navigator<span class="token punctuation">.</span>clipboard<span class="token punctuation">.</span><span class="token function">writeText</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> old <span class="token punctuation">=</span> e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>textContent<span class="token punctuation">;</span>
+      e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>textContent <span class="token punctuation">=</span> <span class="token string">"✔ コピーしました"</span><span class="token punctuation">;</span>
+      <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">=&gt;</span> e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>textContent <span class="token punctuation">=</span> old<span class="token punctuation">,</span> <span class="token number">1200</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="note">ボタン押下で code 内のテキストのみをコピー。</div>
+      </section>
+
+      <!-- 17 -->
+      <section class="card">
+        <h2>17. コードブロック部品</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（コピーつきコード）</h3>
+            <div class="copy-demo">
+              <button class="copy-btn" data-demo-copy>📋</button>
+              <pre><code>&lt;div class="code-block"&gt;
+  &lt;button class="copy-btn"&gt;📋&lt;/button&gt;
+  &lt;pre&gt;&lt;code&gt;echo "Hello"&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-17-html" id="code-tab-17-html">HTML</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-17-html" aria-labelledby="code-tab-17-html">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">code-block</span>"&gt;</span>
+  <span class="token tag">&lt;button <span class="token attr-name">class</span>="<span class="token attr-value">copy-btn</span>"&gt;</span>📋<span class="token tag">&lt;/button&gt;</span>
+  <span class="token tag">&lt;pre&gt;</span><span class="token tag">&lt;code&gt;</span>echo "Hello"<span class="token tag">&lt;/code&gt;</span><span class="token tag">&lt;/pre&gt;</span>
+<span class="token tag">&lt;/div&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 18 -->
+      <section class="card">
+        <h2>18. アクセシビリティ（ARIA）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー</h3>
+            <div role="group" aria-label="テーマ切替の例" class="theme-mini" data-theme="light">
+              <div class="toolbar">
+                <button type="button" data-mini-theme="light" class="active" aria-label="ライトモードに切替">Light</button>
+                <button type="button" data-mini-theme="dark" aria-label="ダークモードに切替">Dark</button>
+              </div>
+              <div class="box">支援技術に伝わるラベルの付与例</div>
             </div>
           </div>
           <div class="tabs" data-tabs>
             <div class="tablist" role="tablist" aria-label="コードサンプル">
               <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-18-html" id="code-tab-18-html">HTML</button>
-              <button class="tab" role="tab" aria-selected="false" aria-controls="code-panel-18-js" id="code-tab-18-js">JavaScript</button>
             </div>
             <div class="tabpanel" role="tabpanel" id="code-panel-18-html" aria-labelledby="code-tab-18-html">
               <div class="code-block">
                 <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token tag">&lt;button <span class="token attr-name">data-open-modal</span>&gt;</span>Open<span class="token tag">&lt;/button&gt;</span>
-<span class="token tag">&lt;dialog <span class="token attr-name">data-modal</span>&gt;</span>...<span class="token tag">&lt;/dialog&gt;</span></code></pre>
-              </div>
-            </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-18-js" aria-labelledby="code-tab-18-js" hidden>
-              <div class="code-block">
-                <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code>document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span><span class="token punctuation">=&gt;</span><span class="token punctuation">{</span>
-  <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">matches</span><span class="token punctuation">(</span><span class="token string">"[data-open-modal]"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">closest</span><span class="token punctuation">(</span><span class="token string">".modal-demo"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">"[data-modal]"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">showModal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-  <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">matches</span><span class="token punctuation">(</span><span class="token string">"[data-close-modal]"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
-    e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">closest</span><span class="token punctuation">(</span><span class="token string">"dialog"</span><span class="token punctuation">)</span><span class="token punctuation">?.</span><span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-  <span class="token punctuation">}</span>
-<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+                <pre><code><span class="token tag">&lt;div <span class="token attr-name">role</span>="<span class="token attr-value">group</span>" <span class="token attr-name">aria-label</span>="<span class="token attr-value">テーマ切替</span>"&gt;</span>
+  <span class="token tag">&lt;button <span class="token attr-name">aria-label</span>="<span class="token attr-value">ライト</span>"&gt;</span>Light<span class="token tag">&lt;/button&gt;</span>
+  <span class="token tag">&lt;button <span class="token attr-name">aria-label</span>="<span class="token attr-value">ダーク</span>"&gt;</span>Dark<span class="token tag">&lt;/button&gt;</span>
+<span class="token tag">&lt;/div&gt;</span></code></pre>
               </div>
             </div>
           </div>
@@ -1112,38 +1187,110 @@ document<span class="token punctuation">.</span><span class="token function">add
 
       <!-- 19 -->
       <section class="card">
-        <h2>19) トグルスイッチ（checkboxベース）</h2>
+        <h2>19. 印刷用スタイル</h2>
         <div class="example">
           <div class="preview">
-            <h3>プレビュー（クリック/キーボード操作可）</h3>
-            <label class="switch">
-              <input type="checkbox" aria-label="通知を有効にする" id="toggle-1">
-              <span class="track"><span class="thumb"></span></span>
-              <span class="label">通知</span>
-            </label>
+            <h3>プレビュー</h3>
+            <p>ここは見た目だけ（印刷プレビューはブラウザ依存）。</p>
+            <ul>
+              <li>リンク色は印刷時に黒へ</li>
+              <li>画面専用UI（目次・しっぽなど）を非表示</li>
+            </ul>
           </div>
           <div class="tabs" data-tabs>
             <div class="tablist" role="tablist" aria-label="コードサンプル">
-              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-19-html" id="code-tab-19-html">HTML</button>
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-10-css" id="code-tab-10-css">CSS</button>
             </div>
-            <div class="tabpanel" role="tabpanel" id="code-panel-19-html" aria-labelledby="code-tab-19-html">
+            <div class="tabpanel" role="tabpanel" id="code-panel-10-css" aria-labelledby="code-tab-10-css">
               <div class="code-block">
                 <button class="code-copy" data-copy="code">コピー</button>
-                <pre><code><span class="token tag">&lt;label <span class="token attr-name">class</span>="<span class="token attr-value">switch</span>"&gt;</span>
-  <span class="token tag">&lt;input <span class="token attr-name">type</span>="<span class="token attr-value">checkbox</span>" <span class="token attr-name">aria-label</span>="<span class="token attr-value">...</span>"&gt;</span>
-  <span class="token tag">&lt;span <span class="token attr-name">class</span>="<span class="token attr-value">track</span>"&gt;</span><span class="token tag">&lt;span <span class="token attr-name">class</span>="<span class="token attr-value">thumb</span>"&gt;</span><span class="token tag">&lt;/span&gt;</span><span class="token tag">&lt;/span&gt;</span>
-  <span class="token tag">&lt;span <span class="token attr-name">class</span>="<span class="token attr-value">label</span>"&gt;</span>通知<span class="token tag">&lt;/span&gt;</span>
-<span class="token tag">&lt;/label&gt;</span></code></pre>
+                <pre><code><span class="token keyword">@media</span> print<span class="token punctuation">{</span>
+  <span class="token selector">a</span><span class="token punctuation">{</span><span class="token property">color</span><span class="token punctuation">:</span>inherit<span class="token punctuation">;</span><span class="token property">text-decoration</span><span class="token punctuation">:</span>none<span class="token punctuation">}</span>
+  <span class="token selector">.theme-toggle</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>none<span class="token punctuation">}</span>
+  <span class="token selector">.chat-line.bubble::after</span><span class="token punctuation">{</span><span class="token property">display</span><span class="token punctuation">:</span>none<span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
               </div>
             </div>
           </div>
         </div>
-        <div class="note">ネイティブのcheckboxなのでアクセシブル。見た目だけCSSでスイッチ化しています。</div>
+      </section>
+
+      <!-- 20 -->
+      <section class="card">
+        <h2>20. 演習用テンプレート（iframe）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>プレビュー（iframeで完全分離）</h3>
+            <iframe id="mini-iframe" title="ミニ演習プレビュー" style="width:100%;height:260px;border:1px solid #ddd;border-radius:8px;background:#fff"></iframe>
+            <div class="split-note">※ 中のソースは下のコードと同一です（srcdocで埋め込み）</div>
+          </div>
+          <div class="tabs" data-tabs>
+            <div class="tablist" role="tablist" aria-label="コードサンプル">
+              <button class="tab" role="tab" aria-selected="true" aria-controls="code-panel-13-html" id="code-tab-13-html">HTML</button>
+            </div>
+            <div class="tabpanel" role="tabpanel" id="code-panel-13-html" aria-labelledby="code-tab-13-html">
+              <div class="code-block">
+                <button class="code-copy" data-copy="code">コピー</button>
+                <pre><code><span class="token tag">&lt;!doctype html&gt;</span>
+<span class="token tag">&lt;meta <span class="token attr-name">charset</span>="<span class="token attr-value">utf-8</span>"&gt;</span>
+<span class="token tag">&lt;style&gt;</span>
+<span class="token selector">:root</span><span class="token punctuation">{</span><span class="token property">--bg</span><span class="token punctuation">:</span>#fff<span class="token punctuation">;</span><span class="token property">--fg</span><span class="token punctuation">:</span>#222<span class="token punctuation">}</span><span class="token selector">[data-theme=dark]</span><span class="token punctuation">{</span><span class="token property">--bg</span><span class="token punctuation">:</span>#222<span class="token punctuation">;</span><span class="token property">--fg</span><span class="token punctuation">:</span>#eee<span class="token punctuation">}</span>
+<span class="token selector">body</span><span class="token punctuation">{</span><span class="token property">background</span><span class="token punctuation">:</span><span class="token function">var</span><span class="token punctuation">(</span>--bg<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token property">color</span><span class="token punctuation">:</span><span class="token function">var</span><span class="token punctuation">(</span>--fg<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token property">font-family</span><span class="token punctuation">:</span>sans-serif<span class="token punctuation">}</span>
+<span class="token selector">.code-block</span><span class="token punctuation">{</span><span class="token property">position</span><span class="token punctuation">:</span>relative<span class="token punctuation">}</span>
+<span class="token selector">.copy-btn</span><span class="token punctuation">{</span><span class="token property">position</span><span class="token punctuation">:</span>absolute<span class="token punctuation">;</span><span class="token property">top</span><span class="token punctuation">:</span>.5rem<span class="token punctuation">;</span><span class="token property">right</span><span class="token punctuation">:</span>.5rem<span class="token punctuation">}</span>
+<span class="token tag">&lt;/style&gt;</span>
+<span class="token tag">&lt;div&gt;</span>
+  <span class="token tag">&lt;button <span class="token attr-name">data-theme-set</span>="<span class="token attr-value">light</span>"&gt;</span>Light<span class="token tag">&lt;/button&gt;</span>
+  <span class="token tag">&lt;button <span class="token attr-name">data-theme-set</span>="<span class="token attr-value">dark</span>"&gt;</span>Dark<span class="token tag">&lt;/button&gt;</span>
+<span class="token tag">&lt;/div&gt;</span>
+<span class="token tag">&lt;div <span class="token attr-name">class</span>="<span class="token attr-value">code-block</span>"&gt;</span>
+  <span class="token tag">&lt;button <span class="token attr-name">class</span>="<span class="token attr-value">copy-btn</span>"&gt;</span>📋<span class="token tag">&lt;/button&gt;</span>
+  <span class="token tag">&lt;pre&gt;</span><span class="token tag">&lt;code&gt;</span>echo "Hello"<span class="token tag">&lt;/code&gt;</span><span class="token tag">&lt;/pre&gt;</span>
+<span class="token tag">&lt;/div&gt;</span>
+<span class="token tag">&lt;script&gt;</span>
+<span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+  <span class="token keyword">function</span> <span class="token function">apply</span><span class="token punctuation">(</span><span class="token parameter">t</span><span class="token punctuation">)</span><span class="token punctuation">{</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">"data-theme"</span><span class="token punctuation">,</span>t<span class="token punctuation">)</span><span class="token punctuation">}</span>
+  document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span><span class="token parameter">e</span><span class="token punctuation">=&gt;</span><span class="token punctuation">{</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>themeSet<span class="token punctuation">)</span><span class="token punctuation">{</span><span class="token function">apply</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>dataset<span class="token punctuation">.</span>themeSet<span class="token punctuation">)</span><span class="token punctuation">}</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span>classList<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"copy-btn"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+      navigator<span class="token punctuation">.</span>clipboard<span class="token punctuation">.</span><span class="token function">writeText</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">.</span><span class="token function">closest</span><span class="token punctuation">(</span><span class="token string">".code-block"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">querySelector</span><span class="token punctuation">(</span><span class="token string">"code"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>innerText<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token tag">&lt;/script&gt;</span></code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 70 -->
+      <section class="card">
+        <h2>70) 参考サイトURL集（localStorage保存）</h2>
+        <div class="example">
+          <div class="preview">
+            <h3>ブックマーク管理</h3>
+            <form id="link-form" class="link-form" onsubmit="return false;">
+              <input type="url" id="link-url" placeholder="https://example.com" required>
+              <input type="text" id="link-title" placeholder="サイト名・解説" required>
+              <button type="submit" class="btn btn-primary">追加</button>
+            </form>
+            <ul id="link-list" class="link-list">
+              <!-- Links will be rendered here by JS -->
+            </ul>
+            <div class="link-actions">
+              <button id="export-btn" class="btn btn-secondary">エクスポート</button>
+              <button id="import-btn" class="btn btn-secondary">インポート</button>
+              <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
+          </div>
+        </div>
+        <div class="note">入力したURLはブラウザのlocalStorageに保存されます。他の人には見えません。</div>
       </section>
 
       <div class="pagination" role="navigation" aria-label="ページナビゲーション">
         <button id="prevBtn">◀ 前へ <kbd>←</kbd></button>
-        <span class="page-info" id="pageInfo">1 / 19</span>
+        <span class="page-info" id="pageInfo">1 / 21</span>
         <button id="nextBtn">次へ ▶ <kbd>→</kbd></button>
       </div>
     </main>
@@ -1355,6 +1502,129 @@ pre{background:#272822;color:#f8f8f2;padding:.6rem;border-radius:6px;margin:0}
       e.target.closest("dialog")?.close();
     }
   });
+
+  // 20: プログレスバー
+  (function(){
+    const demo = document.getElementById('progress-demo');
+    if (!demo) return;
+    const startBtn = document.getElementById('progress-start-btn');
+    const bar = document.getElementById('progress-timer-bar');
+    const text = document.getElementById('progress-timer-text');
+    const DURATION = 5;
+    let intervalId = null;
+
+    function startTimer() {
+      startBtn.disabled = true;
+      clearInterval(intervalId);
+      let remaining = DURATION;
+      const tick = () => {
+        const progress = ((DURATION - remaining) / DURATION) * 100;
+        bar.style.width = `${progress}%`;
+        text.textContent = `残り時間: ${remaining}秒`;
+        if (remaining-- <= 0) {
+          clearInterval(intervalId);
+          text.textContent = '完了！';
+          startBtn.disabled = false;
+        }
+      };
+      intervalId = setInterval(tick, 1000);
+      tick(); // Start immediately
+    }
+    startBtn.addEventListener('click', startTimer);
+  })();
+
+  // ===== 70: 参考サイトURL集 =====
+  (function(){
+    const STORAGE_KEY = 'learning-links-collection';
+    const form = document.getElementById('link-form');
+    const urlInput = document.getElementById('link-url');
+    const titleInput = document.getElementById('link-title');
+    const listEl = document.getElementById('link-list');
+    const exportBtn = document.getElementById('export-btn');
+    const importBtn = document.getElementById('import-btn');
+    const importFile = document.getElementById('import-file');
+
+    if (!form || !listEl) return;
+
+    let links = [];
+    try {
+      links = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch(e) {
+      console.error("Failed to parse links from localStorage", e);
+      links = [];
+    }
+
+    function saveLinks() {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(links)); } catch(e) { console.error("Failed to save links", e); }
+    }
+
+    function renderLinks() {
+      listEl.innerHTML = '';
+      if (links.length === 0) {
+        listEl.innerHTML = '<li>まだブックマークはありません。</li>';
+        return;
+      }
+      links.forEach((link, index) => {
+        const li = document.createElement('li');
+        li.dataset.index = index;
+        li.innerHTML = `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.title}<br><span class="link-title">${link.url}</span></a><button class="delete-btn" aria-label="${link.title}を削除">削除</button>`;
+        listEl.appendChild(li);
+      });
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const url = urlInput.value.trim();
+      const title = titleInput.value.trim();
+      if (url && title) { links.push({ url, title }); saveLinks(); renderLinks(); form.reset(); urlInput.focus(); }
+    });
+
+    listEl.addEventListener('click', (e) => {
+      if (e.target.classList.contains('delete-btn')) { const li = e.target.closest('li'); if (li) { const index = parseInt(li.dataset.index, 10); if (!isNaN(index)) { links.splice(index, 1); saveLinks(); renderLinks(); } } }
+    });
+
+    exportBtn.addEventListener('click', () => {
+      if (links.length === 0) {
+        alert('エクスポートするデータがありません。');
+        return;
+      }
+      const jsonString = JSON.stringify(links, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'bookmarks.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    importBtn.addEventListener('click', () => {
+      importFile.click();
+    });
+
+    importFile.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const importedLinks = JSON.parse(event.target.result);
+          if (!Array.isArray(importedLinks) || !importedLinks.every(item => item.url && item.title)) throw new Error('無効なファイル形式です。');
+          if (links.length > 0 && !confirm('現在のリストは上書きされます。よろしいですか？')) return;
+          links = importedLinks;
+          saveLinks();
+          renderLinks();
+          alert(`${links.length}件のブックマークをインポートしました。`);
+        } catch (err) { alert('ファイルの読み込みに失敗しました: ' + err.message); }
+        finally { importFile.value = ''; }
+      };
+      reader.readAsText(file);
+    });
+
+    renderLinks();
+  })();
 
   // 初期表示
   activate(0, {scroll:false});
