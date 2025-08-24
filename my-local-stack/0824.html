@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Docker + PHP + MySQL + phpMyAdmin ローカル開発ガイド（準備〜起動〜CRUD）</title>
+<style>
+  :root{--fg:#111;--bg:#fff;--muted:#6b7280;--line:#e5e7eb;--pri:#2563eb;--ok:#16a34a;--warn:#b45309;--err:#b91c1c}
+  *{box-sizing:border-box} body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; line-height:1.65; margin:28px; color:var(--fg); background:var(--bg)}
+  h1{font-size:26px;margin:.2em 0 .6em} h2{font-size:22px;margin:1.2em 0 .4em} h3{font-size:18px;margin:1em 0 .4em}
+  code,kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.95em}
+  pre{background:#0b1020; color:#e5e7eb; padding:14px 16px; border-radius:10px; overflow:auto; border:1px solid #0e1726}
+  a{color:var(--pri); text-decoration:none} a:hover{text-decoration:underline}
+  .toc{border:1px solid var(--line); border-radius:10px; padding:14px; background:#f8fafc}
+  .note{border-left:4px solid var(--pri); background:#eef2ff; padding:10px 12px; border-radius:6px; margin:.6em 0}
+  .good{border-left:4px solid var(--ok); background:#ecfdf5; padding:10px 12px; border-radius:6px; margin:.6em 0}
+  .warn{border-left:4px solid var(--warn); background:#fffbeb; padding:10px 12px; border-radius:6px; margin:.6em 0}
+  .bad{border-left:4px solid var(--err); background:#fef2f2; padding:10px 12px; border-radius:6px; margin:.6em 0}
+  .grid{display:grid; gap:10px}
+  .two{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .kbd{display:inline-block; padding:.2em .5em; border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; background:#f9fafb}
+  hr{border:none; border-top:1px solid var(--line); margin:22px 0}
+  table{border-collapse:collapse; width:100%} th,td{border:1px solid var(--line); padding:8px 10px} th{background:#f8fafc; text-align:left}
+  .small{font-size:.94em; color:var(--muted)}
+</style>
+</head>
+<body>
+
+<h1>Docker + PHP + MySQL + phpMyAdmin ローカル開発ガイド</h1>
+<p class="small">目的：ローカルで最小構成の Webアプリ（PHP）をDockerで立ち上げ、MySQL と接続して CRUD（追加・編集・削除）まで確認する。</p>
+
+<div class="toc">
+  <strong>目次</strong>
+  <ol>
+    <li><a href="#structure">フォルダ構成（完成形）</a></li>
+    <li><a href="#why-structure">なぜこの構成が良いの？（要点）</a></li>
+    <li><a href="#env">.env（環境変数）</a></li>
+    <li><a href="#compose">docker-compose.yml（全体の設計図）</a></li>
+    <li><a href="#dockerfile">web/Dockerfile（PHPの箱の作り方）</a></li>
+    <li><a href="#phpmyadmin-config">phpmyadmin/config.inc.php（DB管理画面の設定）</a></li>
+    <li><a href="#phpini">web/php.ini（PHPの細かい設定）</a></li>
+    <li><a href="#sql">db/init/001_init.sql（初期テーブルとダミーデータ）</a></li>
+    <li><a href="#indexphp">public/index.php（一覧＋CRUDの単一ファイル版）</a></li>
+    <li><a href="#run">起動・確認・停止（手順）</a></li>
+    <li><a href="#trouble">つまずき対処（よくある例）</a></li>
+    <li><a href="#concepts">用語の超要点：PDO / プリペアド / CSRF / フラッシュ</a></li>
+    <li><a href="#next">次の一歩（発展）</a></li>
+  </ol>
+</div>
+
+<hr>
+
+<h2 id="structure">1. フォルダ構成（完成形）</h2>
+<pre><code>my-local-stack/
+├─ docker-compose.yml
+├─ .env
+├─ db/
+│  └─ init/
+│     └─ 001_init.sql
+├─ web/
+│  ├─ Dockerfile
+│  └─ php.ini
+├─ phpmyadmin/
+│  └─ config.inc.php
+└─ public/
+   └─ index.php
+</code></pre>
+
+<h2 id="why-structure">2. なぜこの構成が良いの？（要点）</h2>
+<ul>
+  <li><strong>役割分離：</strong> 設計図（compose）・環境差分（.env）・DB初期化（db/init）・アプリ（public）・言語設定（web）を分けて迷子を防ぐ。</li>
+  <li><strong>再現性：</strong> <kbd class="kbd">docker compose up -d</kbd> で誰のPCでも同じ状態が起動。</li>
+  <li><strong>安全性：</strong> 公開範囲（public/）と非公開設定（.env, php.ini 等）を分離。</li>
+</ul>
+
+<div class="good"><strong>ポイント：</strong> 後でテストやログを追加しても崩れにくい「器」になっています。</div>
+
+<hr>
+
+<h2 id="env">3. <code>.env</code>（環境変数）</h2>
+<p>パスワードやポートなど、人や環境によって変えたい値を一か所に集約します。</p>
+<pre><code>MYSQL_DATABASE=myapp
+MYSQL_USER=myuser
+MYSQL_PASSWORD=mypassword
+MYSQL_ROOT_PASSWORD=rootpassword
+
+WEB_PORT=8080
+PHPMYADMIN_PORT=8081
+DB_PORT=3306
+</code></pre>
+<div class="note">compose から <code>${変数名}</code> で参照されます。Git には基本的にコミットしない想定（<code>.gitignore</code>）</div>
+
+<hr>
+
+<h2 id="compose">4. <code>docker-compose.yml</code>（全体の設計図）</h2>
+<pre><code>services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: Asia/Tokyo
+    command: ["mysqld","--character-set-server=utf8mb4","--collation-server=utf8mb4_0900_ai_ci"]
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-hdb", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PMA_HOST: db
+      UPLOAD_LIMIT: 64M
+    ports:
+      - "${PHPMYADMIN_PORT}:80"
+    volumes:
+      - ./phpmyadmin/config.inc.php:/etc/phpmyadmin/config.inc.php:ro
+    # Windows環境でのパーミッションエラー対策
+    command: >
+      sh -c "
+        echo '==> Changing permissions for config.inc.php...';
+        chmod 644 /etc/phpmyadmin/config.inc.php;
+        echo '==> Permissions after chmod:';
+        ls -l /etc/phpmyadmin/config.inc.php;
+        echo '==> Starting phpMyAdmin...';
+        /docker-entrypoint.sh apache2-foreground
+      "
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./public:/var/www/html
+      - ./web/php.ini:/usr/local/etc/php/php.ini:ro
+    environment:
+      DB_HOST: db
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASS: ${MYSQL_PASSWORD}
+      TZ: Asia/Tokyo
+    ports:
+      - "${WEB_PORT}:80"
+
+volumes:
+  db_data: {}
+</code></pre>
+<ul>
+  <li><strong>db：</strong> 初回起動時に <code>db/init</code> のSQLが自動実行。</li>
+  <li><strong>phpmyadmin：</strong> GUIでDB確認。</li>
+  <li><strong>web：</strong> PHP + Apache。<code>public/</code> をドキュメントルートにマウント。</li>
+  <li><strong>depends_on + healthcheck：</strong> DBが準備完了後に他が起動 → 安定。</li>
+</ul>
+
+<hr>
+
+<h2 id="dockerfile">5. <code>web/Dockerfile</code>（PHPの箱の作り方）</h2>
+<pre><code>FROM php:8.2-apache
+
+RUN docker-php-ext-install pdo pdo_mysql
+RUN echo "ServerName localhost" &gt;&gt; /etc/apache2/apache2.conf \
+    &amp;&amp; a2enmod rewrite
+
+WORKDIR /var/www/html
+</code></pre>
+<div class="note"><strong>理由：</strong> MySQL接続には <code>pdo_mysql</code> が必須。将来のルーティングに <code>mod_rewrite</code> が便利。</div>
+
+<hr>
+
+<h2 id="phpmyadmin-config">6. <code>phpmyadmin/config.inc.php</code>（DB管理画面の設定）</h2>
+<p>phpMyAdminのセキュリティを高め、DBコンテナとの通信を暗号化（SSL化）するための設定ファイルです。</p>
+<pre><code>&lt;?php
+declare(strict_types=1);
+
+// クッキー認証の暗号化キー。32文字以上のランダムな文字列を設定します。
+$cfg['blowfish_secret'] = 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6';
+
+$i = 1;
+$cfg['Servers'][$i]['host'] = 'db';
+$cfg['Servers'][$i]['compress'] = false;
+$cfg['Servers'][$i]['AllowNoPassword'] = false;
+
+// DBコンテナとの通信をSSL化
+$cfg['Servers'][$i]['ssl'] = true;
+$cfg['Servers'][$i]['ssl_verify'] = false; // ローカルなので証明書検証は無効
+</code></pre>
+<div class="note">この設定により、phpMyAdminのログイン画面で「SSLは使用されていません」という警告が表示されなくなります。</div>
+
+<hr>
+
+<h2 id="phpini">7. <code>web/php.ini</code>（PHPの細かい設定）</h2>
+<pre><code>display_errors=On
+error_reporting=E_ALL
+date.timezone=Asia/Tokyo
+upload_max_filesize=32M
+post_max_size=32M
+memory_limit=256M
+</code></pre>
+<div class="warn"><strong>注意：</strong> 本番では <code>display_errors=Off</code> が基本。開発ではエラー見える化が学習効率↑</div>
+
+<hr>
+
+<h2 id="sql">8. <code>db/init/001_init.sql</code>（初期テーブルとダミーデータ）</h2>
+<pre><code>CREATE TABLE IF NOT EXISTS items (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  price INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO items (name, price) VALUES
+  ('Apple', 120),
+  ('Banana', 90),
+  ('Orange', 150);
+</code></pre>
+<div class="note">ファイル名を <code>001_</code> など連番にすると、複数SQLを順序実行できます。</div>
+
+<hr>
+
+<h2 id="indexphp">9. <code>public/index.php</code>（一覧＋CRUDの単一ファイル版）</h2>
+<p>学習しやすいよう、一覧・追加・編集・削除を1ファイルに収めた最小実装です（PDO＋プリペアド、簡易CSRF、フラッシュメッセージ）。</p>
+<pre><code>&lt;?php
+declare(strict_types=1);
+session_start();
+
+$host = getenv('DB_HOST') ?: 'db';
+$db   = getenv('DB_NAME') ?: 'myapp';
+$user = getenv('DB_USER') ?: 'myuser';
+$pass = getenv('DB_PASS') ?: 'mypassword';
+
+function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
+function redirect(string $p): never { header("Location: {$p}"); exit; }
+function flash(string $k, ?string $v=null) {
+  if ($v === null) { $m = $_SESSION['flash'][$k] ?? null; unset($_SESSION['flash'][$k]); return $m; }
+  $_SESSION['flash'][$k] = $v;
+}
+if (empty($_SESSION['csrf'])) { $_SESSION['csrf'] = bin2hex(random_bytes(16)); }
+function csrf_field(): string { return '&lt;input type="hidden" name="csrf" value="'.h($_SESSION['csrf']).'"&gt;'; }
+function assert_csrf(): void {
+  if (!isset($_POST['csrf']) || !hash_equals($_SESSION['csrf'] ?? '', $_POST['csrf'])) {
+    http_response_code(400); echo '&lt;h1&gt;Bad Request&lt;/h1&gt;&lt;p&gt;CSRF token mismatch.&lt;/p&gt;'; exit;
+  }
+}
+
+try {
+  $pdo = new PDO("mysql:host={$host};dbname={$db};charset=utf8mb4", $user, $pass, [
+    PDO::ATTR_ERRMODE =&gt; PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+  ]);
+} catch (Throwable $e) {
+  http_response_code(500);
+  echo "&lt;h1&gt;DB接続に失敗しました&lt;/h1&gt;&lt;pre&gt;".h($e-&gt;getMessage())."&lt;/pre&gt;"; exit;
+}
+
+$action = $_GET['action'] ?? 'index';
+
+if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
+  assert_csrf();
+  $name = trim($_POST['name'] ?? '');
+  $price = trim($_POST['price'] ?? '');
+  $errors = [];
+  if ($name === '') $errors[] = '名前は必須です';
+  if ($price === '' || !ctype_digit($price) || (int)$price &lt; 0) $errors[] = '価格は0以上の整数で入力してください';
+  if ($errors) { flash('errors', implode('&lt;br&gt;', array_map('h', $errors))); flash('old', json_encode(['name'=>$name,'price'=>$price])); redirect('./?action=create'); }
+  $stmt = $pdo-&gt;prepare('INSERT INTO items(name, price) VALUES(:name, :price)');
+  $stmt-&gt;execute([':name'=>$name, ':price'=>(int)$price]);
+  flash('success', '登録しました'); redirect('./');
+
+} elseif ($action === 'update' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
+  assert_csrf();
+  $id = (int)($_GET['id'] ?? 0);
+  $name = trim($_POST['name'] ?? '');
+  $price = trim($_POST['price'] ?? '');
+  $errors = [];
+  if ($id &lt;= 0) $errors[] = '不正なIDです';
+  if ($name === '') $errors[] = '名前は必須です';
+  if ($price === '' || !ctype_digit($price) || (int)$price &lt; 0) $errors[] = '価格は0以上の整数で入力してください';
+  if ($errors) { flash('errors', implode('&lt;br&gt;', array_map('h', $errors))); redirect('./?action=edit&amp;id='.$id); }
+  $stmt = $pdo-&gt;prepare('UPDATE items SET name=:name, price=:price WHERE id=:id');
+  $stmt-&gt;execute([':name'=>$name, ':price'=>(int)$price, ':id'=>$id]);
+  flash('success', '更新しました'); redirect('./');
+
+} elseif ($action === 'destroy' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
+  assert_csrf();
+  $id = (int)($_GET['id'] ?? 0);
+  if ($id &gt; 0) { $stmt = $pdo-&gt;prepare('DELETE FROM items WHERE id=:id'); $stmt-&gt;execute([':id'=>$id]); }
+  flash('success', '削除しました'); redirect('./');
+
+} else {
+  $success = flash('success'); $errors = flash('errors'); $content = '';
+  if ($action === 'create') {
+    $old = json_decode(flash('old') ?? '{}', true);
+    $content .= '&lt;h2&gt;商品を追加&lt;/h2&gt;'.($errors ? '&lt;div class="alert alert-error"&gt;'.$errors.'&lt;/div&gt;':'' ).'
+      &lt;form method="post" action="?action=store"&gt;'.csrf_field().'
+        &lt;div class="field"&gt;&lt;label&gt;名前&lt;/label&gt;&lt;input type="text" name="name" value="'.h($old['name']??'').'" required&gt;&lt;/div&gt;
+        &lt;div class="field"&gt;&lt;label&gt;価格（整数）&lt;/label&gt;&lt;input type="number" name="price" min="0" step="1" value="'.h($old['price']??'').'" required&gt;&lt;/div&gt;
+        &lt;div class="actions"&gt;&lt;button type="submit"&gt;登録する&lt;/button&gt; &lt;a class="btn" href="./"&gt;戻る&lt;/a&gt;&lt;/div&gt;
+      &lt;/form&gt;';
+  } elseif ($action === 'edit') {
+    $id = (int)($_GET['id'] ?? 0);
+    $stmt = $pdo-&gt;prepare('SELECT * FROM items WHERE id=:id'); $stmt-&gt;execute([':id'=>$id]); $item = $stmt-&gt;fetch();
+    if (!$item) { http_response_code(404); echo '&lt;h1&gt;Not Found&lt;/h1&gt;'; exit; }
+    $content .= '&lt;h2&gt;ID #'.(int)$item['id'].' を編集&lt;/h2&gt;'.($errors ? '&lt;div class="alert alert-error"&gt;'.$errors.'&lt;/div&gt;':'' ).'
+      &lt;form method="post" action="?action=update&amp;id='.(int)$item['id'].'"&gt;'.csrf_field().'
+        &lt;div class="field"&gt;&lt;label&gt;名前&lt;/label&gt;&lt;input type="text" name="name" value="'.h($item['name']).'" required&gt;&lt;/div&gt;
+        &lt;div class="field"&gt;&lt;label&gt;価格（整数）&lt;/label&gt;&lt;input type="number" name="price" min="0" step="1" value="'.h((string)$item['price']).'" required&gt;&lt;/div&gt;
+        &lt;div class="actions"&gt;&lt;button type="submit"&gt;更新する&lt;/button&gt; &lt;a class="btn" href="./"&gt;戻る&lt;/a&gt;&lt;/div&gt;
+      &lt;/form&gt;';
+  } else {
+    $stmt = $pdo-&gt;query('SELECT id, name, price, created_at FROM items ORDER BY id DESC'); $rows = $stmt-&gt;fetchAll();
+    $content .= '&lt;div class="toolbar"&gt;&lt;a class="btn primary" href="?action=create"&gt;＋ 追加&lt;/a&gt;&lt;/div&gt;'
+      .($success ? '&lt;div class="alert alert-ok"&gt;'.$success.'&lt;/div&gt;':'' ).'
+      &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;ID&lt;/th&gt;&lt;th&gt;名前&lt;/th&gt;&lt;th&gt;価格&lt;/th&gt;&lt;th&gt;作成日時&lt;/th&gt;&lt;th&gt;操作&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;';
+    foreach ($rows as $r) {
+      $content .= '&lt;tr&gt;&lt;td&gt;'.(int)$r['id'].'&lt;/td&gt;&lt;td&gt;'.h($r['name']).'&lt;/td&gt;&lt;td&gt;'.(int)$r['price'].'&lt;/td&gt;&lt;td&gt;'.h((string)$r['created_at']).'&lt;/td&gt;
+        &lt;td class="ops"&gt;&lt;a class="btn" href="?action=edit&amp;id='.(int)$r['id'].'"&gt;編集&lt;/a&gt;
+        &lt;form method="post" action="?action=destroy&amp;id='.(int)$r['id'].'" onsubmit="return confirm(\'本当に削除しますか？\');" style="display:inline"&gt;'.csrf_field().'&lt;button type="submit" class="btn danger"&gt;削除&lt;/button&gt;&lt;/form&gt;&lt;/td&gt;&lt;/tr&gt;';
+    }
+    if (!$rows) { $content .= '&lt;tr&gt;&lt;td colspan="5" style="text-align:center; color:#777"&gt;データがありません&lt;/td&gt;&lt;/tr&gt;'; }
+    $content .= '&lt;/tbody&gt;&lt;/table&gt;';
+  }
+
+  echo '&lt;!doctype html&gt;&lt;html lang="ja"&gt;&lt;meta charset="utf-8"&gt;&lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Items CRUD（PHP → MySQL）&lt;/title&gt;
+  &lt;style&gt;:root{--bg:#fff;--fg:#111;--muted:#666;--line:#e5e7eb;--pri:#2563eb}
+  *{box-sizing:border-box} body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;margin:24px;color:var(--fg);background:var(--bg);line-height:1.6}
+  h1{font-size:22px;margin:0 0 12px} h2{font-size:18px;margin:12px 0}
+  table{border-collapse:collapse;width:100%;max-width:900px;margin-top:12px} th,td{border:1px solid var(--line);padding:10px} th{background:#f8fafc;text-align:left}
+  .toolbar{margin:12px 0} .btn{display:inline-block;padding:.45em .8em;border:1px solid var(--line);border-radius:.5em;text-decoration:none;color:var(--fg);background:#f8fafc}
+  .btn.primary{background:#2563eb;border-color:#2563eb;color:#fff} .btn.danger{background:#fee2e2;border-color:#fecaca;color:#b91c1c}
+  .actions{margin-top:12px} .field{margin:8px 0;max-width:420px} input[type=text],input[type=number]{width:100%;padding:.5em;border:1px solid var(--line);border-radius:.4em}
+  .alert{margin:10px 0;padding:.6em .8em;border-radius:.5em} .alert-ok{background:#e6ffed;border:1px solid #b7ebc6} .alert-error{background:#fee2e2;border:1px solid #fecaca}
+  .ops form{display:inline} .meta{color:var(--muted);font-size:12px;margin-top:4px} .wrap{max-width:960px} header{display:flex;gap:8px;margin-bottom:10px;align-items:end}
+  header .meta{margin-left:auto;color:#666;font-size:12px}&lt;/style&gt;
+  &lt;div class="wrap"&gt;&lt;header&gt;&lt;h1&gt;Items CRUD（PHP → MySQL）&lt;/h1&gt;&lt;div class="meta"&gt;接続先：'.h("$host / $db / $user").'&lt;/div&gt;&lt;/header&gt;'.$content.'&lt;/div&gt;';
+}
+</code></pre>
+
+<hr>
+
+<h2 id="run">10. 起動・確認・停止（手順）</h2>
+<ol>
+  <li>上のフォルダ構成でファイルを配置</li>
+  <li><kbd class="kbd">cd my-local-stack</kbd></li>
+  <li><kbd class="kbd">docker compose build</kbd>（初回／Dockerfile変更時）</li>
+  <li><kbd class="kbd">docker compose up -d</kbd>（バックグラウンド起動）</li>
+</ol>
+<div class="grid two">
+  <div class="good"><strong>Webアプリ：</strong> <code>http://localhost:8080</code><br>一覧表示 → 「＋追加」→ 編集・削除を確認</div>
+  <div class="note"><strong>phpMyAdmin：</strong> <code>http://localhost:8081</code><br>サーバー：<code>db</code><br>ユーザー：<code>myuser</code><br>パスワード：<code>mypassword</code><br>（<code>.env</code>で設定した値で手動ログイン）</div>
+</div>
+<p>停止：<kbd class="kbd">docker compose down</kbd><br>DB初期化からやり直す：<kbd class="kbd">docker compose down -v</kbd> → <kbd class="kbd">up -d</kbd></p>
+
+<hr>
+
+<h2 id="trouble">11. つまずき対処（よくある例）</h2>
+<table>
+  <thead><tr><th>症状</th><th>確認ポイント</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Webは開くが「DB接続に失敗」</td>
+      <td>
+        <ul>
+          <li><code>.env</code>の<code>MYSQL_*</code>と<code>web</code>の<code>DB_*</code>が一致しているか</li>
+          <li><kbd class="kbd">docker compose logs db</kbd> でMySQL起動失敗がないか</li>
+          <li>ポート<code>3306</code>が他のMySQLで占有されていないか（必要なら<code>DB_PORT</code>変更）</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>phpMyAdminで「サーバーが見つからない」</td>
+      <td>
+        <ul>
+          <li><code>PMA_HOST: db</code> になっているか（サービス名に合わせる）</li>
+          <li><code>docker ps</code>でDBが<em>healthy</em>か</li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td>初期SQLが流れていない</td>
+      <td>
+        <ul>
+          <li>SQLは<strong>初回起動時のみ</strong>自動実行。やり直すときは <kbd class="kbd">down -v</kbd> → <kbd class="kbd">up -d</kbd></li>
+          <li>ファイル拡張子が<code>.sql</code>、配置が<code>db/init/</code>かを確認</li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="concepts">12. 用語の超要点：PDO / プリペアド / CSRF / フラッシュ</h2>
+<ul>
+  <li><strong>PDO：</strong> PHPからDBへつなぐ共通窓口。DBを変えても書き方がほぼ共通。</li>
+  <li><strong>プリペアド：</strong> SQLに値を「安全に」埋め込む実行方法。インジェクション対策の基本。</li>
+  <li><strong>CSRFトークン：</strong> 外部サイト経由のなりすまし送信を防ぐ「秘密の合言葉」。フォームに埋めて検証。</li>
+  <li><strong>フラッシュメッセージ：</strong> 「1回だけ表示」する成功/エラー通知。<code>SESSION</code>に入れて次画面で表示→削除。</li>
+</ul>
+
+<hr>
+
+<h2 id="next">13. 次の一歩（発展）</h2>
+<ul>
+  <li>ファイル分割：<code>create.php</code> / <code>edit.php</code> / <code>delete.php</code> へ分けて可読性UP</li>
+  <li>検索・ページング、ソートの追加</li>
+  <li>Xdebugでブレークポイント学習（<code>php.ini</code>とVS Code設定）</li>
+  <li>Nginx + PHP-FPM 構成への変更（実運用に近づける）</li>
+</ul>
+
+<hr>
+
+<p class="small">© Your Local Notes — この資料はローカル学習用。パスワードなど秘匿情報のコミットは避けましょう。</p>
+
+</body>
+</html>
