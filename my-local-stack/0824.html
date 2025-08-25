@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Docker + PHP + MySQL + phpMyAdmin ローカル開発ガイド（準備〜起動〜CRUD）</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <style>
     :root{
       --bg:#f8fafc; --fg:#1e293b; --muted:#64748b; --line:#e2e8f0;
@@ -37,8 +39,11 @@
     hr{border:none; border-top:1px solid var(--line); margin:2rem 0;}
 
     code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.9em; background:rgba(100,116,139,.1); padding:.2em .4em; border-radius:4px;}
-    pre{background:#1e293b; color:#e2e8f0; padding:1rem; border-radius:10px; overflow:auto; border:1px solid #334155; font-size:.9rem; max-height:400px;}
+    /* pre の背景は highlight.js のテーマに合わせ、padding は中の code タグに任せる */
+    pre{background:#282c34; border-radius:10px; overflow:auto; max-height:400px;}
     pre code{background:transparent; padding:0; border-radius:0;}
+    /* highlight.js が適用するスタイル。デフォルトのpaddingを明示 */
+    pre code.hljs { padding: 1em; }
 
     .code-block{position:relative;margin:1em 0}
     .code-block pre{margin:0}
@@ -114,7 +119,7 @@
       <h2 id="structure">1. フォルダ構成（完成形）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
-        <pre><code>my-local-stack/
+        <pre><code class="language-plaintext">my-local-stack/
 ├─ docker-compose.yml
 ├─ .env
 ├─ db/
@@ -141,7 +146,7 @@
       <p>パスワードやポートなど、人や環境によって変えたい値を一か所に集約します。</p>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
-        <pre><code>MYSQL_DATABASE=myapp
+        <pre><code class="language-ini">MYSQL_DATABASE=myapp
 MYSQL_USER=myuser
 MYSQL_PASSWORD=mypassword
 MYSQL_ROOT_PASSWORD=rootpassword
@@ -156,7 +161,7 @@ DB_PORT=3306
       <h2 id="compose">4. <code>docker-compose.yml</code>（全体の設計図）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
-        <pre><code>services:
+        <pre><code class="language-yaml">services:
   db:
     image: mysql:8.4
     environment:
@@ -252,7 +257,7 @@ volumes:
       <h2 id="dockerfile">6. <code>web/Dockerfile</code>（PHPの箱の作り方）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
-        <pre><code>FROM php:8.2-apache
+        <pre><code class="language-dockerfile">FROM php:8.2-apache
 
 RUN docker-php-ext-install pdo pdo_mysql
 RUN echo "ServerName localhost" &gt;&gt; /etc/apache2/apache2.conf \
@@ -267,7 +272,7 @@ WORKDIR /var/www/html
       <p>phpMyAdminのセキュリティを高め、DBコンテナとの通信を暗号化（SSL化）するための設定ファイルです。</p>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
-        <pre><code>&lt;?php
+        <pre><code class="language-php">&lt;?php
 declare(strict_types=1);
 
 // クッキー認証の暗号化キー。32文字以上のランダムな文字列を設定します。
@@ -288,7 +293,7 @@ $cfg['Servers'][$i]['ssl_verify'] = false; // ローカルなので証明書検�
       <h2 id="phpini">8. <code>web/php.ini</code>（PHPの細かい設定）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
-        <pre><code>display_errors=On
+        <pre><code class="language-ini">display_errors=On
 error_reporting=E_ALL
 date.timezone=Asia/Tokyo
 upload_max_filesize=32M
@@ -301,7 +306,7 @@ memory_limit=256M
       <h2 id="sql">9. <code>db/init/001_init.sql</code>（初期テーブルとダミーデータ）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
-        <pre><code>CREATE TABLE IF NOT EXISTS items (
+        <pre><code class="language-sql">CREATE TABLE IF NOT EXISTS items (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   price INT NOT NULL,
@@ -320,7 +325,7 @@ INSERT INTO items (name, price) VALUES
       <p>学習しやすいよう、一覧・追加・編集・削除を1ファイルに収めた最小実装です（PDO＋プリペアド、簡易CSRF、フラッシュメッセージ）。</p>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
-        <pre><code>&lt;?php
+        <pre><code class="language-php">&lt;?php
 declare(strict_types=1);
 session_start();
 
@@ -600,6 +605,9 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
       // --- Init ---
       updateToggleState();
       window.addEventListener('resize', updateToggleState);
+      if (window.hljs) {
+        window.hljs.highlightAll();
+      }
     });
   </script>
 </body>
