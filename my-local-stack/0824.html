@@ -36,6 +36,7 @@
     <li><a href="#why-structure">なぜこの構成が良いの？（要点）</a></li>
     <li><a href="#env">.env（環境変数）</a></li>
     <li><a href="#compose">docker-compose.yml（全体の設計図）</a></li>
+    <li><a href="#discovery">コラム：サービス名がホスト名になる魔法</a></li>
     <li><a href="#dockerfile">web/Dockerfile（PHPの箱の作り方）</a></li>
     <li><a href="#phpmyadmin-config">phpmyadmin/config.inc.php（DB管理画面の設定）</a></li>
     <li><a href="#phpini">web/php.ini（PHPの細かい設定）</a></li>
@@ -168,7 +169,28 @@ volumes:
 
 <hr>
 
-<h2 id="dockerfile">5. <code>web/Dockerfile</code>（PHPの箱の作り方）</h2>
+<h2 id="discovery">5. コラム：サービス名がホスト名になる魔法</h2>
+<p>なぜ<code>web</code>コンテナは、IPアドレスを知らないのに<code>db</code>という名前だけでMySQLに接続できるのでしょうか？<br>
+その秘密は、Docker Composeが自動的に作る「内部ネットワーク」と「サービスディスカバリ」機能にあります。</p>
+<ol>
+  <li><strong>専用の内部ネットワークが作られる</strong><br>
+    <code>docker compose up</code>を実行すると、コンテナ達だけが参加できるプライベートな仮想ネットワークが自動で作成されます。
+  </li>
+  <li><strong>サービス名が「住所」になる（サービスディスカバリ）</strong><br>
+    このネットワーク内では、<code>docker-compose.yml</code>に書いたサービス名（例: <code>db</code>）が、そのままホスト名（コンピュータ名）として使えます。
+  </li>
+  <li><strong>環境変数で接続情報を渡す</strong><br>
+    各コンテナには、環境変数を通じて「どのホストに接続するか」を教えます。<code>web</code>サービスでは<code>DB_HOST: db</code>と設定し、PHP側で<code>getenv('DB_HOST')</code>として受け取っています。
+  </li>
+  <li><strong><code>depends_on</code>で起動順序を保証する</strong><br>
+    <code>db</code>が準備完了するまで<code>web</code>の起動を待つことで、接続エラーを防ぎます。
+  </li>
+</ol>
+<div class="good"><strong>結論：</strong>これらの機能のおかげで、私たちは複雑なネットワーク設定なしに、サービス名を頼りにコンテナ間を安全に接続できます。</div>
+
+<hr>
+
+<h2 id="dockerfile">6. <code>web/Dockerfile</code>（PHPの箱の作り方）</h2>
 <pre><code>FROM php:8.2-apache
 
 RUN docker-php-ext-install pdo pdo_mysql
@@ -181,7 +203,7 @@ WORKDIR /var/www/html
 
 <hr>
 
-<h2 id="phpmyadmin-config">6. <code>phpmyadmin/config.inc.php</code>（DB管理画面の設定）</h2>
+<h2 id="phpmyadmin-config">7. <code>phpmyadmin/config.inc.php</code>（DB管理画面の設定）</h2>
 <p>phpMyAdminのセキュリティを高め、DBコンテナとの通信を暗号化（SSL化）するための設定ファイルです。</p>
 <pre><code>&lt;?php
 declare(strict_types=1);
@@ -202,7 +224,7 @@ $cfg['Servers'][$i]['ssl_verify'] = false; // ローカルなので証明書検�
 
 <hr>
 
-<h2 id="phpini">7. <code>web/php.ini</code>（PHPの細かい設定）</h2>
+<h2 id="phpini">8. <code>web/php.ini</code>（PHPの細かい設定）</h2>
 <pre><code>display_errors=On
 error_reporting=E_ALL
 date.timezone=Asia/Tokyo
@@ -214,7 +236,7 @@ memory_limit=256M
 
 <hr>
 
-<h2 id="sql">8. <code>db/init/001_init.sql</code>（初期テーブルとダミーデータ）</h2>
+<h2 id="sql">9. <code>db/init/001_init.sql</code>（初期テーブルとダミーデータ）</h2>
 <pre><code>CREATE TABLE IF NOT EXISTS items (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -231,7 +253,7 @@ INSERT INTO items (name, price) VALUES
 
 <hr>
 
-<h2 id="indexphp">9. <code>public/index.php</code>（一覧＋CRUDの単一ファイル版）</h2>
+<h2 id="indexphp">10. <code>public/index.php</code>（一覧＋CRUDの単一ファイル版）</h2>
 <p>学習しやすいよう、一覧・追加・編集・削除を1ファイルに収めた最小実装です（PDO＋プリペアド、簡易CSRF、フラッシュメッセージ）。</p>
 <pre><code>&lt;?php
 declare(strict_types=1);
@@ -352,7 +374,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <hr>
 
-<h2 id="run">10. 起動・確認・停止（手順）</h2>
+<h2 id="run">11. 起動・確認・停止（手順）</h2>
 <ol>
   <li>上のフォルダ構成でファイルを配置</li>
   <li><kbd class="kbd">cd my-local-stack</kbd></li>
@@ -367,7 +389,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <hr>
 
-<h2 id="trouble">11. つまずき対処（よくある例）</h2>
+<h2 id="trouble">12. つまずき対処（よくある例）</h2>
 <table>
   <thead><tr><th>症状</th><th>確認ポイント</th></tr></thead>
   <tbody>
@@ -399,12 +421,23 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
         </ul>
       </td>
     </tr>
+    <tr>
+      <td>phpMyAdminで「パーミッションが正しくありません」エラー</td>
+      <td>
+        <ul>
+          <li><strong>原因：</strong> Windows環境でDockerを使うと、設定ファイル(<code>config.inc.php</code>)が「誰でも書き込み可能」と誤認されるため。</li>
+          <li><strong>解決策A（推奨）：</strong> <code>docker-compose.yml</code>の<code>phpmyadmin</code>サービスに<code>command</code>を追加し、起動時にパーミッションを強制変更する。（このガイドで採用済みの方法）</li>
+          <li><strong>解決策B（Windows限定）：</strong> <code>config.inc.php</code>のプロパティ → セキュリティ → 詳細設定で「継承の無効化」を行う。</li>
+          <li><strong>重要：</strong> 対策後は<code>docker compose down -v</code>で環境を完全にリセットしてから再起動すること。</li>
+        </ul>
+      </td>
+    </tr>
   </tbody>
 </table>
 
 <hr>
 
-<h2 id="concepts">12. 用語の超要点：PDO / プリペアド / CSRF / フラッシュ</h2>
+<h2 id="concepts">13. 用語の超要点：PDO / プリペアド / CSRF / フラッシュ</h2>
 <ul>
   <li><strong>PDO：</strong> PHPからDBへつなぐ共通窓口。DBを変えても書き方がほぼ共通。</li>
   <li><strong>プリペアド：</strong> SQLに値を「安全に」埋め込む実行方法。インジェクション対策の基本。</li>
@@ -414,7 +447,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <hr>
 
-<h2 id="next">13. 次の一歩（発展）</h2>
+<h2 id="next">14. 次の一歩（発展）</h2>
 <ul>
   <li>ファイル分割：<code>create.php</code> / <code>edit.php</code> / <code>delete.php</code> へ分けて可読性UP</li>
   <li>検索・ページング、ソートの追加</li>

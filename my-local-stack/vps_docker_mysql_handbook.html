@@ -362,7 +362,43 @@ services:
       </section>
 
       <section id="s11">
-        <h2>11. トラブルシューティング：phpMyAdminのパーミッションエラー</h2>
+        <h2>11. コラム：サービス名がホスト名になる魔法（サービスディスカバリ）</h2>
+        <p class="muted">
+          なぜ<code>web</code>コンテナは、IPアドレスを知らないのに<code>db</code>という名前だけでMySQLコンテナに接続できるのでしょうか？その秘密はDocker Composeが提供する「内部ネットワーク」と「サービスディスカバリ」にあります。
+        </p>
+        <ol>
+          <li>
+            <strong>専用の内部ネットワークが作られる</strong><br>
+            <code>docker compose up</code>を実行すると、コンテナ達だけが参加できるプライベートな仮想ネットワークが自動で作成されます。
+          </li>
+          <li>
+            <strong>サービス名が「住所」になる（サービスディスカバリ）</strong><br>
+            このネットワーク内では、<code>docker-compose.yml</code>に書いたサービス名（例: <code>db</code>, <code>app</code>）が、そのままホスト名（コンピュータ名）として使えます。これにより、IPアドレスを意識することなくコンテナ間で通信できます。
+          </li>
+          <li>
+            <strong>環境変数で接続情報を渡す</strong><br>
+            各コンテナには、環境変数を通じて「どのホストに、どの認証情報で接続するか」を教えます。
+<div class="codebox">
+<pre><code># webサービスの例
+environment:
+  DB_HOST: db  # ← 接続先のホスト名として 'db' を指定
+  DB_USER: appuser
+  DB_PASS: apppass_here
+</code></pre>
+</div>
+          </li>
+          <li>
+            <strong><code>depends_on</code>で起動順序を保証する</strong><br>
+            <code>db</code>コンテナの準備が整う前に<code>app</code>コンテナが起動すると接続に失敗します。<code>depends_on</code>と<code>healthcheck</code>を組み合わせることで、「<code>db</code>が完全に準備OKになるまで、<code>app</code>の起動を待つ」という制御ができ、安定性が向上します。
+          </li>
+        </ol>
+        <div class="callout">
+          <strong>結論：</strong>これらの機能が連携することで、私たちは複雑なネットワーク設定を一切書かずに、サービス名を頼りにコンテナ間を安全かつ確実に接続させることができるのです。
+        </div>
+      </section>
+
+      <section id="s12">
+        <h2>12. トラブルシューティング：phpMyAdminのパーミッションエラー</h2>
         <div class="callout warn">
           <strong>症状：</strong> <code>phpMyAdmin - エラー 設定ファイルのパーミッションが正しくありません。誰でも書き込み可能になっています！</code>
         </div>
@@ -405,8 +441,8 @@ command: >
         </p>
       </section>
 
-      <section id="s12">
-        <h2>12. VPS導入の手順（最短）</h2>
+      <section id="s13">
+        <h2>13. VPS導入の手順（最短）</h2>
         <ol>
           <li>OS更新：<code>sudo apt update && sudo apt upgrade -y</code></li>
           <li>Docker導入：<code>curl -fsSL https://get.docker.com | sudo sh</code>（再ログインで<code>docker</code>グループ反映）</li>
@@ -417,8 +453,8 @@ command: >
         </ol>
       </section>
 
-      <section id="s13">
-        <h2>13. チートシート</h2>
+      <section id="s14">
+        <h2>14. チートシート</h2>
         <div class="grid-2">
           <div>
             <h3>公開ポート</h3>
