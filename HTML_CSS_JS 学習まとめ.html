@@ -151,13 +151,26 @@
 
     /* モバイル：サイドバー折りたたみ */
     .sidebar-toggle{
-      display:inline-flex;
-      border:1px solid #ddd;
-      background:#fff;
-      color:#3949ab;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: transparent;
+      border: none;
+      color: #fff;
+      padding: .4rem .6rem;
       border-radius:8px;
-      padding:.35rem .6rem;
       cursor:pointer;
+      transition: background-color .2s ease;
+    }
+    .sidebar-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+    .sidebar-toggle-icon {
+      font-size: 1.2em;
+      line-height: 1;
+      width: 1.2em; /* アイコン幅を固定してガタつき防止 */
+      text-align: center;
+      font-weight: bold; /* アイコンを少し太く */
     }
     @media (max-width: 900px){
       .layout{grid-template-columns: 1fr}
@@ -391,7 +404,9 @@
 <body>
   <header>
     <div class="brand">
-      <button class="sidebar-toggle" aria-controls="sidebar" aria-expanded="false">☰ 目次</button>
+      <button class="sidebar-toggle" aria-controls="sidebar" aria-label="目次の開閉">
+        <span class="sidebar-toggle-icon"></span> 目次
+      </button>
       <h1>HTML/CSS/JS 学習まとめ（1〜20）— プレビュー全幅＋コード縦並び</h1>
     </div>
   </header>
@@ -1417,6 +1432,7 @@ document<span class="token punctuation">.</span><span class="token function">add
   const layout = document.querySelector('.layout');
   const sidebar = document.getElementById('sidebar');
   const toggleBtn = document.querySelector('.sidebar-toggle');
+  const toggleIcon = toggleBtn.querySelector('.sidebar-toggle-icon');
   const tocSearch = document.getElementById('tocSearch');
   let current = 0;
 
@@ -1448,22 +1464,32 @@ document<span class="token punctuation">.</span><span class="token function">add
       // モバイル表示のときだけサイドバーを閉じる
       if (window.innerWidth <= 900 && sidebar.classList.contains('open')) {
         sidebar.classList.remove('open');
-        toggleBtn.setAttribute('aria-expanded', 'false');
+        updateToggleState();
       }
     });
   });
 
+  function updateToggleState() {
+    let isExpanded;
+    if (window.innerWidth > 900) {
+      isExpanded = !layout.classList.contains('sidebar-collapsed');
+      // PC: 開いている時は左向き矢印、閉じている時はハンバーガー
+      toggleIcon.textContent = isExpanded ? '«' : '☰';
+    } else {
+      isExpanded = sidebar.classList.contains('open');
+      // Mobile: 開いている時はバツ、閉じている時はハンバーガー
+      toggleIcon.textContent = isExpanded ? '✕' : '☰';
+    }
+    toggleBtn.setAttribute('aria-expanded', String(isExpanded));
+  }
+
   toggleBtn.addEventListener('click', ()=>{
     if (window.innerWidth > 900) {
-      // PC表示
       layout.classList.toggle('sidebar-collapsed');
-      const isExpanded = !layout.classList.contains('sidebar-collapsed');
-      toggleBtn.setAttribute('aria-expanded', String(isExpanded));
     } else {
-      // モバイル表示
-      const isOpen = sidebar.classList.toggle('open');
-      toggleBtn.setAttribute('aria-expanded', String(isOpen));
+      sidebar.classList.toggle('open');
     }
+    updateToggleState();
   });
 
   tocSearch.addEventListener('input', ()=>{
@@ -1473,6 +1499,9 @@ document<span class="token punctuation">.</span><span class="token function">add
       link.parentElement.style.display = visible ? '' : 'none';
     });
   });
+
+  // 初期化
+  updateToggleState();
 
   // ===== プレビューのJS =====
   // mini theme toggles（2,3,11,12）
@@ -1786,7 +1815,7 @@ pre{background:#272822;color:#f8f8f2;padding:.6rem;border-radius:6px;margin:0}
   })();
 
   // 初期表示
-  activate(0, {scroll:false});
+  activate(0, {scroll: false});
 </script>
 </body>
 </html>
