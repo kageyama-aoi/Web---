@@ -37,8 +37,19 @@
     hr{border:none; border-top:1px solid var(--line); margin:2rem 0;}
 
     code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:.9em; background:rgba(100,116,139,.1); padding:.2em .4em; border-radius:4px;}
-    pre{background:#1e293b; color:#e2e8f0; padding:1rem; border-radius:10px; overflow:auto; border:1px solid #334155; font-size:.9rem;}
+    pre{background:#1e293b; color:#e2e8f0; padding:1rem; border-radius:10px; overflow:auto; border:1px solid #334155; font-size:.9rem; max-height:400px;}
     pre code{background:transparent; padding:0; border-radius:0;}
+
+    .code-block{position:relative;margin:1em 0}
+    .code-block pre{margin:0}
+    .copy-btn{
+      position:absolute; top:.5rem; right:.5rem; z-index:1;
+      background:var(--bg); border:1px solid var(--border); color:var(--muted);
+      border-radius:6px; padding:.2rem .5rem; cursor:pointer; font-size:.8rem;
+      transition:all .2s ease;
+    }
+    .copy-btn:hover{background:var(--pri); color:var(--sidebar-bg);}
+    .copy-btn.copied{background:var(--ok); color:var(--sidebar-bg); border-color:var(--ok);}
 
     .note, .good, .warn, .bad{padding:.8rem 1rem; border-radius:8px; margin:1em 0; border-left:4px solid;}
     .note{border-color:var(--pri); background:#eef2ff;}
@@ -101,7 +112,9 @@
       <p class="small">目的：ローカルで最小構成の Webアプリ（PHP）をDockerで立ち上げ、MySQL と接続して CRUD（追加・編集・削除）まで確認する。</p>
 
       <h2 id="structure">1. フォルダ構成（完成形）</h2>
-      <pre><code>my-local-stack/
+      <div class="code-block">
+        <button type="button" class="copy-btn" title="コピー">📋</button>
+        <pre><code>my-local-stack/
 ├─ docker-compose.yml
 ├─ .env
 ├─ db/
@@ -114,6 +127,7 @@
 │  └─ config.inc.php
 └─ public/
    └─ index.php</code></pre>
+      </div>
 
       <h2 id="why-structure">2. なぜこの構成が良いの？（要点）</h2>
       <ul>
@@ -125,7 +139,9 @@
 
       <h2 id="env">3. <code>.env</code>（環境変数）</h2>
       <p>パスワードやポートなど、人や環境によって変えたい値を一か所に集約します。</p>
-      <pre><code>MYSQL_DATABASE=myapp
+      <div class="code-block">
+        <button type="button" class="copy-btn" title="コピー">📋</button>
+        <pre><code>MYSQL_DATABASE=myapp
 MYSQL_USER=myuser
 MYSQL_PASSWORD=mypassword
 MYSQL_ROOT_PASSWORD=rootpassword
@@ -134,10 +150,13 @@ WEB_PORT=8080
 PHPMYADMIN_PORT=8081
 DB_PORT=3306
       </code></pre>
+      </div>
       <div class="note">compose から <code>${変数名}</code> で参照されます。Git には基本的にコミットしない想定（<code>.gitignore</code>）</div>
 
       <h2 id="compose">4. <code>docker-compose.yml</code>（全体の設計図）</h2>
-      <pre><code>services:
+      <div class="code-block">
+        <button type="button" class="copy-btn" title="コピー">📋</button>
+        <pre><code>services:
   db:
     image: mysql:8.4
     environment:
@@ -203,6 +222,7 @@ DB_PORT=3306
 volumes:
   db_data: {}
       </code></pre>
+      </div>
       <ul>
         <li><strong>db：</strong> 初回起動時に <code>db/init</code> のSQLが自動実行。</li>
         <li><strong>phpmyadmin：</strong> GUIでDB確認。</li>
@@ -230,7 +250,9 @@ volumes:
       <div class="good"><strong>結論：</strong>これらの機能のおかげで、私たちは複雑なネットワーク設定なしに、サービス名を頼りにコンテナ間を安全に接続できます。</div>
 
       <h2 id="dockerfile">6. <code>web/Dockerfile</code>（PHPの箱の作り方）</h2>
-      <pre><code>FROM php:8.2-apache
+      <div class="code-block">
+        <button type="button" class="copy-btn" title="コピー">📋</button>
+        <pre><code>FROM php:8.2-apache
 
 RUN docker-php-ext-install pdo pdo_mysql
 RUN echo "ServerName localhost" &gt;&gt; /etc/apache2/apache2.conf \
@@ -238,11 +260,14 @@ RUN echo "ServerName localhost" &gt;&gt; /etc/apache2/apache2.conf \
 
 WORKDIR /var/www/html
       </code></pre>
+      </div>
       <div class="note"><strong>理由：</strong> MySQL接続には <code>pdo_mysql</code> が必須。将来のルーティングに <code>mod_rewrite</code> が便利。</div>
 
       <h2 id="phpmyadmin-config">7. <code>phpmyadmin/config.inc.php</code>（DB管理画面の設定）</h2>
       <p>phpMyAdminのセキュリティを高め、DBコンテナとの通信を暗号化（SSL化）するための設定ファイルです。</p>
-      <pre><code>&lt;?php
+      <div class="code-block">
+        <button type="button" class="copy-btn" title="コピー">📋</button>
+        <pre><code>&lt;?php
 declare(strict_types=1);
 
 // クッキー認証の暗号化キー。32文字以上のランダムな文字列を設定します。
@@ -257,20 +282,26 @@ $cfg['Servers'][$i]['AllowNoPassword'] = false;
 $cfg['Servers'][$i]['ssl'] = true;
 $cfg['Servers'][$i]['ssl_verify'] = false; // ローカルなので証明書検証は無効
       </code></pre>
+      </div>
       <div class="note">この設定により、phpMyAdminのログイン画面で「SSLは使用されていません」という警告が表示されなくなります。</div>
 
       <h2 id="phpini">8. <code>web/php.ini</code>（PHPの細かい設定）</h2>
-      <pre><code>display_errors=On
+      <div class="code-block">
+        <button type="button" class="copy-btn" title="コピー">📋</button>
+        <pre><code>display_errors=On
 error_reporting=E_ALL
 date.timezone=Asia/Tokyo
 upload_max_filesize=32M
 post_max_size=32M
 memory_limit=256M
       </code></pre>
+      </div>
       <div class="warn"><strong>注意：</strong> 本番では <code>display_errors=Off</code> が基本。開発ではエラー見える化が学習効率↑</div>
 
       <h2 id="sql">9. <code>db/init/001_init.sql</code>（初期テーブルとダミーデータ）</h2>
-      <pre><code>CREATE TABLE IF NOT EXISTS items (
+      <div class="code-block">
+        <button type="button" class="copy-btn" title="コピー">📋</button>
+        <pre><code>CREATE TABLE IF NOT EXISTS items (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
   price INT NOT NULL,
@@ -282,11 +313,14 @@ INSERT INTO items (name, price) VALUES
   ('Banana', 90),
   ('Orange', 150);
       </code></pre>
+      </div>
       <div class="note">ファイル名を <code>001_</code> など連番にすると、複数SQLを順序実行できます。</div>
 
       <h2 id="indexphp">10. <code>public/index.php</code>（一覧＋CRUDの単一ファイル版）</h2>
       <p>学習しやすいよう、一覧・追加・編集・削除を1ファイルに収めた最小実装です（PDO＋プリペアド、簡易CSRF、フラッシュメッセージ）。</p>
-      <pre><code>&lt;?php
+      <div class="code-block">
+        <button type="button" class="copy-btn" title="コピー">📋</button>
+        <pre><code>&lt;?php
 declare(strict_types=1);
 session_start();
 
@@ -402,6 +436,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
   &lt;div class="wrap"&gt;&lt;header&gt;&lt;h1&gt;Items CRUD（PHP → MySQL）&lt;/h1&gt;&lt;div class="meta"&gt;接続先：'.h("$host / $db / $user").'&lt;/div&gt;&lt;/header&gt;'.$content.'&lt;/div&gt;';
 }
       </code></pre>
+      </div>
 
       <h2 id="run">11. 起動・確認・停止（手順）</h2>
       <ol>
@@ -540,6 +575,26 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
             updateToggleState();
           }
         });
+      });
+
+      // --- Copy Button Logic ---
+      document.addEventListener('click', e => {
+        const copyBtn = e.target.closest('.copy-btn');
+        if (!copyBtn) return;
+
+        const block = copyBtn.closest('.code-block');
+        const pre = block?.querySelector('pre');
+        if (pre) {
+          navigator.clipboard.writeText(pre.textContent).then(() => {
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = '✔ Copied';
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+              copyBtn.textContent = originalText;
+              copyBtn.classList.remove('copied');
+            }, 1500);
+          }).catch(err => { console.error('コピーに失敗しました', err); alert('コピーに失敗しました。'); });
+        }
       });
 
       // --- Init ---
