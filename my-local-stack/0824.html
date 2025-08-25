@@ -146,7 +146,7 @@
           <li><a href="#architecture">3. アプリケーション構成図</a></li>
           <li><a href="#env">4. .env（環境変数）</a></li>
           <li><a href="#compose">5. docker-compose.yml（設計図）</a></li>
-          <li><a href="#discovery">6. コラム：サービスディスカバリ</a></li>
+          <li><a href="#discovery">6. コラム：コンテナ間のDB接続の仕組み</a></li>
           <li><a href="#dockerfile">7. web/Dockerfile（PHP環境）</a></li>
           <li><a href="#phpmyadmin-config">8. phpmyadmin/config.inc.php（設定）</a></li>
           <li><a href="#phpini">9. web/php.ini（PHP設定）</a></li>
@@ -311,24 +311,25 @@ volumes:
         <li><strong>depends_on + healthcheck：</strong> DBが準備完了後に他が起動 → 安定。</li>
       </ul>
 
-      <h2 id="discovery">6. コラム：サービスディスカバリ</h2>
+      <h2 id="discovery">6. コラム：コンテナ間のDB接続の仕組み</h2>
       <p>なぜ<code>web</code>コンテナは、IPアドレスを知らないのに<code>db</code>という名前だけでMySQLに接続できるのでしょうか？<br>
-      その秘密は、Docker Composeが自動的に作る「内部ネットワーク」と「サービスディスカバリ」機能にあります。</p>
+      これは、Docker Composeが提供する「<strong>仮想ネットワーク</strong>」と「<strong>サービスディスカバリ</strong>」という2つの強力な機能のおかげです。</p>
       <ol>
-        <li><strong>専用の内部ネットワークが作られる</strong><br>
-          <code>docker compose up</code>を実行すると、コンテナ達だけが参加できるプライベートな仮想ネットワークが自動で作成されます。
+        <li>
+          <strong>専用の仮想ネットワークが作られる</strong><br>
+          <code>docker compose up</code>を実行すると、Composeファイルに定義されたサービス（<code>web</code>, <code>db</code>など）だけが参加できるプライベートなネットワークが自動で作成されます。このネットワーク内では、各コンテナは互いに<strong>TCP/IP通信</strong>が可能です。
         </li>
-        <li><strong>サービス名が「住所」になる（サービスディスカバリ）</strong><br>
-          このネットワーク内では、<code>docker-compose.yml</code>に書いたサービス名（例: <code>db</code>）が、そのままホスト名（コンピュータ名）として使えます。
+        <li>
+          <strong>サービス名がホスト名として使える（サービスディスカバリ）</strong><br>
+          このネットワークにはDocker内蔵のDNSサーバーが存在します。<code>web</code>コンテナが「<code>db</code>」というホスト名で通信しようとすると、このDNSが自動的に<code>db</code>コンテナの内部IPアドレスに変換（名前解決）してくれます。これにより、私たちはIPアドレスを意識することなく、サービス名で通信先を指定できます。
         </li>
-        <li><strong>環境変数で接続情報を渡す</strong><br>
-          各コンテナには、環境変数を通じて「どのホストに接続するか」を教えます。<code>web</code>サービスでは<code>DB_HOST: db</code>と設定し、PHP側で<code>getenv('DB_HOST')</code>として受け取っています。
-        </li>
-        <li><strong><code>depends_on</code>で起動順序を保証する</strong><br>
-          <code>db</code>が準備完了するまで<code>web</code>の起動を待つことで、接続エラーを防ぎます。
+        <li>
+          <strong>コンテナ間の直接通信</strong><br>
+          PHPコード（<code>new PDO("mysql:host=db;...")</code>）は、「<code>db</code>というホストの3306番ポート（MySQLの標準ポート）にTCPで接続せよ」という指示を出します。これはDockerネットワーク内で完結する直接的な通信です。
         </li>
       </ol>
-      <div class="good"><strong>結論：</strong>これらの機能のおかげで、私たちは複雑なネットワーク設定なしに、サービス名を頼りにコンテナ間を安全に接続できます。</div>
+      <div class="good"><strong>結論：</strong>Dockerが裏側でネットワーク設定と名前解決を自動で行ってくれるため、私たちはサービス名を指定するだけで、簡単かつ安全にコンテナ間を接続できます。</div>
+      <div class="note"><strong>補足：</strong><code>docker-compose.yml</code>の<code>ports</code>設定（例: <code>"8080:80"</code>）は、ホストPC（外部）からコンテナへの通信を中継するためのものです。コンテナ同士の内部通信には影響しません。</div>
 
       <h2 id="dockerfile">7. <code>web/Dockerfile</code>（PHP環境）</h2>
       <div class="code-block">
