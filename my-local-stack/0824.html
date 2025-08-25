@@ -6,6 +6,7 @@
   <title>Docker + PHP + MySQL + phpMyAdmin ローカル開発ガイド（準備〜起動〜CRUD）</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
     :root{
       --bg:#f1f5f9; --fg:#1e293b; --muted:#64748b; --line:#e2e8f0;
@@ -65,6 +66,25 @@
     pre code.hljs { padding: 1em; }
 
     .code-block{position:relative;margin:1em 0}
+    /* Mermaid.js 用のスタイル */
+    .mermaid {
+      background-color: var(--sidebar-bg); border-radius: 10px; padding: 1rem; text-align: center;
+      transition: background-color .2s;
+    }
+    /* MermaidのテーマをCSS変数で上書き */
+    .mermaid .node { fill: var(--bg); stroke: var(--pri); stroke-width: 2px; }
+    .mermaid .node .nodeLabel { color: var(--fg); }
+    .mermaid .container { fill: var(--sidebar-bg); stroke: var(--line); }
+    .mermaid .container .nodeLabel { color: var(--fg); }
+    .mermaid .file { fill: var(--bg); stroke: var(--line); stroke-dasharray: 5 5; }
+    .mermaid .file .nodeLabel { color: var(--muted); }
+    .mermaid .volume { fill: var(--bg); stroke: var(--line); stroke-dasharray: 2 2; }
+    .mermaid .volume .nodeLabel { color: var(--muted); }
+    /* 矢印のテキスト背景 */
+    .mermaid .edgeLabel {
+      background-color: var(--sidebar-bg) !important;
+      color: var(--fg);
+    }
     .code-block pre{margin:0}
     .copy-btn{
       position:absolute; top:.5rem; right:.5rem; z-index:1;
@@ -123,18 +143,19 @@
         <ol>
           <li><a href="#structure">1. フォルダ構成</a></li>
           <li><a href="#why-structure">2. この構成の利点</a></li>
-          <li><a href="#env">3. .env（環境変数）</a></li>
-          <li><a href="#compose">4. docker-compose.yml（設計図）</a></li>
-          <li><a href="#discovery">5. コラム：サービスディスカバリ</a></li>
-          <li><a href="#dockerfile">6. web/Dockerfile（PHP環境）</a></li>
-          <li><a href="#phpmyadmin-config">7. phpmyadmin/config.inc.php（設定）</a></li>
-          <li><a href="#phpini">8. web/php.ini（PHP設定）</a></li>
-          <li><a href="#sql">9. db/init/001_init.sql（初期データ）</a></li>
-          <li><a href="#indexphp">10. public/index.php（CRUDアプリ）</a></li>
-          <li><a href="#run">11. 起動・確認・停止の手順</a></li>
-          <li><a href="#trouble">12. トラブルシューティング</a></li>
-          <li><a href="#concepts">13. 用語集</a></li>
-          <li><a href="#next">14. 次のステップ</a></li>
+          <li><a href="#architecture">3. アプリケーション構成図</a></li>
+          <li><a href="#env">4. .env（環境変数）</a></li>
+          <li><a href="#compose">5. docker-compose.yml（設計図）</a></li>
+          <li><a href="#discovery">6. コラム：サービスディスカバリ</a></li>
+          <li><a href="#dockerfile">7. web/Dockerfile（PHP環境）</a></li>
+          <li><a href="#phpmyadmin-config">8. phpmyadmin/config.inc.php（設定）</a></li>
+          <li><a href="#phpini">9. web/php.ini（PHP設定）</a></li>
+          <li><a href="#sql">10. db/init/001_init.sql（初期データ）</a></li>
+          <li><a href="#indexphp">11. public/index.php（CRUDアプリ）</a></li>
+          <li><a href="#run">12. 起動・確認・停止の手順</a></li>
+          <li><a href="#trouble">13. トラブルシューティング</a></li>
+          <li><a href="#concepts">14. 用語集</a></li>
+          <li><a href="#next">15. 次のステップ</a></li>
         </ol>
       </div>
     </nav>
@@ -168,7 +189,36 @@
       </ul>
       <div class="good"><strong>ポイント：</strong> 後でテストやログを追加しても崩れにくい「器」になっています。</div>
 
-      <h2 id="env">3. <code>.env</code>（環境変数）</h2>
+      <h2 id="architecture">3. アプリケーション構成図</h2>
+      <pre class="mermaid">
+        graph TD
+            subgraph "ユーザーPC (localhost)"
+                A["ブラウザ"]:::node
+            end
+
+            subgraph "Dockerコンテナ群"
+                B["web (Apache/PHP)"]:::container
+                C["phpmyadmin"]:::container
+                D["db (MySQL)"]:::container
+            end
+
+            subgraph "ホストPCのファイル/Volume"
+                F1["public/"]:::file
+                F2["web/php.ini"]:::file
+                F3["db/init/"]:::file
+                F4["phpmyadmin/config.inc.php"]:::file
+                V1["db_data (Volume)"]:::volume
+            end
+
+            A -- ":${WEB_PORT}" --> B
+            A -- ":${PHPMYADMIN_PORT}" --> C
+            B -- "DB接続" --> D
+            C -- "DB接続" --> D
+            F1 -.-> B; F2 -.-> B; F3 -.-> D; F4 -.-> C; V1 -.-> D
+      </pre>
+      <div class="note">この図は、各コンテナがどのように連携し、ホストPC上のどのファイルと同期しているかを示しています。<code>${...}</code> は <code>.env</code> ファイルの値に置き換えられます。</div>
+
+      <h2 id="env">4. <code>.env</code>（環境変数）</h2>
       <p>パスワードやポートなど、人や環境によって変えたい値を一か所に集約します。</p>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
@@ -184,7 +234,7 @@ DB_PORT=3306
       </div>
       <div class="note">compose から <code>${変数名}</code> で参照されます。Git には基本的にコミットしない想定（<code>.gitignore</code>）</div>
 
-      <h2 id="compose">4. <code>docker-compose.yml</code>（設計図）</h2>
+      <h2 id="compose">5. <code>docker-compose.yml</code>（設計図）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
         <pre><code class="language-yaml">services:
@@ -261,7 +311,7 @@ volumes:
         <li><strong>depends_on + healthcheck：</strong> DBが準備完了後に他が起動 → 安定。</li>
       </ul>
 
-      <h2 id="discovery">5. コラム：サービスディスカバリ</h2>
+      <h2 id="discovery">6. コラム：サービスディスカバリ</h2>
       <p>なぜ<code>web</code>コンテナは、IPアドレスを知らないのに<code>db</code>という名前だけでMySQLに接続できるのでしょうか？<br>
       その秘密は、Docker Composeが自動的に作る「内部ネットワーク」と「サービスディスカバリ」機能にあります。</p>
       <ol>
@@ -280,7 +330,7 @@ volumes:
       </ol>
       <div class="good"><strong>結論：</strong>これらの機能のおかげで、私たちは複雑なネットワーク設定なしに、サービス名を頼りにコンテナ間を安全に接続できます。</div>
 
-      <h2 id="dockerfile">6. <code>web/Dockerfile</code>（PHP環境）</h2>
+      <h2 id="dockerfile">7. <code>web/Dockerfile</code>（PHP環境）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
         <pre><code class="language-dockerfile">FROM php:8.2-apache
@@ -294,7 +344,7 @@ WORKDIR /var/www/html
       </div>
       <div class="note"><strong>理由：</strong> MySQL接続には <code>pdo_mysql</code> が必須。将来のルーティングに <code>mod_rewrite</code> が便利。</div>
 
-      <h2 id="phpmyadmin-config">7. <code>phpmyadmin/config.inc.php</code>（設定）</h2>
+      <h2 id="phpmyadmin-config">8. <code>phpmyadmin/config.inc.php</code>（設定）</h2>
       <p>phpMyAdminのセキュリティを高め、DBコンテナとの通信を暗号化（SSL化）するための設定ファイルです。</p>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
@@ -316,7 +366,7 @@ $cfg['Servers'][$i]['ssl_verify'] = false; // ローカルなので証明書検�
       </div>
       <div class="note">この設定により、phpMyAdminのログイン画面で「SSLは使用されていません」という警告が表示されなくなります。</div>
 
-      <h2 id="phpini">8. <code>web/php.ini</code>（PHP設定）</h2>
+      <h2 id="phpini">9. <code>web/php.ini</code>（PHP設定）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
         <pre><code class="language-ini">display_errors=On
@@ -329,7 +379,7 @@ memory_limit=256M
       </div>
       <div class="warn"><strong>注意：</strong> 本番では <code>display_errors=Off</code> が基本。開発ではエラー見える化が学習効率↑</div>
 
-      <h2 id="sql">9. <code>db/init/001_init.sql</code>（初期データ）</h2>
+      <h2 id="sql">10. <code>db/init/001_init.sql</code>（初期データ）</h2>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
         <pre><code class="language-sql">CREATE TABLE IF NOT EXISTS items (
@@ -347,7 +397,7 @@ INSERT INTO items (name, price) VALUES
       </div>
       <div class="note">ファイル名を <code>001_</code> など連番にすると、複数SQLを順序実行できます。</div>
 
-      <h2 id="indexphp">10. <code>public/index.php</code>（CRUDアプリ）</h2>
+      <h2 id="indexphp">11. <code>public/index.php</code>（CRUDアプリ）</h2>
       <p>学習しやすいよう、一覧・追加・編集・削除を1ファイルに収めた最小実装です（PDO＋プリペアド、簡易CSRF、フラッシュメッセージ）。</p>
       <div class="code-block">
         <button type="button" class="copy-btn" title="コピー">📋</button>
@@ -469,7 +519,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
       </code></pre>
       </div>
 
-      <h2 id="run">11. 起動・確認・停止の手順</h2>
+      <h2 id="run">12. 起動・確認・停止の手順</h2>
       <ol>
         <li>上のフォルダ構成でファイルを配置</li>
         <li><kbd class="kbd">cd my-local-stack</kbd></li>
@@ -482,7 +532,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       <p>停止：<kbd class="kbd">docker compose down</kbd><br>DB初期化からやり直す：<kbd class="kbd">docker compose down -v</kbd> → <kbd class="kbd">up -d</kbd></p>
 
-      <h2 id="trouble">12. トラブルシューティング</h2>
+      <h2 id="trouble">13. トラブルシューティング</h2>
       <table>
         <thead><tr><th>症状</th><th>確認ポイント</th></tr></thead>
         <tbody>
@@ -528,7 +578,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
         </tbody>
       </table>
 
-      <h2 id="concepts">13. 用語集</h2>
+      <h2 id="concepts">14. 用語集</h2>
       <table>
         <thead>
           <tr>
@@ -544,7 +594,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
         </tbody>
       </table>
 
-      <h2 id="next">14. 次のステップ</h2>
+      <h2 id="next">15. 次のステップ</h2>
       <ul>
         <li>ファイル分割：<code>create.php</code> / <code>edit.php</code> / <code>delete.php</code> へ分けて可読性UP</li>
         <li>検索・ページング、ソートの追加</li>
@@ -665,6 +715,7 @@ if ($action === 'store' &amp;&amp; $_SERVER['REQUEST_METHOD'] === 'POST') {
       if (window.hljs) {
         window.hljs.highlightAll();
       }
+      mermaid.initialize({ startOnLoad: true, theme: 'base' });
       initTheme();
     });
   </script>
