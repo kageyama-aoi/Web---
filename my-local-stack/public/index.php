@@ -86,10 +86,52 @@ if ($action === 'store' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="actions"><button type="submit">更新する</button> <a class="btn" href="./">戻る</a></div>
       </form>';
   } else {
-    $stmt = $pdo->query('SELECT id, name, price, created_at FROM items ORDER BY id DESC'); $rows = $stmt->fetchAll();
-    $content .= '<div class="toolbar"><a class="btn primary" href="?action=create">＋ 追加</a></div>'
-      .($success ? '<div class="alert alert-ok">'.$success.'</div>':'' ).'
-      <table><thead><tr><th>ID</th><th>名前</th><th>価格</th><th>作成日時</th><th>操作</th></tr></thead><tbody>';
+    // 検索条件の取得
+    $search_name = trim($_GET['name'] ?? '');
+    $search_price = trim($_GET['price'] ?? '');
+
+    // ベースのSQLとパラメータ
+    $sql = 'SELECT id, name, price, created_at FROM items';
+    $where = [];
+    $params = [];
+
+    // 条件の組み立て
+    if ($search_name !== '') {
+        $where[] = 'name LIKE :name';
+        $params[':name'] = $search_name . '%';
+    }
+    if ($search_price !== '' && ctype_digit($search_price)) {
+        $where[] = 'price = :price';
+        $params[':price'] = (int)$search_price;
+    }
+
+    if (!empty($where)) {
+        $sql .= ' WHERE ' . implode(' AND ', $where);
+    }
+    $sql .= ' ORDER BY id DESC';
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll();
+
+    $content .= '<div class="toolbar"><a class="btn primary" href="?action=create">＋ 追加</a></div>';
+
+    // 検索フォーム
+    $content .= '
+      <form method="get" action="./" class="search-form">
+        <div class="field-group">
+          <div class="field"><label>名前（前方一致）</label><input type="text" name="name" value="'.h($search_name).'"></div>
+          <div class="field"><label>価格（完全一致）</label><input type="number" name="price" min="0" step="1" value="'.h($search_price).'"></div>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn">検索</button>
+          <a class="btn" href="./">リセット</a>
+        </div>
+      </form>
+    ';
+
+    $content .= ($success ? '<div class="alert alert-ok">'.$success.'</div>':'')
+      .'<table><thead><tr><th>ID</th><th>名前</th><th>価格</th><th>作成日時</th><th>操作</th></tr></thead><tbody>';
     foreach ($rows as $r) {
       $content .= '<tr><td>'.(int)$r['id'].'</td><td>'.h($r['name']).'</td><td>'.(int)$r['price'].'</td><td>'.h((string)$r['created_at']).'</td>
         <td class="ops"><a class="btn" href="?action=edit&id='.(int)$r['id'].'">編集</a>
@@ -110,6 +152,12 @@ if ($action === 'store' && $_SERVER['REQUEST_METHOD'] === 'POST') {
   .actions{margin-top:12px} .field{margin:8px 0;max-width:420px} input[type=text],input[type=number]{width:100%;padding:.5em;border:1px solid var(--line);border-radius:.4em}
   .alert{margin:10px 0;padding:.6em .8em;border-radius:.5em} .alert-ok{background:#e6ffed;border:1px solid #b7ebc6} .alert-error{background:#fee2e2;border:1px solid #fecaca}
   .ops form{display:inline} .meta{color:var(--muted);font-size:12px;margin-top:4px} .wrap{max-width:960px} header{display:flex;gap:8px;margin-bottom:10px;align-items:end}
-  header .meta{margin-left:auto;color:#666;font-size:12px}</style>
+  header .meta{margin-left:auto;color:#666;font-size:12px}
+  /* 検索フォーム用スタイル */
+  .search-form{background:#f8fafc;border:1px solid var(--line);padding:16px;border-radius:.5em;margin:12px 0;max-width:900px}
+  .search-form .field-group{display:flex;gap:12px;align-items:flex-end}
+  .search-form .field{flex:1}
+  .search-form .actions{margin-top:12px}
+  .search-form .actions .btn{margin-right:8px}</style>
   <div class="wrap"><header><h1>Items CRUD（PHP → MySQL）</h1><div class="meta">接続先：'.h("$host / $db / $user").'</div></header>'.$content.'</div>';
 }
