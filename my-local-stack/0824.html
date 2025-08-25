@@ -196,13 +196,13 @@
                 A["ブラウザ"]:::node
             end
 
-            subgraph "Dockerコンテナ群"
+            subgraph "Docker内部ネットワーク"
                 B["web (Apache/PHP)"]:::container
                 C["phpmyadmin"]:::container
                 D["db (MySQL)"]:::container
             end
 
-            subgraph "ホストPCのファイル/Volume"
+            subgraph "ホストPCのファイル / Volume"
                 F1["public/"]:::file
                 F2["web/php.ini"]:::file
                 F3["db/init/"]:::file
@@ -212,11 +212,16 @@
 
             A -- ":${WEB_PORT}" --> B
             A -- ":${PHPMYADMIN_PORT}" --> C
-            B -- "DB接続" --> D
-            C -- "DB接続" --> D
-            F1 -.-> B; F2 -.-> B; F3 -.-> D; F4 -.-> C; V1 -.-> D
+            B -- "TCP接続 (ホスト名: db)" --> D
+            C -- "TCP接続 (ホスト名: db)" --> D
+
+            B -.-> F1
+            B -.-> F2
+            D -.-> F3
+            C -.-> F4
+            D -.-> V1
       </pre>
-      <div class="note">この図は、各コンテナがどのように連携し、ホストPC上のどのファイルと同期しているかを示しています。<code>${...}</code> は <code>.env</code> ファイルの値に置き換えられます。</div>
+      <div class="note">この図は、各コンテナがどのように連携し、ホストPC上のどのファイルと同期しているかを示しています。矢印はデータの流れや依存関係を表します。<code>${...}</code> は <code>.env</code> ファイルの値に置き換えられます。</div>
 
       <h2 id="env">4. <code>.env</code>（環境変数）</h2>
       <p>パスワードやポートなど、人や環境によって変えたい値を一か所に集約します。</p>
