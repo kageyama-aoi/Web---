@@ -33,6 +33,11 @@
       display:grid;
       grid-template-columns: 260px 1fr;
       min-height:calc(100vh - 60px);
+      transition: grid-template-columns .25s ease-in-out;
+    }
+    /* PCでサイドバーが閉じている状態 */
+    .layout.sidebar-collapsed {
+      grid-template-columns: 0 1fr;
     }
 
     /* サイドバー */
@@ -41,6 +46,14 @@
       border-right:1px solid #ddd;
       padding:.8rem;
       overflow:auto;
+      transition: padding .25s ease-in-out, opacity .25s ease-in-out;
+      white-space: nowrap;
+    }
+    .layout.sidebar-collapsed nav.sidebar {
+      padding-left: 0;
+      padding-right: 0;
+      opacity: 0;
+      overflow-x: hidden;
     }
     .toc-title{margin:.2rem 0 .6rem; font-weight:700; font-size:.95rem}
     .toc-search{
@@ -137,13 +150,20 @@
     kbd{border:1px solid #ddd; border-radius:6px; padding:.08rem .35rem; background:#fff}
 
     /* モバイル：サイドバー折りたたみ */
-    .sidebar-toggle{display:none}
+    .sidebar-toggle{
+      display:inline-flex;
+      border:1px solid #ddd;
+      background:#fff;
+      color:#3949ab;
+      border-radius:8px;
+      padding:.35rem .6rem;
+      cursor:pointer;
+    }
     @media (max-width: 900px){
       .layout{grid-template-columns: 1fr}
+      .layout.sidebar-collapsed { grid-template-columns: 1fr; } /* モバイルではレイアウト変更しない */
       nav.sidebar{position:fixed; inset:60px 0 auto 0; height:calc(100vh - 60px); transform:translateX(-100%); transition:transform .2s ease}
       nav.sidebar.open{transform:translateX(0)}
-      .sidebar-toggle{display:inline-flex; border:1px solid #ddd; background:#fff; color:#fff;
-        border-radius:8px; padding:.35rem .6rem; cursor:pointer}
     }
 
     /* ====== プレビュー用の共通UI ====== */
@@ -1394,6 +1414,7 @@ document<span class="token punctuation">.</span><span class="token function">add
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
   const pageInfo = document.getElementById('pageInfo');
+  const layout = document.querySelector('.layout');
   const sidebar = document.getElementById('sidebar');
   const toggleBtn = document.querySelector('.sidebar-toggle');
   const tocSearch = document.getElementById('tocSearch');
@@ -1424,7 +1445,8 @@ document<span class="token punctuation">.</span><span class="token function">add
       e.preventDefault();
       const idx = Number(a.dataset.index);
       activate(idx);
-      if (sidebar.classList.contains('open')) {
+      // モバイル表示のときだけサイドバーを閉じる
+      if (window.innerWidth <= 900 && sidebar.classList.contains('open')) {
         sidebar.classList.remove('open');
         toggleBtn.setAttribute('aria-expanded', 'false');
       }
@@ -1432,8 +1454,16 @@ document<span class="token punctuation">.</span><span class="token function">add
   });
 
   toggleBtn.addEventListener('click', ()=>{
-    const open = sidebar.classList.toggle('open');
-    toggleBtn.setAttribute('aria-expanded', String(open));
+    if (window.innerWidth > 900) {
+      // PC表示
+      layout.classList.toggle('sidebar-collapsed');
+      const isExpanded = !layout.classList.contains('sidebar-collapsed');
+      toggleBtn.setAttribute('aria-expanded', String(isExpanded));
+    } else {
+      // モバイル表示
+      const isOpen = sidebar.classList.toggle('open');
+      toggleBtn.setAttribute('aria-expanded', String(isOpen));
+    }
   });
 
   tocSearch.addEventListener('input', ()=>{
