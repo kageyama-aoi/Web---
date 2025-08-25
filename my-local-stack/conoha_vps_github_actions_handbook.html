@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ja" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ConoHa VPS × Docker × GitHub Actions 自動デプロイ実践ハンドブック</title>
+<meta name="description" content="ConoHa VPS上にDockerでWebアプリケーション環境を構築し、GitHub Actionsを使ってGitリポジトリへのpushをトリガーに自動でデプロイするまでの全手順を解説します。" />
+<style>
+  :root {
+    --bg: #111827; --panel: #0b1220; --paper: #0f172a; --fg: #e5e7eb; --muted: #94a3b8;
+    --brand: #60a5fa; --accent: #34d399; --danger: #f87171; --code-bg: #0b1020; --border: #1f2937; --shadow: 0 2px 12px rgba(0,0,0,.25);
+  }
+  [data-theme="light"] {
+    --bg: #f8fafc; --panel: #ffffff; --paper: #ffffff; --fg: #0f172a; --muted: #475569;
+    --brand: #2563eb; --accent: #059669; --danger: #dc2626; --code-bg: #0b1220; --border: #e2e8f0; --shadow: 0 2px 10px rgba(2,6,23,.06);
+  }
+  * { box-sizing: border-box; } html, body { height: 100%; } body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; background: var(--bg); color: var(--fg);}
+  .layout { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+  aside { background: var(--panel); border-right: 1px solid var(--border); padding: 1rem; position: sticky; top: 0; height: 100vh; overflow: auto; }
+  main { min-width: 0; }
+  header.top { position: sticky; top: 0; z-index: 20; padding: .8rem 1rem; background: var(--paper); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  header .title { font-weight: 700; letter-spacing: .2px; }
+  .chip { font-size: .85rem; padding: .15rem .5rem; border: 1px solid var(--border); border-radius: 999px; color: var(--muted);}
+  .container { max-width: 980px; margin: 0 auto; padding: 1rem clamp(1rem, 3vw, 2rem); }
+  section { background: var(--paper); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 1.2rem; margin: 1rem 0 1.5rem;}
+  section h2 { margin-top: .2rem; } .muted { color: var(--muted); } h1, h2, h3 { scroll-margin-top: 80px; } a { color: var(--brand); text-decoration: none; } a:hover { text-decoration: underline; }
+  nav.toc h3 { font-size: 1rem; margin: .2rem 0 .6rem; color: var(--muted);}
+  nav.toc a { display: block; padding: .4rem .4rem; margin: .1rem 0; border-radius: 8px; color: var(--fg);}
+  nav.toc a.active, nav.toc a:hover { background: rgba(96,165,250,.15);}
+  pre { background: var(--code-bg); color: #e2e8f0; padding: 1rem; border-radius: 12px; overflow: auto; border: 1px solid #0b2942;}
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Noto Sans Mono", monospace; font-size: .9rem; }
+  .codebox { position: relative; } .copy { position: absolute; top: 8px; right: 8px; background: rgba(2,6,23,.4); color: #e2e8f0; border: 1px solid rgba(226,232,240,.2); border-radius: 8px; padding: .25rem .5rem; cursor: pointer;}
+  .copy.ok { background: rgba(34,197,94,.3);}
+  .callout { border-left: 4px solid var(--brand); padding: .6rem .8rem; background: rgba(96,165,250,.12); border-radius: 10px;}
+  .callout.warn { border-left-color: var(--danger); background: rgba(248,113,113,.15);}
+  .pill { border: 1px solid var(--border); border-radius: 999px; padding: .1rem .5rem; margin-right: .35rem; font-size: .8rem; color: var(--muted);}
+  footer { color: var(--muted); text-align: center; padding: 2rem 1rem 3rem; }
+  .kvs { display:grid; grid-template-columns: 160px 1fr; gap:.4rem 1rem; } .kvs div:nth-child(odd) { color: var(--muted);}
+  .grid-2 { display:grid; grid-template-columns: 1fr; gap: 1rem; } @media (min-width: 900px) { .grid-2 { grid-template-columns: 1fr 1fr; } }
+  ol li, ul li { margin-bottom: .5rem; }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.5rem">
+      <div style="font-weight:700">目次</div>
+      <button id="theme" class="chip" title="テーマ切替">Light / Dark</button>
+    </div>
+    <nav class="toc" id="toc"></nav>
+    <div style="margin-top:1rem" class="muted">作成: 2025-08-26</div>
+  </aside>
+
+  <main>
+    <header class="top">
+      <div>
+        <div class="title">ConoHa VPS × Docker × GitHub Actions 自動デプロイ実践ハンドブック</div>
+        <div class="muted" style="font-size:.9rem">Git Pushから始めるモダンなWebアプリケーション公開フロー</div>
+      </div>
+      <div>
+        <span class="pill">ConoHa</span>
+        <span class="pill">Docker</span>
+        <span class="pill">GitHub Actions</span>
+        <span class="pill">Caddy</span>
+        <span class="pill">CI/CD</span>
+      </div>
+    </header>
+
+    <div class="container">
+
+      <section id="s1">
+        <h2>1. はじめに：この手順書のゴール</h2>
+        <p>このハンドブックは、ConoHa VPS上にDockerコンテナで動作するWebアプリケーションを構築し、GitHubリポジトリへのpushをトリガーとして本番環境へ自動デプロイ（CI/CD）するまでの一連の流れを解説します。</p>
+        <ul>
+          <li><strong>インフラ</strong>: ConoHa VPS (Ubuntu)</li>
+          <li><strong>コンテナ技術</strong>: Docker, Docker Compose</li>
+          <li><strong>Webサーバー</strong>: Caddy (自動HTTPS化リバースプロキシ)</li>
+          <li><strong>自動化</strong>: GitHub Actions</li>
+        </ul>
+        <div class="callout"><strong>最終目標:</strong> ローカルで開発したコードを <code>git push</code> するだけで、VPS上のアプリケーションが自動で最新版に更新される状態を作る。</div>
+        <h3>完成図</h3>
+        <div style="overflow:auto;border:1px solid var(--border);border-radius:12px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 1024 400">
+            <style>
+              .box { fill: var(--paper); stroke: var(--border); stroke-width:1.2; rx:10; }
+              .title { font: 600 16px system-ui, 'Noto Sans JP', sans-serif; fill: var(--fg); }
+              .text  { font: 14px system-ui, 'Noto Sans JP', sans-serif; fill: var(--muted); }
+              .arrow { stroke: var(--fg); stroke-width:1.4; marker-end:url(#m); fill:none; }
+            </style>
+            <defs><marker id="m" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="currentColor"/></marker></defs>
+            <rect x="32" y="40" width="240" height="80" class="box"/><text x="48" y="70" class="title">Developer (git push)</text>
+            <rect x="32" y="180" width="240" height="80" class="box"/><text x="48" y="210" class="title">GitHub Repository</text>
+            <rect x="312" y="180" width="240" height="80" class="box"/><text x="48" y="235" class="text">main branch</text><text x="328" y="210" class="title">GitHub Actions</text><text x="328" y="235" class="text">CI/CD Workflow</text>
+            <rect x="592" y="20" width="400" height="360" class="box"/><text x="608" y="45" class="title">ConoHa VPS</text>
+            <rect x="624" y="140" width="336" height="180" class="box"/><text x="640" y="165" class="title">Docker</text>
+            <rect x="640" y="190" width="150" height="100" class="box"/><text x="656" y="220" class="title">Caddy</text><text x="656" y="245" class="text">Reverse Proxy</text>
+            <rect x="810" y="190" width="150" height="100" class="box"/><text x="826" y="220" class="title">Your App</text><text x="826" y="245" class="text">Container</text>
+            <path d="M152,180 L152,120" class="arrow"/>
+            <path d="M272,220 L312,220" class="arrow"/>
+            <path d="M552,220 C572,220 582,180 624,180" class="arrow" style="stroke-dasharray: 5 5;"/>
+            <path d="M790,240 L810,240" class="arrow"/>
+          </svg>
+        </div>
+      </section>
+
+      <section id="s2">
+        <h2>2. Step 1: ConoHa VPSの初期設定</h2>
+        <ol>
+          <li><strong>VPS契約:</strong> ConoHaにログインし、サーバーを追加します。プランは一番安いもので十分です。イメージタイプは「OS」タブから「Ubuntu 22.04」を選択します。アプリケーションテンプレートは使いません。</li>
+          <li><strong>SSHキーの登録:</strong> 「SSH Key」の「＋」ボタンから、ローカルPCで生成したSSH公開鍵（<code>~/.ssh/id_rsa.pub</code>など）を登録します。</li>
+          <li><strong>サーバー作成:</strong> rootパスワードを設定し、サーバーを作成します。</li>
+          <li><strong>サーバーへSSH接続:</strong>
+            <pre><code># ssh root@[VPSのIPアドレス]</code></pre>
+          </li>
+          <li><strong>一般ユーザー作成とsudo権限付与:</strong>
+            <pre><code># デプロイ用のユーザーを作成 (例: appuser)
+adduser appuser
+
+# sudoグループに追加
+usermod -aG sudo appuser
+
+# 作成したユーザーに切り替え
+su - appuser</code></pre>
+          </li>
+          <li><strong>SSHキーの設置:</strong>
+            <pre><code># (appuserで実行)
+mkdir ~/.ssh
+chmod 700 ~/.ssh
+# ローカルの公開鍵を authorized_keys にコピーする
+echo "ssh-rsa AAAA..." >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys</code></pre>
+          </li>
+          <li><strong>ファイアウォール(UFW)設定:</strong>
+            <pre><code># (rootまたはsudoで実行)
+ufw allow ssh
+ufw allow http
+ufw allow https
+ufw enable</code></pre>
+          </li>
+          <li><strong>OSアップデート:</strong>
+            <pre><code>sudo apt update && sudo apt upgrade -y</code></pre>
+          </li>
+        </ol>
+        <div class="callout warn"><strong>セキュリティ向上:</strong> 本番運用では、<code>/etc/ssh/sshd_config</code>を編集し、rootログインとパスワード認証を無効化することを強く推奨します。</div>
+      </section>
+
+      <section id="s3">
+        <h2>3. Step 2: Docker環境の構築と手動デプロイ</h2>
+        <ol>
+          <li><strong>Dockerインストール:</strong>
+            <pre><code># 公式のインストールスクリプトを実行
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# 一般ユーザーをdockerグループに追加 (再ログイン後に有効)
+sudo usermod -aG docker $USER</code></pre>
+          </li>
+          <li><strong>Gitインストール:</strong>
+            <pre><code>sudo apt install git -y</code></pre>
+          </li>
+          <li><strong>プロジェクト準備:</strong> ローカルで以下のファイル構成を作成し、GitHubにpushします。
+            <pre><code>my-vps-app/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml  (Step 4で作成)
+├── app/
+│   └── server.js     (シンプルなWebサーバー)
+├── Caddyfile
+└── docker-compose.yml</code></pre>
+          </li>
+          <li><strong>サンプルファイル:</strong>
+            <div class="codebox">
+              <button class="copy" data-target="code3-compose">copy</button>
+<pre id="code3-compose"><code># docker-compose.yml
+version: "3.9"
+name: my-app-stack
+services:
+  reverse-proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+  app:
+    image: node:20-alpine
+    restart: unless-stopped
+    working_dir: /app
+    volumes: ["./app:/app"]
+    command: ["node", "server.js"]
+    expose: ["3000"]
+volumes:
+  caddy_data: {}</code></pre>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-target="code3-caddy">copy</button>
+<pre id="code3-caddy"><code># Caddyfile
+your-domain.com {
+  reverse_proxy app:3000
+}</code></pre>
+            </div>
+            <div class="codebox">
+              <button class="copy" data-target="code3-app">copy</button>
+<pre id="code3-app"><code>// app/server.js
+const http = require('http');
+const server = http.createServer((req, res) => {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.end('Hello from VPS! Deployed at: ' + new Date().toISOString());
+});
+server.listen(3000, () => console.log('Server running on port 3000'));</code></pre>
+            </div>
+          </li>
+          <li><strong>手動デプロイ:</strong> VPSにSSH接続し、動作確認をします。
+            <pre><code># (VPS上で実行)
+# GitHubからコードをクローン
+git clone https://github.com/your-username/my-vps-app.git
+cd my-vps-app
+
+# Caddyfileのドメインを自分のものに書き換える
+nano Caddyfile
+
+# Docker Composeで起動
+docker compose up -d</code></pre>
+          </li>
+          <li><strong>動作確認:</strong> ブラウザで <code>https://your-domain.com</code> にアクセスし、メッセージが表示されれば成功です。</li>
+        </ol>
+      </section>
+
+      <section id="s4">
+        <h2>4. Step 3: GitHub Actionsによる自動デプロイ</h2>
+        <p>ここがこのハンドブックの核心です。ローカルからの<code>git push</code>を検知して、VPS上で自動的にデプロイコマンドが実行されるように設定します。</p>
+        <ol>
+          <li><strong>SSHキーペアの作成（デプロイ専用）:</strong>
+            <pre><code># ローカルPCで実行。パスフレーズは空のままEnter
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ./deploy_key</code></pre>
+            <p><code>deploy_key</code>（秘密鍵）と<code>deploy_key.pub</code>（公開鍵）が生成されます。</p>
+          </li>
+          <li><strong>公開鍵をVPSに登録:</strong> 生成された公開鍵（<code>deploy_key.pub</code>）の内容を、VPSの<code>~/.ssh/authorized_keys</code>ファイルに追記します。
+            <pre><code># (VPS上で実行)
+echo "ssh-ed25519 AAAA..." >> ~/.ssh/authorized_keys</code></pre>
+          </li>
+          <li><strong>秘密鍵をGitHubに登録:</strong>
+            <ol>
+              <li>対象のGitHubリポジトリで <strong>Settings</strong> > <strong>Secrets and variables</strong> > <strong>Actions</strong> を開きます。</li>
+              <li><strong>New repository secret</strong> ボタンをクリックします。</li>
+              <li><strong>Name</strong>に<code>VPS_SSH_PRIVATE_KEY</code>と入力します。</li>
+              <li><strong>Secret</strong>に、先ほど生成した<strong>秘密鍵</strong>（<code>deploy_key</code>）の内容をすべて貼り付けます。</li>
+              <li>同様に、<code>VPS_HOST</code>（VPSのIPアドレス）、<code>VPS_USER</code>（デプロイ用ユーザー名、例: appuser）も登録します。</li>
+            </ol>
+          </li>
+          <li><strong>GitHub Actions ワークフロー作成:</strong> プロジェクトの<code>.github/workflows/deploy.yml</code>に以下を記述します。
+            <div class="codebox">
+              <button class="copy" data-target="code4-workflow">copy</button>
+<pre id="code4-workflow"><code># .github/workflows/deploy.yml
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [ main ] # mainブランチへのpushで実行
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd ~/my-vps-app
+            git pull origin main
+            docker compose up -d --build
+            docker image prune -f</code></pre>
+            </div>
+          </li>
+          <li><strong>最終テスト:</strong> ローカルで<code>app/server.js</code>のメッセージなどを少し変更し、コミットして<code>main</code>ブランチにpushします。
+            <pre><code>git add .
+git commit -m "Update server message"
+git push origin main</code></pre>
+            <p>GitHubリポジトリの「Actions」タブでワークフローが実行され、成功すれば完了です。数分後、ブラウザをリロードしてVPS上の表示が変わっていることを確認してください。</p>
+          </li>
+        </ol>
+      </section>
+
+      <section id="s5">
+        <h2>5. トラブルシューティング</h2>
+        <dl>
+          <dt><strong>GitHub ActionsでSSH接続に失敗する</strong></dt>
+          <dd>秘密鍵・公開鍵のペアが正しいか、公開鍵がVPSの<code>authorized_keys</code>に正しく追記されているか、GitHub Secretsの登録内容（特に秘密鍵のコピーミス）を確認してください。</dd>
+          <dt><strong>CaddyがSSL証明書を取得できない</strong></dt>
+          <dd>DNSのAレコードがVPSのIPアドレスに正しく向いているか、UFWで80/443ポートが開いているかを確認します。DNSの浸透には時間がかかる場合があります。</dd>
+          <dt><strong><code>docker compose</code>コマンドが見つからないと怒られる</strong></dt>
+          <dd>GitHub Actionsの実行ユーザーの環境でパスが通っていない可能性があります。<code>/usr/local/bin/docker-compose</code>のようにフルパスで指定するか、<code>appleboy/ssh-action</code>がログインシェルを模倣するため、通常は問題なく動作します。</dd>
+        </dl>
+      </section>
+
+      <section id="s6">
+        <h2>6. 次のステップ</h2>
+        <p>これで基本的な自動デプロイ環境が完成しました。ここからさらに発展させるためのアイデアです。</p>
+        <ul>
+          <li><strong>データベースの導入:</strong> <code>docker-compose.yml</code>にMySQLやPostgreSQLサービスを追加し、アプリケーションと連携させます。</li>
+          <li><strong>バックアップの自動化:</strong> データベースや永続ボリュームを定期的にバックアップするコンテナを追加します。</li>
+          <li><strong>テストの組み込み:</strong> デプロイ前に、GitHub Actionsで自動テスト（ユニットテストやE2Eテスト）を実行するステップを追加します。</li>
+          <li><strong>環境変数の管理:</strong> DBのパスワードなどの機密情報を<code>.env</code>ファイルで管理し、GitHub ActionsからはSecrets経由でVPS上に<code>.env</code>ファイルを生成するようにします。</li>
+        </ul>
+      </section>
+
+    </div>
+
+    <footer>
+      &copy; このハンドブックは、モダンなWeb開発の第一歩を踏み出すあなたのために作成されました。
+    </footer>
+  </main>
+</div>
+
+<script>
+  document.getElementById('theme').onclick = () => {
+    const root = document.documentElement;
+    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  };
+  (function(){ const t = localStorage.getItem('theme'); if(t) document.documentElement.setAttribute('data-theme', t); })();
+
+  const toc = document.getElementById('toc');
+  const sections = Array.from(document.querySelectorAll('main section'));
+  toc.innerHTML = sections.map(s => `<a href="#${s.id}">${s.querySelector('h2').textContent}</a>`).join('');
+  const links = Array.from(toc.querySelectorAll('a'));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: "-40% 0px -55% 0px", threshold: 0.01 });
+  sections.forEach(s => io.observe(s));
+
+  Array.from(document.querySelectorAll('.copy')).forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.target;
+      const el = document.getElementById(id);
+      const text = el.innerText;
+      try { await navigator.clipboard.writeText(text); btn.textContent = 'copied!'; btn.classList.add('ok'); setTimeout(()=>{btn.textContent='copy'; btn.classList.remove('ok');}, 1200); }
+      catch (e) { console.error(e); }
+    });
+  });
+</script>
+</body>
+</html>

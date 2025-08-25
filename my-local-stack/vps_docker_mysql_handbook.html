@@ -498,7 +498,7 @@ command: >
 
   const toc = document.getElementById('toc');
   const sections = Array.from(document.querySelectorAll('main section'));
-  toc.innerHTML = sections.map(s => `&lt;a href="#${s.id}"&gt;${s.querySelector('h2').textContent}&lt;/a&gt;`).join('');
+  toc.innerHTML = sections.map(s => `<a href="#${s.id}">${s.querySelector('h2').textContent}</a>`).join('');
   const links = Array.from(toc.querySelectorAll('a'));
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
