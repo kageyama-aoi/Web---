@@ -20,7 +20,7 @@
       display: grid;
       grid-template-columns: 320px 1fr;
       gap: 1.5rem;
-      padding: 1rem 1.5rem;
+      padding: 0.75rem 1.5rem;
       margin: 0 auto;
       align-items: flex-start;
       transition: grid-template-columns 0.25s ease-in-out;
@@ -43,7 +43,7 @@
       font-size: 1rem;
       color: #6c757d;
       margin-top: 0;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.25rem;
     }
     .data-io-wrapper {
       display: flex;
@@ -51,8 +51,8 @@
       align-items: center;
     }
     .data-io-wrapper .btn {
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
     }
     .data-io-wrapper .note {
       font-size: 0.85rem; color: #6c757d; margin-left: auto;
@@ -71,21 +71,29 @@
       overflow: hidden;
       white-space: nowrap;
     }
-    .sidebar h2 {
+    .sidebar-section {
+      /* A container for a group of controls in the sidebar */
+    }
+    .sidebar-section + .sidebar-section {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid #e9ecef;
+    }
+    .sidebar-section h2 {
       font-size: 1.25rem;
       margin-top: 0;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
     .main-content {
       flex: 1;
       min-width: 0;
     }
     .control-group {
-      margin-bottom: 1.75rem;
+      margin-bottom: 1.25rem;
     }
     .control-group:last-child { margin-bottom: 0; }
     .control-group > label {
-      display: block; font-weight: 700; margin-bottom: 0.75rem; font-size: 1rem;
+      display: block; font-weight: 700; margin-bottom: 0.5rem; font-size: 0.9rem;
     }
     .layout-container.sidebar-collapsed .sidebar {
       padding: 1.5rem 0;
@@ -127,7 +135,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
     .category-header h2 {
       margin: 0;
@@ -154,7 +162,7 @@
     }
 
     .category-section {
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
     .category-title {
       font-size: 1.5rem;
@@ -181,26 +189,26 @@
     .form-group {
       display: flex;
       flex-direction: column;
-      margin-bottom: 1rem;
+      margin-bottom: 0.6rem;
     }
     .form-group label {
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       margin-bottom: 0.25rem;
     }
     .form-group input, .form-group select {
-      padding: 0.6rem;
+      padding: 0.4rem 0.5rem;
       border: 1px solid #ced4da;
       border-radius: 6px;
-      font-size: 1rem;
+      font-size: 0.85rem;
       font-family: inherit;
     }
     #search-box {
-      width: 100%; padding: 0.8rem 1.2rem; font-size: 1rem; border: 1px solid #dee2e6;
+      width: 100%; padding: 0.6rem 0.8rem; font-size: 0.9rem; border: 1px solid #dee2e6;
       border-radius: 8px; box-sizing: border-box;
     }
     .form-group button {
-      padding: 0.7rem; border: none; border-radius: 6px; background-color: #198754;
+      padding: 0.5rem; border: none; border-radius: 6px; background-color: #198754;
       color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s;
     }
     .form-group button:hover { background-color: #157347; }
@@ -225,7 +233,7 @@
       background-color: #fff;
       border: 1px solid #dee2e6;
       border-radius: 8px;
-      padding: 0.8rem 1.2rem;
+      padding: 0.7rem 1.1rem;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .link-list li:hover {
@@ -266,8 +274,8 @@
 <body>
   <div class="container layout-container">
     <aside class="sidebar">
-      <h2>⚙️ 操作パネル</h2>
-      <div class="side-controls">
+      <div class="sidebar-section">
+        <h2>🔍 検索パネル</h2>
         <div class="control-group">
           <label for="search-box">キーワード検索</label>
           <input type="search" id="search-box" placeholder="タイトルや説明で検索...">
@@ -275,16 +283,16 @@
         <div class="control-group">
           <label>データ入出力</label>
           <div class="data-io-wrapper">
-            <button id="import-btn" class="btn">📥 インポート</button>
-            <button id="export-btn" class="btn">📤 エクスポート</button>
+            <button id="import-btn" class="btn">📥 import</button>
+            <button id="export-btn" class="btn">📤 export</button>
             <input type="file" id="file-input" accept=".json" style="display:none;">
             <span class="note">※ 変更内容はエクスポートで保存</span>
           </div>
         </div>
       </div>
-      <div class="main-controls">
-          <div class="control-group">
-            <label>新しいリンクを追加</label>
+      <div class="sidebar-section">
+        <h2>➕ リンク追加</h2>
+          <div class="control-group" style="margin-bottom: 0;">
             <form id="add-link-form" class="link-form">
               <div class="form-group">
                 <label for="link-title">タイトル</label>
@@ -317,7 +325,7 @@
               </div>
             </form>
           </div>
-        </div>
+      </div>
     </aside>
     <main class="main-content">
       <div class="main-header">
@@ -489,9 +497,28 @@
 
       form.addEventListener('submit', (e) => {
         e.preventDefault();
+        const titleInput = document.getElementById('link-title');
+        const urlInput = document.getElementById('link-url');
+
+        const title = titleInput.value.trim();
+        const url = urlInput.value.trim();
+
+        const errors = [];
+        if (title === '') {
+          errors.push('「タイトル」');
+        }
+        if (url === '') {
+          errors.push('「URL」');
+        }
+
+        if (errors.length > 0) {
+          alert(`以下の必須項目が入力されていません:\n\n${errors.join('\n')}`);
+          return;
+        }
+
         const newLink = {
-          title: document.getElementById('link-title').value,
-          url: document.getElementById('link-url').value,
+          title: title,
+          url: url,
           description: document.getElementById('link-desc').value,
           category: document.getElementById('link-category').value,
         };
