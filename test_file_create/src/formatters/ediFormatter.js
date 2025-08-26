@@ -8,10 +8,10 @@ function storeCode3(value){
   return padLeftSpace(value, 3);
 }
 function ediDataRow(obj){
-  // obj には 審査フラグ/カード番号/カード有効期限(YYMM)/13桁会員番号/カナ氏名/性別/生年月日(YYYYMMDD)/入会申込日(YYYYMMDD)/受付店舗コード
+  // obj には レコード区分/データ区分/審査フラグ/カード番号/カード有効期限(YYMM)/13桁会員番号/カナ氏名/性別/生年月日(YYYYMMDD)/入会申込日(YYYYMMDD)/受付店舗コード などが含まれる
   let rec = "";
-  rec += "2"; // レコード区分
-  rec += "00"; // データ区分
+  rec += obj["レコード区分"] ?? "2";
+  rec += obj["データ区分"] ?? "00";
   rec += padRightSpace(obj["審査フラグ"] ?? "0", 1);
   const card = onlyDigits(obj["カード番号"]).slice(0,16);
   rec += padRightSpace(card, 16);

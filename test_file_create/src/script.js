@@ -1,6 +1,6 @@
 import { PRESETS } from './data/presets.js';
-import { $, $$, getPreset, getFormat, getDelimiter, getNewline, withHeader, getEncoding, extFor, applyPresetDefaults, updateControlAvailability, headerLabels } from './ui.js';
-import { getRowsAsObjects } from './dataGenerator.js';
+import { $, $$, getPreset, getFormat, getDelimiter, getNewline, withHeader, getEncoding, extFor, applyPresetDefaults, updateControlAvailability, headerLabels, getRowCount } from './ui.js';
+import { getRowsAsObjects as generateData } from './dataGenerator.js';
 import { generateEDI2000Fixed, validateEDI } from './formatters/ediFormatter.js';
 import { toCSVTSV } from './formatters/csvFormatter.js';
 import { toJSON } from './formatters/jsonFormatter.js';
@@ -12,111 +12,153 @@ import { toHTML } from './formatters/htmlFormatter.js';
 import { toSQL } from './formatters/sqlFormatter.js';
 import { toFIXED_generic } from './formatters/fixedFormatter.js';
 
-let currentRowsAsObjects = []; // Module-level state for the generated data
+let lastGeneratedResult = {}; // Module-level state for the last generation output
 
 const formatters = {
-  CSV: (rowsObj, p, NL) => {
-    const delim = getDelimiter();
-    return toCSVTSV(rowsObj, delim, withHeader(), headerLabels(), NL);
+  CSV: (rowsAsObjects, { preset, newline, delimiter, withHeader }) => {
+    return toCSVTSV(rowsAsObjects, delimiter, withHeader, headerLabels(preset), newline);
   },
-  TSV: (rowsObj, p, NL) => {
-    return toCSVTSV(rowsObj, '\t', withHeader(), headerLabels(), NL);
+  TSV: (rowsAsObjects, { preset, newline, withHeader }) => {
+    return toCSVTSV(rowsAsObjects, '\t', withHeader, headerLabels(preset), newline);
   },
-  JSON: (rowsObj, p, NL) => toJSON(rowsObj, NL),
-  YAML: (rowsObj, p, NL) => toYAML(rowsObj, NL),
-  XML: (rowsObj, p, NL) => toXML(rowsObj, headerLabels(), NL),
-  Markdown: (rowsObj, p, NL) => toMarkdown(rowsObj, headerLabels(), NL),
-  TXT: (rowsObj, p, NL) => toTXT(rowsObj, NL),
-  HTML: (rowsObj, p, NL) => toHTML(rowsObj, headerLabels(), NL),
-  SQL: (rowsObj, p, NL) => toSQL(rowsObj, headerLabels(), NL),
-  FIXED: (rowsObj, p, NL) => {
-    if (p.id === '2000_1_1') {
-      // generateEDI2000Fixed already takes NL
-      return generateEDI2000Fixed(rowsObj, NL);
+  JSON: (rowsAsObjects, { newline }) => toJSON(rowsAsObjects, newline),
+  YAML: (rowsAsObjects, { newline }) => toYAML(rowsAsObjects, newline),
+  XML: (rowsAsObjects, { preset, newline }) => toXML(rowsAsObjects, headerLabels(preset), newline),
+  Markdown: (rowsAsObjects, { preset, newline, withHeader }) => {
+    // toMarkdownにwithHeaderを渡すように修正
+    return toMarkdown(rowsAsObjects, headerLabels(preset), withHeader, newline);
+  },
+  TXT: (rowsAsObjects, { newline }) => toTXT(rowsAsObjects, newline),
+  HTML: (rowsAsObjects, { preset, newline }) => toHTML(rowsAsObjects, headerLabels(preset), newline),
+  SQL: (rowsAsObjects, { preset, newline }) => toSQL(rowsAsObjects, headerLabels(preset), newline),
+  FIXED: (rowsAsObjects, { preset, newline }) => {
+    if (preset.id === '2000_1_1') {
+      return generateEDI2000Fixed(rowsAsObjects, newline);
     }
-    return toFIXED_generic(rowsObj, getPreset, NL);
+    // toFIXED_genericはプリセットを返す関数を期待するため、ラップして渡す
+    return toFIXED_generic(rowsAsObjects, () => preset, newline);
   },
 };
 
-function generate() {
-  const p = getPreset();
-  const fmt = getFormat();
-  const NL = getNewline();
-  
-  currentRowsAsObjects = getRowsAsObjects(); // Generate and store in state
-  
-  let text = '', ext = extFor(fmt), warn = [];
-
-  const formatter = formatters[fmt];
-  if (formatter) {
-    text = formatter(currentRowsAsObjects, p, NL);
+/**
+ * プリセット定義に基づき、指定された行数のデータオブジェクト配列を準備します。
+ * `rowsObj` (オブジェクト配列) と `rows` (値の配列) の両方の形式に対応します。
+ * @param {object} preset - プリセットオブジェクト
+ * @param {number} rowCount - 生成する行数
+ * @returns {object[]} データオブジェクトの配列
+ */
+function prepareData(preset, rowCount) {
+  let sampleData = [];
+  // プリセットのrowsObjは参照なので、ディープコピーして元の定義を汚染しないようにする
+  if (preset.rowsObj) {
+    sampleData = JSON.parse(JSON.stringify(preset.rowsObj));
+  } else if (preset.rows && preset.fields) {
+    // データが値の配列として定義されている場合、ヘッダー情報を使ってオブジェクトに変換
+    const keys = preset.fields.map(f => f.key);
+    sampleData = preset.rows.map(rowArray => {
+      const obj = {};
+      keys.forEach((key, index) => {
+        obj[key] = rowArray[index] ?? '';
+      });
+      return obj;
+    });
   }
 
-  if (fmt === 'FIXED' && p.id === '2000_1_1') {
-    warn = validateEDI(currentRowsAsObjects);
+  // EDIプリセット用の動的フィールドをここで設定する
+  // これにより、CSV/JSONなど他のフォーマットでもこれらの値が反映される
+  if (preset.id === '2000_1_1') {
+    sampleData.forEach(row => {
+      row["レコード区分"] = "2";
+      row["データ区分"] = "00";
+    });
   }
 
-  updateUI(text, p, ext, warn);
+  if (sampleData.length === 0) return [];
 
-  return { text, ext };
+  // サンプルデータを循環させて、指定された行数のデータを生成
+  const results = [];
+  for (let i = 0; i < rowCount; i++) {
+    results.push({ ...sampleData[i % sampleData.length] });
+  }
+  return results;
 }
 
-function populateRowSelector() {
+/**
+ * 設定に基づきデータを生成・整形する純粋な関数
+ * @param {object} config - データ生成に必要な設定オブジェクト
+ * @returns {object} 生成結果（テキスト、拡張子、警告、データオブジェクト等）
+ */
+function generate(config) {
+  const { preset, format, rowCount } = config;
+  const rowsAsObjects = prepareData(preset, rowCount);
+
+  let text = '', ext = extFor(format), warnings = [];
+
+  const formatter = formatters[format];
+  if (formatter) {
+    text = formatter(rowsAsObjects, config);
+  }
+
+  if (format === 'FIXED' && preset.id === '2000_1_1') {
+    warnings = validateEDI(rowsAsObjects);
+  }
+
+  return { text, ext, warnings, rowsAsObjects, preset };
+}
+
+function populateRowSelector(rowsAsObjects, includeHeader) {
   const selector = $('#rowSelector');
-  const rowsObj = currentRowsAsObjects;
   selector.innerHTML = ''; // Clear previous options
 
-  if (withHeader()) {
+  if (includeHeader) {
     const option = document.createElement('option');
     option.value = '-1';
     option.textContent = 'ヘッダー';
     selector.appendChild(option);
   }
 
-  rowsObj.forEach((row, i) => {
+  rowsAsObjects.forEach((row, i) => {
     const option = document.createElement('option');
     option.value = i;
     option.textContent = `データ行 ${i + 1}`;
     selector.appendChild(option);
   });
 
-  // Set initial selection to the first data row if available
   if (selector.options.length > 0) {
-    selector.value = (rowsObj.length > 0) ? '0' : '-1';
+    selector.value = (rowsAsObjects.length > 0) ? '0' : '-1';
   }
 }
 
-function renderStructuredPreview(rowIndex) {
+function renderStructuredPreview(rowIndex, rowsAsObjects, preset) {
   const container = $('#structuredPreview');
   container.innerHTML = ''; // Clear previous content
 
-  const headers = headerLabels();
-  const rowsObj = currentRowsAsObjects;
+  const headers = headerLabels(preset);
 
   let dataToShow = {};
   
   if (rowIndex === -1) { // Header view
     if (headers.length === 0) {
-      container.innerHTML = "<div class='small muted'>ヘッダーがありません。</div>";
+      container.innerHTML = "<div class='small muted'>ヘッダー定義がありません。</div>";
       return;
     }
     headers.forEach(h => { dataToShow[h] = ''; });
-  } else if (rowsObj[rowIndex]) { // Data row view
-    dataToShow = rowsObj[rowIndex];
+  } else if (rowsAsObjects && rowsAsObjects[rowIndex]) { // Data row view
+    dataToShow = rowsAsObjects[rowIndex];
   } else {
     container.innerHTML = "<div class='small muted'>表示するデータがありません。</div>";
     return;
   }
 
   const table = document.createElement('table');
-  table.style.cssText = "width:100%; font-size:0.85rem; border-collapse: collapse;";
+  table.className = 'structured-preview-table'; // CSSクラスでスタイルを管理
   const tbody = document.createElement('tbody');
 
   headers.forEach(header => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <th style="text-align:left; padding:0.3rem 0.6rem; border:1px solid var(--card-border-color); width:40%; vertical-align: top;">${header}</th>
-      <td style="padding:0.3rem 0.6rem; border:1px solid var(--card-border-color); white-space:pre-wrap; word-break:break-all;">${dataToShow[header] ?? ''}</td>
+      <th>${header}</th>
+      <td>${dataToShow[header] ?? ''}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -125,9 +167,9 @@ function renderStructuredPreview(rowIndex) {
   container.appendChild(table);
 }
 
-function updateUI(text, p, ext, warn) {
-  // 画面反映
+function updateUI({ text, preset, ext, warnings, rowsAsObjects }) {
   $('#preview').value = text;
+  const p = preset; // 短縮用
   $('#fileName').textContent = `sample_${p.id}.${ext}`;
 
   const encoding = getEncoding();
@@ -147,38 +189,39 @@ function updateUI(text, p, ext, warn) {
   $('#lineCount').textContent = (text.match(/\r\n|\r|\n/g)?.length ?? 0) + 1;
 
   // 構造化プレビューの更新
-  populateRowSelector();
-  const initialRowIndex = (currentRowsAsObjects.length > 0) ? 0 : -1;
-  renderStructuredPreview(initialRowIndex);
+  populateRowSelector(rowsAsObjects, withHeader());
+  const initialRowIndex = (rowsAsObjects.length > 0) ? 0 : -1;
+  $('#rowSelector').value = initialRowIndex;
+  renderStructuredPreview(initialRowIndex, rowsAsObjects, p);
 
   // メタチェック（先頭行を schema で見る：固定長系のみ）
-  renderChecks(p, getFormat());
+  renderChecks(p, getFormat(), rowsAsObjects);
 
   // EDI 警告
-  if (warn.length) {
+  if (warnings.length) {
     $('#panelWarn').style.display = '';
-    $('#warnArea').textContent = warn.join('\n');
+    $('#warnArea').textContent = warnings.join('\n');
   } else {
     $('#panelWarn').style.display = 'none';
     $('#warnArea').textContent = '';
   }
 }
 
-function renderChecks(p, fmt){
+function renderChecks(preset, format, rowsAsObjects){
   const el = $("#checksArea");
-  const schema = p.fields || [];
+  const schema = preset.fields || [];
   let html = "";
   if (!schema.length){ el.innerHTML = "<div class='small muted'>フィールド定義なし</div>"; return; }
 
-  const row = currentRowsAsObjects[0] || {};
-  if (fmt === "FIXED"){
+  const row = rowsAsObjects[0] || {};
+  if (format === "FIXED"){
     html += "<table><thead><tr><th>#</th><th>項目</th><th>定義桁</th><th>実長</th><th>判定</th></tr></thead><tbody>";
     schema.forEach((f, i) => {
       const v = String(row[f.key] ?? ""); const actual = v.length;
       const def = f.len || "";
       let cls = "ok", lab = "OK";
-      if (def && actual > def){ cls="warn"; lab="超過"; }
-      html += `<tr><td>${i+1}</td><td>${f.key}</td><td class='mono'>${def}</td><td class='${actual}'>${cls}'>${lab}</td></tr>`;
+      if (def && actual > def) { cls = "warn"; lab = "超過"; } // HTML生成のバグを修正
+      html += `<tr><td>${i+1}</td><td>${f.key}</td><td class='mono'>${def}</td><td class='mono'>${actual}</td><td class='${cls}'>${lab}</td></tr>`;
     });
     html += "</tbody></table>";
   } else {
@@ -188,8 +231,8 @@ function renderChecks(p, fmt){
 }
 
 /* ------------------ ダウンロード ------------------ */
-function doDownload(){
-  const { text, ext } = generate();
+function doDownload() {
+  const { text, ext } = lastGeneratedResult; // 生成済みの結果を利用
   const name = $("#fileName").textContent || `sample.${ext}`;
   const encoding = getEncoding();
   let blob;
@@ -221,37 +264,51 @@ function doDownload(){
   }, 100);
 }
 
+/**
+ * UIイベントを起点に、データ生成フロー全体を管理するコントローラー関数
+ */
+function handleGenerationRequest() {
+  // 1. UIから全設定値を取得
+  const config = {
+    preset: getPreset(),
+    format: getFormat(),
+    delimiter: getDelimiter(),
+    newline: getNewline(),
+    withHeader: withHeader(),
+    encoding: getEncoding(),
+    rowCount: getRowCount(),
+  };
+
+  // 2. 純粋化されたコアロジックを呼び出し
+  const result = generate(config);
+
+  // 3. 結果を後続処理（ダウンロード等）のために保持
+  lastGeneratedResult = result;
+
+  // 4. 結果をUIに反映
+  updateUI(result);
+}
+
 /* ------------------ イベント ------------------ */
 function initEventListeners() {
-  $("#preset").addEventListener("change", ()=>{
-    applyPresetDefaults(); 
-    generate();
+  $("#preset").addEventListener("change", () => {
+    applyPresetDefaults();
+    handleGenerationRequest();
   });
-  $$('input[name="fmt"]').forEach(r=>r.addEventListener("change", ()=>{
-    updateControlAvailability(); 
-    generate();
+  $$('input[name="fmt"]').forEach(r => r.addEventListener("change", () => {
+    updateControlAvailability();
+    handleGenerationRequest();
   }));
-  $$('input[name="delim"]').forEach(r=>r.addEventListener("change", ()=>{
-    generate();
-  }));
-  $("#withHeader").addEventListener("change", ()=>{
-    generate();
+  // 関連する入力要素のイベントを一括で設定
+  $$('input[name="delim"], #withHeader, input[name="nl"], input[name="enc"], #rowCount').forEach(el => {
+    if (!el) return; // #rowCount などが存在しない場合に備える
+    const eventType = el.id === 'rowCount' ? 'input' : 'change';
+    el.addEventListener(eventType, handleGenerationRequest);
   });
-    $$('input[name="nl"]').forEach(r=>r.addEventListener("change", ()=>{
-    generate();
-  }));
-  $$('input[name="enc"]').forEach(r=>r.addEventListener("change", ()=>{
-    generate();
-  }));
-  const rowCountInput = $("#rowCount");
-  if (rowCountInput) {
-    rowCountInput.addEventListener("input", generate);
-  }
+
   const rowSelector = $("#rowSelector");
-  if (rowSelector) rowSelector.addEventListener("change", (e) => renderStructuredPreview(parseInt(e.target.value, 10)));
-  $("#btnPreview").addEventListener("click", ()=>{
-    generate();
-  });
+  if (rowSelector) rowSelector.addEventListener("change", (e) => renderStructuredPreview(parseInt(e.target.value, 10), lastGeneratedResult.rowsAsObjects, lastGeneratedResult.preset));
+  $("#btnPreview").addEventListener("click", handleGenerationRequest);
   $("#btnDownload").addEventListener("click", ()=>{
     doDownload();
   });
@@ -287,7 +344,7 @@ function adjustPresetLayout() {
 
 // 初期化
 applyPresetDefaults();
-generate();
+handleGenerationRequest(); // 初期表示
 initEventListeners();
 checkExternalLibraries();
 adjustPresetLayout();

@@ -16,6 +16,11 @@ export function getNewline(){
 }
 export function withHeader(){ return $("#withHeader").checked; }
 export function getEncoding(){ return $$('input[name="enc"]').find(x=>x.checked)?.value || "UTF-8"; }
+export function getRowCount() {
+  const input = $("#rowCount");
+  // rowCount input が存在しない場合も考慮し、デフォルト値を返す
+  return input ? (parseInt(input.value, 10) || 10) : 10;
+}
 
 export function extFor(fmt){
   return ({CSV:"csv",TSV:"tsv",JSON:"json",YAML:"yaml",XML:"xml",Markdown:"md",TXT:"txt",HTML:"html",SQL:"sql",FIXED:"txt"})[fmt] || "txt";
@@ -44,9 +49,8 @@ export function updateControlAvailability(){
   $("#withHeader").disabled = !(fmt==="CSV" || fmt==="TSV" || fmt==="Markdown");
 }
 
-export function headerLabels(){
-  const p = getPreset();
-  if (p && p.fields) return p.fields.map(f=>f.key);
+export function headerLabels(preset){
+  if (preset && preset.fields) return preset.fields.map(f=>f.key);
   // フォールバック（未定義時）
   return [];
 }
