@@ -13,25 +13,41 @@
       color: #212529;
     }
     .container {
-      max-width: 1200px;
-      margin: 1rem auto 2rem;
-      padding: 1.5rem 2rem;
+      max-width: 1400px;
+      /* margin and padding will be handled by layout-container and its children */
+    }
+    .layout-container {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+      padding: 1rem 1.5rem;
+      margin: 0 auto;
+      align-items: flex-start;
+      transition: grid-template-columns 0.25s ease-in-out;
+    }
+    .layout-container.sidebar-collapsed {
+      grid-template-columns: 0 1fr;
+      gap: 0.75rem;
+    }
+    .main-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
     h1 {
       font-size: 2rem;
-      margin-bottom: 0.25rem;
+      margin: 0;
       letter-spacing: -0.02em;
     }
     .lead {
       font-size: 1rem;
       color: #6c757d;
       margin-top: 0;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
     .data-io-wrapper {
       display: flex;
       gap: 0.75rem;
-      margin-bottom: 1.5rem;
       align-items: center;
     }
     .data-io-wrapper .btn {
@@ -42,78 +58,107 @@
       font-size: 0.85rem; color: #6c757d; margin-left: auto;
     }
 
-    /* --- Control Panel --- */
-    .control-panel {
-      margin-bottom: 2.5rem;
-    }
-    .control-panel > summary {
-      list-style: none; /* Safari */
-      font-weight: 600;
-      font-size: 1.1rem;
-      cursor: pointer;
+    /* --- Sidebar --- */
+    .sidebar {
+      position: sticky;
+      top: 1rem;
       background-color: #fff;
       border: 1px solid #dee2e6;
       border-radius: 8px;
-      padding: 0.8rem 1.2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: background-color 0.2s;
-    }
-    .control-panel > summary:hover {
-      background-color: #f8f9fa;
-    }
-    .control-panel > summary::after {
-      content: '';
-      display: inline-block;
-      width: 0.5em;
-      height: 0.5em;
-      border-top: 2px solid #6c757d;
-      border-right: 2px solid #6c757d;
-      transform: rotate(135deg);
-      transition: transform 0.25s ease;
-    }
-    .control-panel > summary::-webkit-details-marker { display: none; } /* Chrome */
-    .control-panel[open] > summary {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    .control-panel[open] > summary::after {
-      transform: rotate(-45deg);
-    }
-    .control-panel-content {
-      background-color: #fff;
-      border: 1px solid #dee2e6;
-      border-top: none;
-      margin-top: -1px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-      gap: 2.5rem;
       padding: 1.5rem 2rem;
-      align-items: start;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: padding 0.2s, opacity 0.2s, transform 0.25s, border 0.25s;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .sidebar h2 {
+      font-size: 1.25rem;
+      margin-top: 0;
+      margin-bottom: 1.5rem;
+    }
+    .main-content {
+      flex: 1;
+      min-width: 0;
     }
     .control-group {
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
     }
     .control-group:last-child { margin-bottom: 0; }
     .control-group > label {
       display: block; font-weight: 700; margin-bottom: 0.75rem; font-size: 1rem;
     }
-    @media (max-width: 960px) {
-      .control-panel-content {
+    .layout-container.sidebar-collapsed .sidebar {
+      padding: 1.5rem 0;
+      opacity: 0;
+      transform: translateX(-20px);
+      border: none;
+    }
+    #sidebar-toggle {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: grid;
+      place-items: center;
+      transition: background-color 0.2s;
+    }
+    #sidebar-toggle:hover { background-color: #f1f5f9; }
+    @media (max-width: 1024px) {
+      .layout-container {
         grid-template-columns: 1fr;
-        gap: 2rem;
+      }
+      .sidebar {
+        position: static;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      #sidebar-toggle {
+        display: none; /* Hide on mobile, as layout is stacked */
+      }
+      .layout-container.sidebar-collapsed {
+        /* On mobile, collapsed state does nothing special */
       }
     }
 
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .category-header h2 {
+      margin: 0;
+    }
+    .add-to-category-btn {
+      background: #eef2ff;
+      border: 1px solid #e0e7ff;
+      color: #3b82f6;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      line-height: 1;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      transition: all 0.2s ease;
+    }
+    .add-to-category-btn:hover {
+      background-color: #dbeafe;
+      transform: scale(1.1);
+    }
+
     .category-section {
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
     }
     .category-title {
       font-size: 1.5rem;
-      margin-bottom: 1rem;
+      /* margin-bottom is now on .category-header */
       padding-left: 0.75rem;
       border-left: 5px solid #6c757d;
     }
@@ -131,17 +176,12 @@
     .category-title.feature_docs { border-color: #818cf8; } /* Indigo */
 
     .link-form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      align-items: end;
+      /* Styles for the form container */
     }
     .form-group {
       display: flex;
       flex-direction: column;
-    }
-    .form-group.full-width {
-      grid-column: 1 / -1;
+      margin-bottom: 1rem;
     }
     .form-group label {
       font-weight: 600;
@@ -156,18 +196,23 @@
       font-family: inherit;
     }
     #search-box {
-      width: 100%;
-      padding: 0.8rem 1.2rem;
-      font-size: 1rem;
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      box-sizing: border-box;
+      width: 100%; padding: 0.8rem 1.2rem; font-size: 1rem; border: 1px solid #dee2e6;
+      border-radius: 8px; box-sizing: border-box;
     }
     .form-group button {
       padding: 0.7rem; border: none; border-radius: 6px; background-color: #198754;
       color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s;
     }
     .form-group button:hover { background-color: #157347; }
+    #link-category.highlight {
+      transition: none;
+      box-shadow: 0 0 0 3px var(--accent-color, #3b82f6);
+      animation: highlight-fade 1s ease-out;
+    }
+    @keyframes highlight-fade {
+      from { box-shadow: 0 0 0 3px var(--accent-color, #3b82f6); }
+      to { box-shadow: 0 0 0 0px transparent; }
+    }
 
     .link-list {
       display: grid;
@@ -219,14 +264,25 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>スプレッドシート リンク集</h1>
-    <p class="lead">業務やプロジェクトで利用するGoogleスプレッドシートへのリンク一覧です。</p>
-
-    <details class="control-panel">
-      <summary>⚙️ 検索 & 操作パネル</summary>
-      <div class="control-panel-content">
-        <div class="main-controls">
+  <div class="container layout-container">
+    <aside class="sidebar">
+      <h2>⚙️ 操作パネル</h2>
+      <div class="side-controls">
+        <div class="control-group">
+          <label for="search-box">キーワード検索</label>
+          <input type="search" id="search-box" placeholder="タイトルや説明で検索...">
+        </div>
+        <div class="control-group">
+          <label>データ入出力</label>
+          <div class="data-io-wrapper">
+            <button id="import-btn" class="btn">📥 インポート</button>
+            <button id="export-btn" class="btn">📤 エクスポート</button>
+            <input type="file" id="file-input" accept=".json" style="display:none;">
+            <span class="note">※ 変更内容はエクスポートで保存</span>
+          </div>
+        </div>
+      </div>
+      <div class="main-controls">
           <div class="control-group">
             <label>新しいリンクを追加</label>
             <form id="add-link-form" class="link-form">
@@ -235,98 +291,114 @@
                 <input type="text" id="link-title" placeholder="例: プロジェクトC 予算管理" required>
               </div>
               <div class="form-group">
-                <label for="link-category">カテゴリ</label>
-                <select id="link-category">
-                  <option value="custom">その他（カスタム）</option>
-                  <option value="business">業務管理</option>
-                  <option value="project">プロジェクト</option>
-                  <option value="personal">個人用</option>
-                  <option value="progress">進捗管理</option>
-                  <option value="pj_management">PJ全体管理</option>
-                  <option value="pj_info">PJ関連情報</option>
-                  <option value="operations">運用関連</option>
-                  <option value="feature_docs">機能補足説明</option>
-                </select>
-              </div>
-              <div class="form-group full-width">
                 <label for="link-url">URL</label>
                 <input type="url" id="link-url" placeholder="https://docs.google.com/spreadsheets/d/..." required>
               </div>
-              <div class="form-group full-width">
+              <div class="form-group">
                 <label for="link-desc">説明</label>
                 <input type="text" id="link-desc" placeholder="例: PM: 鈴木 / 随時更新">
               </div>
-              <div class="form-group full-width">
+              <div class="form-group">
+                <label for="link-category">カテゴリ</label>
+                <select id="link-category">
+                  <option value="business">📊 業務管理</option>
+                  <option value="project">🚀 プロジェクト</option>
+                  <option value="personal">👤 個人用</option>
+                  <option value="progress">📈 進捗管理</option>
+                  <option value="pj_management">👑 PJ全体管理</option>
+                  <option value="pj_info">ℹ️ PJ関連情報</option>
+                  <option value="operations">⚙️ 運用関連</option>
+                  <option value="feature_docs">📖 機能補足説明</option>
+                  <option value="custom">⭐ その他（カスタム）</option>
+                </select>
+              </div>
+              <div class="form-group">
                 <button type="submit">追加する</button>
               </div>
             </form>
           </div>
         </div>
-        <div class="side-controls">
-          <div class="control-group">
-            <label for="search-box">キーワード検索</label>
-            <input type="search" id="search-box" placeholder="タイトルや説明で検索...">
-          </div>
-          <div class="control-group">
-            <label>データ入出力</label>
-            <div class="data-io-wrapper">
-              <button id="import-btn" class="btn">📥 インポート</button>
-              <button id="export-btn" class="btn">📤 エクスポート</button>
-              <input type="file" id="file-input" accept=".json" style="display:none;">
-              <span class="note">※ 変更内容はエクスポートで保存</span>
-            </div>
-          </div>
-        </div>
+    </aside>
+    <main class="main-content">
+      <div class="main-header">
+        <button id="sidebar-toggle" title="サイドバーを開閉">⚙️</button>
+        <h1>スプレッドシート リンク集</h1>
       </div>
-    </details>
+      <p class="lead">業務やプロジェクトで利用するGoogleスプレッドシートへのリンク一覧です。</p>
+      <div id="category-wrapper">
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title business">📊 業務管理</h2>
+            <button class="add-to-category-btn" data-category="business" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-business" class="link-list"></ul>
+        </section>
 
-    <div id="category-wrapper">
-      <section class="category-section">
-        <h2 class="category-title business">📊 業務管理</h2>
-        <ul id="link-list-business" class="link-list"></ul>
-      </section>
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title project">🚀 プロジェクト</h2>
+            <button class="add-to-category-btn" data-category="project" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-project" class="link-list"></ul>
+        </section>
 
-      <section class="category-section">
-        <h2 class="category-title project">🚀 プロジェクト</h2>
-        <ul id="link-list-project" class="link-list"></ul>
-      </section>
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title personal">👤 個人用</h2>
+            <button class="add-to-category-btn" data-category="personal" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-personal" class="link-list"></ul>
+        </section>
 
-      <section class="category-section">
-        <h2 class="category-title personal">👤 個人用</h2>
-        <ul id="link-list-personal" class="link-list"></ul>
-      </section>
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title progress">📈 進捗管理</h2>
+            <button class="add-to-category-btn" data-category="progress" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-progress" class="link-list"></ul>
+        </section>
 
-      <section class="category-section">
-        <h2 class="category-title progress">📈 進捗管理</h2>
-        <ul id="link-list-progress" class="link-list"></ul>
-      </section>
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title pj_management">👑 PJ全体管理</h2>
+            <button class="add-to-category-btn" data-category="pj_management" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-pj_management" class="link-list"></ul>
+        </section>
 
-      <section class="category-section">
-        <h2 class="category-title pj_management">👑 PJ全体管理</h2>
-        <ul id="link-list-pj_management" class="link-list"></ul>
-      </section>
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title pj_info">ℹ️ PJ関連情報</h2>
+            <button class="add-to-category-btn" data-category="pj_info" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-pj_info" class="link-list"></ul>
+        </section>
 
-      <section class="category-section">
-        <h2 class="category-title pj_info">ℹ️ PJ関連情報</h2>
-        <ul id="link-list-pj_info" class="link-list"></ul>
-      </section>
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title operations">⚙️ 運用関連</h2>
+            <button class="add-to-category-btn" data-category="operations" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-operations" class="link-list"></ul>
+        </section>
 
-      <section class="category-section">
-        <h2 class="category-title operations">⚙️ 運用関連</h2>
-        <ul id="link-list-operations" class="link-list"></ul>
-      </section>
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title feature_docs">📖 機能補足説明</h2>
+            <button class="add-to-category-btn" data-category="feature_docs" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-feature_docs" class="link-list"></ul>
+        </section>
 
-      <section class="category-section">
-        <h2 class="category-title feature_docs">📖 機能補足説明</h2>
-        <ul id="link-list-feature_docs" class="link-list"></ul>
-      </section>
-
-      <section class="category-section">
-        <h2 class="category-title custom">⭐ その他（カスタム）</h2>
-        <ul id="link-list-custom" class="link-list"></ul>
-      </section>
-    </div>
-
+        <section class="category-section">
+          <div class="category-header">
+            <h2 class="category-title custom">⭐ その他（カスタム）</h2>
+            <button class="add-to-category-btn" data-category="custom" title="このカテゴリにリンクを追加">+</button>
+          </div>
+          <ul id="link-list-custom" class="link-list"></ul>
+        </section>
+      </div>
+    </main>
   </div>
 
   <script>
@@ -353,6 +425,9 @@
       const exportBtn = document.getElementById('export-btn');
       const fileInput = document.getElementById('file-input');
       const categoryWrapper = document.getElementById('category-wrapper');
+      const categorySelect = document.getElementById('link-category');
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const layoutContainer = document.querySelector('.layout-container');
 
       let customLinks = []; // localStorageの代わりにメモリで管理
 
@@ -436,6 +511,33 @@
       });
 
       searchBox.addEventListener('input', renderLinks);
+
+      categoryWrapper.addEventListener('click', (e) => {
+        const btn = e.target.closest('.add-to-category-btn');
+        if (!btn) return;
+
+        const category = btn.dataset.category;
+        const titleInput = document.getElementById('link-title');
+
+        // Set the dropdown value
+        categorySelect.value = category;
+
+        // Visual feedback
+        const categoryTitle = btn.parentElement.querySelector('.category-title');
+        const accentColor = window.getComputedStyle(categoryTitle).borderLeftColor;
+        
+        categorySelect.style.setProperty('--accent-color', accentColor);
+        categorySelect.classList.remove('highlight');
+        void categorySelect.offsetWidth; // Trigger reflow to restart animation
+        categorySelect.classList.add('highlight');
+
+        // Focus the title input
+        titleInput.focus();
+      });
+
+      categorySelect.addEventListener('animationend', () => {
+        categorySelect.classList.remove('highlight');
+      });
 
       // --- Import/Export Logic ---
       importBtn.addEventListener('click', () => fileInput.click());
@@ -527,6 +629,23 @@
         });
         customLinks = newLinks;
         renderLinks(); // Re-render to update indices and ensure consistency
+      }
+
+      // --- Sidebar Toggle Logic ---
+      function setSidebarState(collapsed) {
+        layoutContainer.classList.toggle('sidebar-collapsed', collapsed);
+        localStorage.setItem('sidebarCollapsed', collapsed ? 'true' : 'false');
+      }
+
+      sidebarToggle.addEventListener('click', () => {
+        const isCollapsed = layoutContainer.classList.contains('sidebar-collapsed');
+        setSidebarState(!isCollapsed);
+      });
+
+      // Restore sidebar state on load
+      const savedState = localStorage.getItem('sidebarCollapsed');
+      if (savedState === 'true' && window.innerWidth > 1024) {
+        setSidebarState(true);
       }
 
       // Initial render
