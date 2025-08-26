@@ -271,8 +271,23 @@ function checkExternalLibraries() {
   }
 }
 
+/**
+ * プリセット選択UIのレイアウトを調整します。
+ * プリセットのラベル等を含む親要素とプルダウンを縦に配置することで、
+ * プルダウンの選択肢リストが他の要素に隠されるのを防ぎます。
+ */
+function adjustPresetLayout() {
+  const presetElement = $('#preset');
+  if (presetElement && presetElement.parentElement) {
+    const container = presetElement.parentElement;
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+  }
+}
+
 // 初期化
 applyPresetDefaults();
 generate();
 initEventListeners();
 checkExternalLibraries();
+adjustPresetLayout();
