@@ -71,6 +71,11 @@
       overflow: hidden;
       white-space: nowrap;
     }
+    .sidebar.is-loading {
+      opacity: 0.6;
+      pointer-events: none;
+      user-select: none;
+    }
     .sidebar-section {
       /* A container for a group of controls in the sidebar */
     }
@@ -273,7 +278,7 @@
 </head>
 <body>
   <div class="container layout-container">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-section">
         <h2>🔍 検索パネル</h2>
         <div class="control-group">
@@ -411,22 +416,7 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const defaultLinks = {
-        business: [
-          { title: '月次売上レポート', url: 'https://docs.google.com/spreadsheets/d/...', description: '担当: 経理部 / 毎月5営業日までに更新' },
-          { title: '全社共有 連絡先一覧', url: 'https://docs.google.com/spreadsheets/d/...', description: 'オーナー: 総務部 / 随時更新' },
-          { title: '備品管理台帳', url: 'https://docs.google.com/spreadsheets/d/...', description: 'オーナー: 総務部' },
-        ],
-        project: [
-          { title: 'プロジェクトA 進捗管理表', url: 'https://docs.google.com/spreadsheets/d/...', description: 'PM: 景山 / 毎週金曜更新' },
-          { title: 'プロジェクトB 課題管理表 (WBS)', url: 'https://docs.google.com/spreadsheets/d/...', description: 'PM: 佐藤 / 随時更新' },
-        ],
-        personal: [
-          { title: '個人タスク管理', url: 'https://docs.google.com/spreadsheets/d/...', description: '自分用のToDoリスト' },
-          { title: '学習記録シート', url: 'https://docs.google.com/spreadsheets/d/...', description: '日々の学びを記録' },
-        ]
-      };
-
+      const sidebar = document.getElementById('sidebar');
       const form = document.getElementById('add-link-form');
       const searchBox = document.getElementById('search-box');
       const importBtn = document.getElementById('import-btn');
@@ -437,6 +427,7 @@
       const sidebarToggle = document.getElementById('sidebar-toggle');
       const layoutContainer = document.querySelector('.layout-container');
 
+      let defaultLinks = {};
       let customLinks = []; // localStorageの代わりにメモリで管理
 
       const lists = {
@@ -527,156 +518,148 @@
         form.reset();
       });
 
-      document.querySelector('.container').addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-btn')) {
-          const index = parseInt(e.target.dataset.index, 10);
-          if (confirm('このリンクを削除してもよろしいですか？')) {
-            customLinks.splice(index, 1);
-            renderLinks();
-          }
-        }
-      });
-
-      searchBox.addEventListener('input', renderLinks);
-
-      categoryWrapper.addEventListener('click', (e) => {
-        const btn = e.target.closest('.add-to-category-btn');
-        if (!btn) return;
-
-        const category = btn.dataset.category;
-        const titleInput = document.getElementById('link-title');
-
-        // Set the dropdown value
-        categorySelect.value = category;
-
-        // Visual feedback
-        const categoryTitle = btn.parentElement.querySelector('.category-title');
-        const accentColor = window.getComputedStyle(categoryTitle).borderLeftColor;
-        
-        categorySelect.style.setProperty('--accent-color', accentColor);
-        categorySelect.classList.remove('highlight');
-        void categorySelect.offsetWidth; // Trigger reflow to restart animation
-        categorySelect.classList.add('highlight');
-
-        // Focus the title input
-        titleInput.focus();
-      });
-
-      categorySelect.addEventListener('animationend', () => {
-        categorySelect.classList.remove('highlight');
-      });
-
-      // --- Import/Export Logic ---
-      importBtn.addEventListener('click', () => fileInput.click());
-
-      fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          try {
-            const data = JSON.parse(event.target.result);
-            if (Array.isArray(data)) {
-              customLinks = data;
+      function setupEventListeners() {
+        document.querySelector('.container').addEventListener('click', (e) => {
+          if (e.target.classList.contains('delete-btn')) {
+            const index = parseInt(e.target.dataset.index, 10);
+            if (confirm('このリンクを削除してもよろしいですか？')) {
+              customLinks.splice(index, 1);
               renderLinks();
-              alert('データをインポートしました。');
-            } else {
-              alert('エラー: 無効なファイル形式です。JSON配列である必要があります。');
             }
-          } catch (err) {
-            alert('エラー: ファイルの読み込みに失敗しました。\n' + err.message);
           }
-        };
-        reader.readAsText(file);
-        fileInput.value = ''; // 同じファイルを再度選択できるようにリセット
-      });
-
-      exportBtn.addEventListener('click', () => {
-        const dataStr = JSON.stringify(customLinks, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'spreadsheet-data.json';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      });
-
-      // --- Drag & Drop Logic ---
-      let draggedItem = null;
-
-      categoryWrapper.addEventListener('dragstart', (e) => {
-        if (e.target.tagName === 'LI' && e.target.draggable) {
-          draggedItem = e.target;
-          setTimeout(() => e.target.classList.add('dragging'), 0);
-        }
-      });
-
-      categoryWrapper.addEventListener('dragend', (e) => {
-        if (draggedItem) {
-          draggedItem.classList.remove('dragging');
-          draggedItem = null;
-          syncCustomLinksFromDOM();
-        }
-      });
-
-      categoryWrapper.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        const container = e.target.closest('.link-list');
-        if (!container || !draggedItem) return;
-
-        const afterElement = getDragAfterElement(container, e.clientY);
-        if (draggedItem) {
-          if (afterElement == null) {
-            container.appendChild(draggedItem);
-          } else {
-            container.insertBefore(draggedItem, afterElement);
-          }
-        }
-      });
-
-      function getDragAfterElement(container, y) {
-        const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
-        return draggableElements.reduce((closest, child) => {
-          const box = child.getBoundingClientRect();
-          const offset = y - box.top - box.height / 2;
-          return (offset < 0 && offset > closest.offset) ? { offset: offset, element: child } : closest;
-        }, { offset: Number.NEGATIVE_INFINITY }).element;
-      }
-
-      function syncCustomLinksFromDOM() {
-        const newLinks = [];
-        document.querySelectorAll('.link-list li[data-link-data]').forEach(li => {
-          const linkData = JSON.parse(li.dataset.linkData);
-          const newCategory = li.closest('.category-section').querySelector('.category-title').classList[1];
-          linkData.category = newCategory;
-          newLinks.push(linkData);
         });
-        customLinks = newLinks;
-        renderLinks(); // Re-render to update indices and ensure consistency
+
+        searchBox.addEventListener('input', renderLinks);
+
+        categoryWrapper.addEventListener('click', (e) => {
+          const btn = e.target.closest('.add-to-category-btn');
+          if (!btn) return;
+
+          const category = btn.dataset.category;
+          const titleInput = document.getElementById('link-title');
+
+          // Set the dropdown value
+          categorySelect.value = category;
+
+          // Visual feedback
+          const categoryTitle = btn.parentElement.querySelector('.category-title');
+          const accentColor = window.getComputedStyle(categoryTitle).borderLeftColor;
+          
+          categorySelect.style.setProperty('--accent-color', accentColor);
+          categorySelect.classList.remove('highlight');
+          void categorySelect.offsetWidth; // Trigger reflow to restart animation
+          categorySelect.classList.add('highlight');
+
+          // Focus the title input
+          titleInput.focus();
+        });
+
+        categorySelect.addEventListener('animationend', () => {
+          categorySelect.classList.remove('highlight');
+        });
+
+        // --- Import/Export Logic ---
+        importBtn.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            try {
+              const data = JSON.parse(event.target.result);
+              if (Array.isArray(data)) {
+                customLinks = data;
+                renderLinks();
+                alert('データをインポートしました。');
+              } else {
+                alert('エラー: 無効なファイル形式です。JSON配列である必要があります。');
+              }
+            } catch (err) {
+              alert('エラー: ファイルの読み込みに失敗しました。\n' + err.message);
+            }
+          };
+          reader.readAsText(file);
+          fileInput.value = ''; // 同じファイルを再度選択できるようにリセット
+        });
+
+        exportBtn.addEventListener('click', () => {
+          const dataStr = JSON.stringify(customLinks, null, 2);
+          const blob = new Blob([dataStr], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'spreadsheet-data.json';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
+
+        // --- Drag & Drop Logic ---
+        let draggedItem = null;
+
+        categoryWrapper.addEventListener('dragstart', (e) => {
+          if (e.target.tagName === 'LI' && e.target.draggable) {
+            draggedItem = e.target;
+            setTimeout(() => e.target.classList.add('dragging'), 0);
+          }
+        });
+
+        categoryWrapper.addEventListener('dragend', (e) => {
+          if (draggedItem) {
+            draggedItem.classList.remove('dragging');
+            draggedItem = null;
+            syncCustomLinksFromDOM();
+          }
+        });
+
+        categoryWrapper.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          const container = e.target.closest('.link-list');
+          if (!container || !draggedItem) return;
+
+          const afterElement = getDragAfterElement(container, e.clientY);
+          if (draggedItem) {
+            if (afterElement == null) {
+              container.appendChild(draggedItem);
+            } else {
+              container.insertBefore(draggedItem, afterElement);
+            }
+          }
+        });
+
+        // --- Sidebar Toggle Logic ---
+        sidebarToggle.addEventListener('click', () => {
+          const isCollapsed = layoutContainer.classList.contains('sidebar-collapsed');
+          setSidebarState(!isCollapsed);
+        });
       }
 
-      // --- Sidebar Toggle Logic ---
-      function setSidebarState(collapsed) {
-        layoutContainer.classList.toggle('sidebar-collapsed', collapsed);
-        localStorage.setItem('sidebarCollapsed', collapsed ? 'true' : 'false');
+      async function main() {
+        sidebar.classList.add('is-loading');
+        try {
+          const response = await fetch('./spreadsheet-data-default.json');
+          if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+          defaultLinks = await response.json();
+        } catch (error) {
+          console.error('Failed to load default links:', error);
+          alert('サンプルのリンクデータの読み込みに失敗しました。');
+        } finally {
+          sidebar.classList.remove('is-loading');
+        }
+
+        setupEventListeners();
+        renderLinks();
+
+        // Restore sidebar state on load
+        const savedState = localStorage.getItem('sidebarCollapsed');
+        if (savedState === 'true' && window.innerWidth > 1024) {
+          setSidebarState(true);
+        }
       }
 
-      sidebarToggle.addEventListener('click', () => {
-        const isCollapsed = layoutContainer.classList.contains('sidebar-collapsed');
-        setSidebarState(!isCollapsed);
-      });
-
-      // Restore sidebar state on load
-      const savedState = localStorage.getItem('sidebarCollapsed');
-      if (savedState === 'true' && window.innerWidth > 1024) {
-        setSidebarState(true);
-      }
-
-      // Initial render
-      renderLinks();
+      main();
     });
   </script>
 </body>
