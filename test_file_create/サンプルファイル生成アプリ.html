@@ -144,6 +144,23 @@
     .theme-switcher input:checked + .switch-toggle { background-color: var(--primary-bg-color); }
     .theme-switcher input:checked + .switch-toggle::before { transform: translateX(20px); }
   </style>
+  <style>
+    /* --- プルダウンとフォーマット選択のスタイル調整 --- */
+    #preset {
+      width: 100%; /* 親要素の幅いっぱいに広げる */
+    }
+    #fmtGroup {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    #fmtGroup .group-separator {
+      width: 100%;
+      height: 1px;
+      background-color: var(--card-border-color);
+      margin: 0.5rem 0;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -201,15 +218,20 @@
         <fieldset class="row">
           <legend>フォーマット</legend>
           <div class="flex" id="fmtGroup">
+            <!-- Group 1: Delimited -->
             <label class="switch" for="fmt_csv"><input type="radio" name="fmt" value="CSV" id="fmt_csv">CSV</label>
             <label class="switch" for="fmt_tsv"><input type="radio" name="fmt" value="TSV" id="fmt_tsv">TSV</label>
+            <div class="group-separator"></div>
+            <!-- Group 2: Structured -->
             <label class="switch" for="fmt_json"><input type="radio" name="fmt" value="JSON" id="fmt_json">JSON</label>
             <label class="switch" for="fmt_yaml"><input type="radio" name="fmt" value="YAML" id="fmt_yaml">YAML</label>
             <label class="switch" for="fmt_xml"><input type="radio" name="fmt" value="XML" id="fmt_xml">XML</label>
+            <div class="group-separator"></div>
+            <!-- Group 3: Markup & Others -->
             <label class="switch" for="fmt_md"><input type="radio" name="fmt" value="Markdown" id="fmt_md">MD</label>
-            <label class="switch" for="fmt_txt"><input type="radio" name="fmt" value="TXT" id="fmt_txt">TXT</label>
             <label class="switch" for="fmt_html"><input type="radio" name="fmt" value="HTML" id="fmt_html">HTML</label>
             <label class="switch" for="fmt_sql"><input type="radio" name="fmt" value="SQL" id="fmt_sql">SQL</label>
+            <label class="switch" for="fmt_txt"><input type="radio" name="fmt" value="TXT" id="fmt_txt">TXT</label>
             <label class="switch" for="fmt_fixed"><input type="radio" name="fmt" value="FIXED" id="fmt_fixed" checked>固定長</label>
           </div>
         </fieldset>
@@ -246,6 +268,14 @@
           </div>
         </fieldset>
 
+        <fieldset class="row">
+          <legend>データ件数</legend>
+          <div class="flex">
+            <input type="number" id="rowCount" name="rowCount" value="3" min="1" max="10000" style="width: 100px; padding: .375rem .75rem;">
+            <label for="rowCount" style="margin-left: 0.5rem; align-self: center;">件</label>
+          </div>
+        </fieldset>
+
         <div class="row">
           <label>プレビュー</label>
           <div class="flex">
@@ -270,7 +300,18 @@
           <span class="pill">サイズ: <span id="fileSize" class="mono"></span></span>
           <span class="pill">行数: <span id="lineCount" class="mono"></span></span>
         </div>
-        <textarea id="preview" class="mono" spellcheck="false" aria-label="出力プレビュー"></textarea>
+
+        <div class="row" style="align-items: center; margin-bottom: 0.5rem; padding: 0 0.5rem;">
+          <label for="rowSelector" class="small muted" style="margin-right: 0.5rem;">表示行:</label>
+          <select id="rowSelector" style="flex: 1; padding: .25rem .5rem;"></select>
+        </div>
+        <div id="structuredPreview" class="mono" style="border: 1px solid var(--card-border-color); border-radius: 8px; padding: 0.5rem; min-height: 100px; overflow-x: auto;">
+        </div>
+
+        <details style="margin-top: 1rem;">
+          <summary class="small muted">Rawテキストプレビュー</summary>
+          <textarea id="preview" class="mono" spellcheck="false" aria-label="出力プレビュー"></textarea>
+        </details>
 
         <div id="panelChecks" class="grid">
           <div class="small muted">メタチェック（先頭レコード基準）</div>
@@ -315,6 +356,60 @@
       localStorage.setItem('theme', newTheme);
       applyTheme(newTheme);
     });
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // --- パラメータ設定の簡略化 ---
+
+    const PRESET_CONFIGS = {
+      '1600_19_1': { fmt: 'CSV', withHeader: true, nl: 'CRLF', enc: 'SJIS' },
+      '2000_1_1': { fmt: 'FIXED', withHeader: false, nl: 'CRLF', enc: 'SJIS' },
+      '4000_3_1': { fmt: 'CSV', withHeader: false, nl: 'CRLF', enc: 'SJIS' },
+    };
+
+    const form = document.getElementById('settingsForm');
+
+    function updateControlsState() {
+      const selectedFormat = form.elements.fmt.value;
+      const isCsvTsv = ['CSV', 'TSV'].includes(selectedFormat);
+
+      // --- 区切り文字 ---
+      const delimFieldset = form.elements.delim[0].closest('fieldset');
+      delimFieldset.disabled = !isCsvTsv;
+      delimFieldset.style.opacity = isCsvTsv ? '1' : '0.6';
+
+      if (selectedFormat === 'TSV') {
+        form.elements.delim.value = '\t';
+      } else if (selectedFormat === 'CSV') {
+        form.elements.delim.value = ',';
+      }
+
+      // --- ヘッダ行 ---
+      const headerFieldset = form.elements.withHeader.closest('fieldset');
+      headerFieldset.disabled = !isCsvTsv;
+      headerFieldset.style.opacity = isCsvTsv ? '1' : '0.6';
+    }
+
+    function applyPreset(presetValue) {
+      const config = PRESET_CONFIGS[presetValue];
+      if (!config) return;
+
+      form.elements.fmt.value = config.fmt;
+      form.elements.withHeader.checked = config.withHeader;
+      form.elements.nl.value = config.nl;
+      form.elements.enc.value = config.enc;
+
+      updateControlsState();
+    }
+
+    form.addEventListener('change', (e) => {
+      if (e.target.name === 'preset') applyPreset(e.target.value);
+      if (e.target.name === 'fmt') updateControlsState();
+    });
+
+    // 初期表示時に現在のプリセットを適用
+    applyPreset(form.elements.preset.value);
   });
 </script>
 <script type="module" src="src/script.js"></script>

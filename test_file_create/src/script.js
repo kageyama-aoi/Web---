@@ -11,24 +11,42 @@ import { toHTML } from './formatters/htmlFormatter.js';
 import { toSQL } from './formatters/sqlFormatter.js';
 import { toFIXED_generic } from './formatters/fixedFormatter.js';
 
+let currentRowsAsObjects = []; // Module-level state for the generated data
+
+function getRowCount() {
+  const input = $('#rowCount');
+  if (!input) return 1;
+  const count = parseInt(input.value, 10);
+  return isNaN(count) || count < 1 ? 1 : count;
+}
+
 /* ------------------ データ取得（行） ------------------ */
 function getRowsAsObjects(){
   const p = getPreset();
-  if (p.id==="2000_1_1"){
+  const rowCount = getRowCount();
+  let baseRows = [];
+
+  if (p.id === "2000_1_1"){
     // EDI は rowsObj をそのまま返す（レコード区分等はCSV用に付与）
-    return p.rowsObj.map(o => ({
+    baseRows = p.rowsObj.map(o => ({
       "レコード区分":"2",
       "データ区分":"00",
       ...o,
       "空白":"" // CSV用の末尾空白（固定長のときは専用ロジック）
     }));
-  }
-  // 通常プリセット（配列→オブジェクト化）
-  if (Array.isArray(p.rows)){
+  } else if (Array.isArray(p.rows)){
+    // 通常プリセット（配列→オブジェクト化）
     const heads = headerLabels();
-    return p.rows.map(arr => Object.fromEntries(heads.map((k,i)=>[k, arr[i] ?? ""])));
+    baseRows = p.rows.map(arr => Object.fromEntries(heads.map((k,i)=>[k, arr[i] ?? ""])));
   }
-  return [];
+
+  if (baseRows.length === 0) return [];
+
+  const generatedRows = [];
+  for (let i = 0; i < rowCount; i++) {
+    generatedRows.push(baseRows[i % baseRows.length]);
+  }
+  return generatedRows;
 }
 
 const formatters = {
@@ -59,21 +77,87 @@ function generate() {
   const p = getPreset();
   const fmt = getFormat();
   const NL = getNewline();
-  const rowsObj = getRowsAsObjects();
+  
+  currentRowsAsObjects = getRowsAsObjects(); // Generate and store in state
+  
   let text = '', ext = extFor(fmt), warn = [];
 
   const formatter = formatters[fmt];
   if (formatter) {
-    text = formatter(rowsObj, p, NL);
+    text = formatter(currentRowsAsObjects, p, NL);
   }
 
   if (fmt === 'FIXED' && p.id === '2000_1_1') {
-    warn = validateEDI(rowsObj);
+    warn = validateEDI(currentRowsAsObjects);
   }
 
   updateUI(text, p, ext, warn);
 
   return { text, ext };
+}
+
+function populateRowSelector() {
+  const selector = $('#rowSelector');
+  const rowsObj = currentRowsAsObjects;
+  selector.innerHTML = ''; // Clear previous options
+
+  if (withHeader()) {
+    const option = document.createElement('option');
+    option.value = '-1';
+    option.textContent = 'ヘッダー';
+    selector.appendChild(option);
+  }
+
+  rowsObj.forEach((row, i) => {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = `データ行 ${i + 1}`;
+    selector.appendChild(option);
+  });
+
+  // Set initial selection to the first data row if available
+  if (selector.options.length > 0) {
+    selector.value = (rowsObj.length > 0) ? '0' : '-1';
+  }
+}
+
+function renderStructuredPreview(rowIndex) {
+  const container = $('#structuredPreview');
+  container.innerHTML = ''; // Clear previous content
+
+  const headers = headerLabels();
+  const rowsObj = currentRowsAsObjects;
+
+  let dataToShow = {};
+  
+  if (rowIndex === -1) { // Header view
+    if (headers.length === 0) {
+      container.innerHTML = "<div class='small muted'>ヘッダーがありません。</div>";
+      return;
+    }
+    headers.forEach(h => { dataToShow[h] = ''; });
+  } else if (rowsObj[rowIndex]) { // Data row view
+    dataToShow = rowsObj[rowIndex];
+  } else {
+    container.innerHTML = "<div class='small muted'>表示するデータがありません。</div>";
+    return;
+  }
+
+  const table = document.createElement('table');
+  table.style.cssText = "width:100%; font-size:0.85rem; border-collapse: collapse;";
+  const tbody = document.createElement('tbody');
+
+  headers.forEach(header => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <th style="text-align:left; padding:0.3rem 0.6rem; border:1px solid var(--card-border-color); width:40%; vertical-align: top;">${header}</th>
+      <td style="padding:0.3rem 0.6rem; border:1px solid var(--card-border-color); white-space:pre-wrap; word-break:break-all;">${dataToShow[header] ?? ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  container.appendChild(table);
 }
 
 function updateUI(text, p, ext, warn) {
@@ -97,8 +181,13 @@ function updateUI(text, p, ext, warn) {
   $('#fileSize').textContent = `${blob.size.toLocaleString()} bytes`;
   $('#lineCount').textContent = (text.match(/\r\n|\r|\n/g)?.length ?? 0) + 1;
 
+  // 構造化プレビューの更新
+  populateRowSelector();
+  const initialRowIndex = (currentRowsAsObjects.length > 0) ? 0 : -1;
+  renderStructuredPreview(initialRowIndex);
+
   // メタチェック（先頭行を schema で見る：固定長系のみ）
-  renderChecks(getRowsAsObjects(), p, getFormat());
+  renderChecks(p, getFormat());
 
   // EDI 警告
   if (warn.length) {
@@ -110,13 +199,13 @@ function updateUI(text, p, ext, warn) {
   }
 }
 
-function renderChecks(rowsObj, p, fmt){
+function renderChecks(p, fmt){
   const el = $("#checksArea");
   const schema = p.fields || [];
   let html = "";
   if (!schema.length){ el.innerHTML = "<div class='small muted'>フィールド定義なし</div>"; return; }
 
-  const row = rowsObj[0] || {};
+  const row = currentRowsAsObjects[0] || {};
   if (fmt === "FIXED"){
     html += "<table><thead><tr><th>#</th><th>項目</th><th>定義桁</th><th>実長</th><th>判定</th></tr></thead><tbody>";
     schema.forEach((f, i) => {
@@ -189,6 +278,12 @@ function initEventListeners() {
   $$('input[name="enc"]').forEach(r=>r.addEventListener("change", ()=>{
     generate();
   }));
+  const rowCountInput = $("#rowCount");
+  if (rowCountInput) {
+    rowCountInput.addEventListener("input", generate);
+  }
+  const rowSelector = $("#rowSelector");
+  if (rowSelector) rowSelector.addEventListener("change", (e) => renderStructuredPreview(parseInt(e.target.value, 10)));
   $("#btnPreview").addEventListener("click", ()=>{
     generate();
   });
