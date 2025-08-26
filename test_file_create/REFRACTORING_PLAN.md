@@ -1,36 +1,59 @@
 # `script.js` リファクタリング計画
 
 ## 目的
-`script.js` のコードベースを改善し、可読性、保守性、拡張性を向上させる。
+アプリケーション全体のコードベースを改善し、可読性、保守性、拡張性を向上させる。
 
 ## 現状の課題
-- **モノリシックな構造**: 全てのロジックが単一ファイルに集約されており、コードの見通しが悪い。
-- **グローバルスコープの汚染**: 多くの関数がグローバルスコープに定義されており、名前の衝突や依存関係の不明瞭さを引き起こす可能性がある。
-- **UIロジックとデータロジックの混在**: UI操作とデータ処理・生成ロジックが密接に結合している。
-- **重複コード**: 一部のDOMクエリや処理に重複が見られる。
-- **複雑な `generate()` 関数**: フォーマットごとの分岐が多く、肥大化している。
-- **マジックストリング/ナンバー**: デリミタやフォーマットタイプなどがハードコードされている箇所がある。
-- **EDI固有ロジックの分離不足**: EDIの固定長生成やバリデーションロジックが他の汎用ロジックと混在している。
+フェーズ1のモジュール化は完了したが、依然として以下の課題が残っている。
+
+- **`script.js` の責務過多**: UI更新、データ生成、イベント登録など、複数の役割が混在している。
+- **暗黙的な状態管理**: `currentRowsAsObjects` のようなモジュールレベルの変数がグローバルな状態として機能しており、データの流れが追いにくい。
+- **UI生成とロジックの結合**: `renderStructuredPreview` 内でHTML文字列を組み立てており、変更がしにくい。
+- **ユーザーフィードバック**: `alert()` を使用しており、ユーザー体験を阻害する可能性がある。
 
 ## リファクタリングのステップ（段階的に実施）
 
-### フェーズ1: モジュール化と責務の分離
-1.  **`PRESETS` データの分離**: `PRESETS` 定義を別のファイル（例: `data/presets.js`）に移動し、必要に応じてインポートする形式にする。
-2.  **UIヘルパー関数の分離**: `$`, `$$`, `getCurrentPreset`, `getPreset`, `getFormat`, `getDelimiter`, `getNewline`, `withHeader`, `extFor`, `applyPresetDefaults`, `updateControlAvailability`, `headerLabels` などのUI関連関数を `ui.js` または `domUtils.js` のようなファイルに分離する。
-3.  **文字列ユーティリティ関数の分離**: `newlineify`, `csvQuote`, `onlyDigits`, `padLeftZero`, `padRightSpace`, `padLeftSpace` などの汎用文字列操作関数を `utils/stringUtils.js` のようなファイルに分離する。
-4.  **EDI固有ロジックの分離**: `ediHeader`, `ediEnd`, `storeCode3`, `ediDataRow`, `ediTrailer`, `generateEDI2000Fixed`, `validateEDI` などのEDI関連関数を `formatters/ediFormatter.js` のようなファイルに分離する。
-5.  **各フォーマット生成関数の分離**: `toCSVTSV`, `toJSON`, `toYAML`, `toXML`, `toMarkdown`, `toTXT`, `toHTML`, `toSQL`, `toFIXED_generic` を `formatters/` ディレクトリ配下の各ファイル（例: `formatters/csvFormatter.js`, `formatters/jsonFormatter.js` など）に分離する。
+### フェーズ1: モジュール化と責務の分離 (✅ 対応済み)
+1.  **`PRESETS` データの分離**: `data/presets.js` へ分離済み。
+2.  **UIヘルパー関数の分離**: `ui.js` へ分離済み。
+3.  **文字列ユーティリティ関数の分離**: `utils/stringUtils.js` へ分離済み。
+4.  **EDI固有ロジックの分離**: `formatters/ediFormatter.js` へ分離済み。
+5.  **各フォーマット生成関数の分離**: `formatters/` ディレクトリ配下へ分離済み。
 
-### フェーズ2: `generate()` 関数の改善とイベントハンドリング
-1.  **`generate()` 関数のリファクタリング**:
-    *   各フォーマット生成関数をモジュールとしてインポートし、`generate()` 関数内で動的に呼び出すように変更する（例: フォーマットタイプと関数をマッピングしたオブジェクトを使用）。
-    *   `generate()` 関数からUI更新ロジック（`$("#preview").value = text;` など）を分離し、専用の関数またはUIモジュールに移動する。
-2.  **イベントハンドリングの整理**: イベントリスナーの登録部分を関数にまとめ、初期化処理を明確にする。
+### フェーズ2: `script.js` の責務分離とコアロジックの純粋化 (提案)
+`script.js` の役割を「各モジュールの読み込みと連携の初期化」に限定する。
+- **UI更新ロジックの分離**: `updateUI` や `renderStructuredPreview` などのDOM操作関数を、`uiUpdater.js` のような新モジュールに分離する。
+- **データ生成ロジックの分離**: `getRowsAsObjects` 関数を `dataGenerator.js` のような新モジュールに分離する。
+- **コアロジックの純粋化**: `generate` 関数を、データフォーマット処理に特化した純粋な `formatData(data, settings)` 関数と、それを呼び出してUIを更新するイベントハンドラに分割する。
 
-### フェーズ3: コード品質の向上
-1.  **命名規則の統一**: 変数名、関数名が意図を明確に伝えるように見直す。
-2.  **コメントの整理**: 複雑なロジックや意図を説明するコメントに限定し、冗長なコメントは削除する。
-3.  **ESLint/Prettierの導入検討**: コードスタイルを自動で統一するためのツール導入を検討する（もしプロジェクトにない場合）。
+### フェーズ3: 状態管理の一元化 (提案)
+アプリケーションの状態を管理する単一の `state` オブジェクトを導入する。
+```javascript
+const state = {
+  preset: '2000_1_1',
+  format: 'FIXED',
+  rowCount: 3,
+  // ...その他の設定値
+  generatedData: [], // currentRowsAsObjects の代わり
+};
+```
+- これにより、データの流れが「状態の変更 → UIの再描画」という一方向になり、予測可能で堅牢なアプリケーションになる。
+
+### フェーズ4: UI生成ロジックのコンポーネント化 (提案)
+HTML文字列の組み立てをやめ、データを受け取ってDOM要素を返す「コンポーネント関数」を導入する。
+```javascript
+// ui.js
+export function createPreviewTable(headers, dataRow) {
+  const table = document.createElement('table');
+  // ... table の中身を生成するロジック ...
+  return table;
+}
+```
+- これにより、HTML構造とロジックが分離され、可読性と保守性が向上する。
+
+### フェーズ5: ユーザーフィードバックの改善 (提案)
+- `alert()` の使用を廃止し、画面上部にトースト通知やインラインメッセージを表示する専用のUIを設ける。
+- `showNotification(message, type)` のような関数をUIモジュールに作成し、ユーザー操作を妨げない洗練されたフィードバックを提供する。
 
 ## 実施方法
 - 各フェーズ、各ステップごとに小さな変更を加え、動作確認を行う。
@@ -38,4 +61,4 @@
 
 ---
 
-**次のステップ**: つぎはフェーズ2から着手します。
+**次のステップ**: フェーズ2の「`script.js` の責務分離」から着手する。
