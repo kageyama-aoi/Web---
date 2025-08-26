@@ -28,6 +28,17 @@
       margin-top: 0;
       margin-bottom: 3rem;
     }
+    .search-wrapper {
+      margin-bottom: 1.5rem;
+    }
+    #search-box {
+      width: 100%;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      box-sizing: border-box;
+    }
     .category-section {
       margin-bottom: 2.5rem;
     }
@@ -40,6 +51,70 @@
     .category-title.business { border-color: #2563eb; }
     .category-title.project { border-color: #d97706; }
     .category-title.personal { border-color: #059669; }
+    .category-title.custom { border-color: #6366f1; }
+    .category-title.progress { border-color: #14b8a6; } /* Teal */
+    .category-title.pj_management { border-color: #0284c7; } /* Sky */
+    .category-title.pj_info { border-color: #38bdf8; } /* Light Blue */
+    .category-title.operations { border-color: #475569; } /* Slate */
+    .category-title.feature_docs { border-color: #818cf8; } /* Indigo */
+
+    details.add-link-section {
+      margin-bottom: 2.5rem;
+    }
+    details.add-link-section > summary {
+      list-style: none; /* Safari */
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 0.8rem 1.2rem;
+    }
+    details.add-link-section > summary::-webkit-details-marker { display: none; } /* Chrome */
+    details.add-link-section[open] > summary {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .add-link-content {
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      padding: 1.5rem 2rem;
+      margin-top: -1px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .link-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: end;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+    .form-group label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+    .form-group input, .form-group select {
+      padding: 0.6rem;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    .form-group button {
+      padding: 0.7rem; border: none; border-radius: 6px; background-color: #198754;
+      color: white; font-weight: 600; cursor: pointer; transition: background-color 0.2s;
+    }
+    .form-group button:hover { background-color: #157347; }
 
     .link-list {
       display: grid;
@@ -76,6 +151,18 @@
       margin-top: 0.25rem;
       word-break: break-all;
     }
+    .delete-btn {
+      font-size: 1.2rem; line-height: 1; color: #dc3545;
+      background: none; border: none; cursor: pointer;
+      float: right; padding: 0 0 0 8px;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .link-list li:hover .delete-btn {
+      opacity: 0.5;
+    }
+    .link-list li:hover .delete-btn:hover {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
@@ -83,31 +170,207 @@
     <h1>スプレッドシート リンク集</h1>
     <p class="lead">業務やプロジェクトで利用するGoogleスプレッドシートへのリンク一覧です。</p>
 
+    <div class="search-wrapper">
+      <input type="search" id="search-box" placeholder="タイトルや説明で検索...">
+    </div>
+
+    <details class="add-link-section">
+      <summary>🔗 新しいリンクを追加</summary>
+      <div class="add-link-content">
+        <form id="add-link-form" class="link-form">
+          <div class="form-group full-width">
+            <label for="link-title">タイトル</label>
+            <input type="text" id="link-title" placeholder="例: プロジェクトC 予算管理" required>
+          </div>
+          <div class="form-group full-width">
+            <label for="link-url">URL</label>
+            <input type="url" id="link-url" placeholder="https://docs.google.com/spreadsheets/d/..." required>
+          </div>
+          <div class="form-group">
+            <label for="link-desc">説明</label>
+            <input type="text" id="link-desc" placeholder="例: PM: 鈴木 / 随時更新">
+          </div>
+          <div class="form-group">
+            <label for="link-category">カテゴリ</label>
+            <select id="link-category">
+              <option value="custom">その他（カスタム）</option>
+              <option value="business">業務管理</option>
+              <option value="project">プロジェクト</option>
+              <option value="personal">個人用</option>
+              <option value="progress">進捗管理</option>
+              <option value="pj_management">PJ全体管理</option>
+              <option value="pj_info">PJ関連情報</option>
+              <option value="operations">運用関連</option>
+              <option value="feature_docs">機能補足説明</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <button type="submit">追加する</button>
+          </div>
+        </form>
+      </div>
+    </details>
+
     <section class="category-section">
       <h2 class="category-title business">📊 業務管理</h2>
-      <ul class="link-list">
-        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">月次売上レポート</a><span class="description">担当: 経理部 / 毎月5営業日までに更新</span></li>
-        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">全社共有 連絡先一覧</a><span class="description">オーナー: 総務部 / 随時更新</span></li>
-        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">備品管理台帳</a><span class="description">オーナー: 総務部</span></li>
-      </ul>
+      <ul id="link-list-business" class="link-list"></ul>
     </section>
 
     <section class="category-section">
       <h2 class="category-title project">🚀 プロジェクト</h2>
-      <ul class="link-list">
-        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">プロジェクトA 進捗管理表</a><span class="description">PM: 景山 / 毎週金曜更新</span></li>
-        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">プロジェクトB 課題管理表 (WBS)</a><span class="description">PM: 佐藤 / 随時更新</span></li>
-      </ul>
+      <ul id="link-list-project" class="link-list"></ul>
     </section>
 
     <section class="category-section">
       <h2 class="category-title personal">👤 個人用</h2>
-      <ul class="link-list">
-        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">個人タスク管理</a><span class="description">自分用のToDoリスト</span></li>
-        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">学習記録シート</a><span class="description">日々の学びを記録</span></li>
-      </ul>
+      <ul id="link-list-personal" class="link-list"></ul>
+    </section>
+
+    <section class="category-section">
+      <h2 class="category-title progress">📈 進捗管理</h2>
+      <ul id="link-list-progress" class="link-list"></ul>
+    </section>
+
+    <section class="category-section">
+      <h2 class="category-title pj_management">👑 PJ全体管理</h2>
+      <ul id="link-list-pj_management" class="link-list"></ul>
+    </section>
+
+    <section class="category-section">
+      <h2 class="category-title pj_info">ℹ️ PJ関連情報</h2>
+      <ul id="link-list-pj_info" class="link-list"></ul>
+    </section>
+
+    <section class="category-section">
+      <h2 class="category-title operations">⚙️ 運用関連</h2>
+      <ul id="link-list-operations" class="link-list"></ul>
+    </section>
+
+    <section class="category-section">
+      <h2 class="category-title feature_docs">📖 機能補足説明</h2>
+      <ul id="link-list-feature_docs" class="link-list"></ul>
+    </section>
+
+    <section class="category-section">
+      <h2 class="category-title custom">⭐ その他（カスタム）</h2>
+      <ul id="link-list-custom" class="link-list"></ul>
     </section>
 
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const defaultLinks = {
+        business: [
+          { title: '月次売上レポート', url: 'https://docs.google.com/spreadsheets/d/...', description: '担当: 経理部 / 毎月5営業日までに更新' },
+          { title: '全社共有 連絡先一覧', url: 'https://docs.google.com/spreadsheets/d/...', description: 'オーナー: 総務部 / 随時更新' },
+          { title: '備品管理台帳', url: 'https://docs.google.com/spreadsheets/d/...', description: 'オーナー: 総務部' },
+        ],
+        project: [
+          { title: 'プロジェクトA 進捗管理表', url: 'https://docs.google.com/spreadsheets/d/...', description: 'PM: 景山 / 毎週金曜更新' },
+          { title: 'プロジェクトB 課題管理表 (WBS)', url: 'https://docs.google.com/spreadsheets/d/...', description: 'PM: 佐藤 / 随時更新' },
+        ],
+        personal: [
+          { title: '個人タスク管理', url: 'https://docs.google.com/spreadsheets/d/...', description: '自分用のToDoリスト' },
+          { title: '学習記録シート', url: 'https://docs.google.com/spreadsheets/d/...', description: '日々の学びを記録' },
+        ]
+      };
+
+      const form = document.getElementById('add-link-form');
+      const searchBox = document.getElementById('search-box');
+      const lists = {
+        business: document.getElementById('link-list-business'),
+        project: document.getElementById('link-list-project'),
+        personal: document.getElementById('link-list-personal'),
+        custom: document.getElementById('link-list-custom'),
+        progress: document.getElementById('link-list-progress'),
+        pj_management: document.getElementById('link-list-pj_management'),
+        pj_info: document.getElementById('link-list-pj_info'),
+        operations: document.getElementById('link-list-operations'),
+        feature_docs: document.getElementById('link-list-feature_docs'),
+      };
+
+      function getCustomLinks() {
+        return JSON.parse(localStorage.getItem('customSpreadsheetLinks') || '[]');
+      }
+
+      function saveCustomLinks(links) {
+        localStorage.setItem('customSpreadsheetLinks', JSON.stringify(links));
+      }
+
+      function createLinkElement(link, index = -1) {
+        const li = document.createElement('li');
+        const isCustom = index !== -1;
+
+        let deleteButton = '';
+        if (isCustom) {
+          deleteButton = `<button class="delete-btn" data-index="${index}" title="このリンクを削除">×</button>`;
+        }
+
+        li.innerHTML = `
+          ${deleteButton}
+          <a href="${link.url}" target="_blank" rel="noopener">${link.title}</a>
+          <span class="description">${link.description}</span>
+        `;
+        return li;
+      }
+
+      function renderLinks() {
+        const searchTerm = searchBox.value.toLowerCase();
+        // Clear all lists
+        Object.values(lists).forEach(list => list.innerHTML = '');
+
+        // Render default links
+        for (const category in defaultLinks) {
+          defaultLinks[category].forEach(link => {
+            if ((link.title.toLowerCase() + link.description.toLowerCase()).includes(searchTerm)) {
+              lists[category].appendChild(createLinkElement(link));
+            }
+          });
+        }
+
+        // Render custom links
+        const customLinks = getCustomLinks();
+        customLinks.forEach((link, index) => {
+          if ((link.title.toLowerCase() + link.description.toLowerCase()).includes(searchTerm)) {
+            const categoryList = lists[link.category] || lists.custom;
+            categoryList.appendChild(createLinkElement(link, index));
+          }
+        });
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const newLink = {
+          title: document.getElementById('link-title').value,
+          url: document.getElementById('link-url').value,
+          description: document.getElementById('link-desc').value,
+          category: document.getElementById('link-category').value,
+        };
+        const customLinks = getCustomLinks();
+        customLinks.push(newLink);
+        saveCustomLinks(customLinks);
+        renderLinks();
+        form.reset();
+      });
+
+      document.querySelector('.container').addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+          const index = parseInt(e.target.dataset.index, 10);
+          if (confirm('このリンクを削除してもよろしいですか？')) {
+            let customLinks = getCustomLinks();
+            customLinks.splice(index, 1);
+            saveCustomLinks(customLinks);
+            renderLinks();
+          }
+        }
+      });
+
+      searchBox.addEventListener('input', renderLinks);
+
+      // Initial render
+      renderLinks();
+    });
+  </script>
 </body>
 </html>
