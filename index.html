@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Local Stack - 資料一覧</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      background-color: #f4f7f9;
+      color: #333;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem 2rem 2rem;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    h1 {
+      border-bottom: 2px solid #eef2f5;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 1.25rem;
+      border: 1px solid #eef2f5;
+      border-left-width: 5px;
+      border-radius: 8px;
+      padding: 1rem;
+      transition: box-shadow 0.2s ease;
+    }
+    li.category-guide { border-left-color: #3b82f6; } /* Blue */
+    li.category-tool { border-left-color: #f59e0b; } /* Amber */
+    li.category-collection { border-left-color: #8b5cf6; } /* Violet */
+    li.category-report { border-left-color: #ef4444; } /* Red */
+    li.category-component { border-left-color: #10b981; } /* Emerald */
+    li.category-memo { border-left-color: #14b8a6; } /* Teal */
+
+    li:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    a {
+      text-decoration: none;
+      color: #007bff;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .file-path {
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      color: #555;
+      font-size: 0.85rem;
+      display: block;
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>資料一覧 (My Local Stack)</h1>
+    <p>ローカルに保存しているWeb開発関連の資料へのポータルページです。</p>
+    <ul>
+      <li class="category-guide">
+        <a href="./my-local-stack/guide-vps-github-actions-deploy.html" target="_blank">Guide: ConoHa VPS & GitHub Actions 自動デプロイ</a>
+        <span class="file-path">./guide-vps-github-actions-deploy.html</span>
+      </li>
+      <li class="category-guide">
+        <a href="./my-local-stack/guide-vps-docker-mysql.html" target="_blank">Guide: VPS & Docker & MySQL 構築ハンドブック</a>
+        <span class="file-path">./guide-vps-docker-mysql.html</span>
+      </li>
+      <li class="category-guide">
+        <a href="./guide-ai-coding-roadmap.html" target="_blank">Guide: AIコーディング ロードマップ</a>
+        <span class="file-path">./guide-ai-coding-roadmap.html</span>
+      </li>
+      <li class="category-tool">
+        <a href="./tool-tech-stack-comparison.html" target="_blank">Tool: 技術スタック比較</a>
+        <span class="file-path">./tool-tech-stack-comparison.html</span>
+      </li>
+      <li class="category-collection">
+        <a href="./collection-prompt-for-comparison-site.html" target="_blank">Collection: 比較サイト用プロンプト集</a>
+        <span class="file-path">./collection-prompt-for-comparison-site.html</span>
+      </li>
+      <li class="category-collection">
+        <a href="./collection-color-palettes.html" target="_blank">Collection: Webアプリ用カラーパレット集</a>
+        <span class="file-path">./collection-color-palettes.html</span>
+      </li>
+      <li class="category-report">
+        <a href="./report-phpmailer-dkim-issue.html" target="_blank">Report: PHPMailer DKIM不一致問題</a>
+        <span class="file-path">./report-phpmailer-dkim-issue.html</span>
+      </li>
+      <li class="category-component">
+        <a href="./component-progress-bar.html" target="_blank">Component: 円形プログレスバー</a>
+        <span class="file-path">./component-progress-bar.html</span>
+      </li>
+      <li class="category-memo">
+        <a href="./my-local-stack/memo-20240825-learnings.html" target="_blank">Memo: 2024-08-25 学んだこと</a>
+        <span class="file-path">./memo-20240825-learnings.html</span>
+      </li>
+      <li class="category-memo">
+        <a href="./my-local-stack/memo-20240824-misc.html" target="_blank">Memo: 2024-08-24 その他資料</a>
+        <span class="file-path">./memo-20240824-misc.html</span>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

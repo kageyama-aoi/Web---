@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Local Stack - スプレッドシートリンク集</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      background-color: #f8f9fa;
+      color: #212529;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem 2rem 3rem;
+    }
+    h1 {
+      font-size: 2.25rem;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    .lead {
+      font-size: 1.1rem;
+      color: #6c757d;
+      margin-top: 0;
+      margin-bottom: 3rem;
+    }
+    .category-section {
+      margin-bottom: 2.5rem;
+    }
+    .category-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      padding-left: 0.75rem;
+      border-left: 5px solid #6c757d;
+    }
+    .category-title.business { border-color: #2563eb; }
+    .category-title.project { border-color: #d97706; }
+    .category-title.personal { border-color: #059669; }
+
+    .link-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      list-style: none;
+      padding: 0;
+    }
+    .link-list li {
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 0.8rem 1.2rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .link-list li:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    a {
+      text-decoration: none;
+      color: #0d6efd;
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: block;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .description {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", Meiryo, sans-serif;
+      color: #6c757d;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>スプレッドシート リンク集</h1>
+    <p class="lead">業務やプロジェクトで利用するGoogleスプレッドシートへのリンク一覧です。</p>
+
+    <section class="category-section">
+      <h2 class="category-title business">📊 業務管理</h2>
+      <ul class="link-list">
+        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">月次売上レポート</a><span class="description">担当: 経理部 / 毎月5営業日までに更新</span></li>
+        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">全社共有 連絡先一覧</a><span class="description">オーナー: 総務部 / 随時更新</span></li>
+        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">備品管理台帳</a><span class="description">オーナー: 総務部</span></li>
+      </ul>
+    </section>
+
+    <section class="category-section">
+      <h2 class="category-title project">🚀 プロジェクト</h2>
+      <ul class="link-list">
+        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">プロジェクトA 進捗管理表</a><span class="description">PM: 景山 / 毎週金曜更新</span></li>
+        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">プロジェクトB 課題管理表 (WBS)</a><span class="description">PM: 佐藤 / 随時更新</span></li>
+      </ul>
+    </section>
+
+    <section class="category-section">
+      <h2 class="category-title personal">👤 個人用</h2>
+      <ul class="link-list">
+        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">個人タスク管理</a><span class="description">自分用のToDoリスト</span></li>
+        <li><a href="https://docs.google.com/spreadsheets/d/..." target="_blank" rel="noopener">学習記録シート</a><span class="description">日々の学びを記録</span></li>
+      </ul>
+    </section>
+
+  </div>
+</body>
+</html>
