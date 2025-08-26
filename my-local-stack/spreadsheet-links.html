@@ -14,31 +14,100 @@
     }
     .container {
       max-width: 1200px;
-      margin: 2rem auto;
-      padding: 1rem 2rem 3rem;
+      margin: 1rem auto 2rem;
+      padding: 1.5rem 2rem;
     }
     h1 {
-      font-size: 2.25rem;
-      margin-bottom: 0.5rem;
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
       letter-spacing: -0.02em;
     }
     .lead {
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: #6c757d;
       margin-top: 0;
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
     }
-    .search-wrapper {
+    .data-io-wrapper {
+      display: flex;
+      gap: 0.75rem;
       margin-bottom: 1.5rem;
+      align-items: center;
     }
-    #search-box {
-      width: 100%;
-      padding: 0.8rem 1.2rem;
-      font-size: 1rem;
+    .data-io-wrapper .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    .data-io-wrapper .note {
+      font-size: 0.85rem; color: #6c757d; margin-left: auto;
+    }
+
+    /* --- Control Panel --- */
+    .control-panel {
+      margin-bottom: 2.5rem;
+    }
+    .control-panel > summary {
+      list-style: none; /* Safari */
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      background-color: #fff;
       border: 1px solid #dee2e6;
       border-radius: 8px;
-      box-sizing: border-box;
+      padding: 0.8rem 1.2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background-color 0.2s;
     }
+    .control-panel > summary:hover {
+      background-color: #f8f9fa;
+    }
+    .control-panel > summary::after {
+      content: '';
+      display: inline-block;
+      width: 0.5em;
+      height: 0.5em;
+      border-top: 2px solid #6c757d;
+      border-right: 2px solid #6c757d;
+      transform: rotate(135deg);
+      transition: transform 0.25s ease;
+    }
+    .control-panel > summary::-webkit-details-marker { display: none; } /* Chrome */
+    .control-panel[open] > summary {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .control-panel[open] > summary::after {
+      transform: rotate(-45deg);
+    }
+    .control-panel-content {
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-top: none;
+      margin-top: -1px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 2.5rem;
+      padding: 1.5rem 2rem;
+      align-items: start;
+    }
+    .control-group {
+      margin-bottom: 2rem;
+    }
+    .control-group:last-child { margin-bottom: 0; }
+    .control-group > label {
+      display: block; font-weight: 700; margin-bottom: 0.75rem; font-size: 1rem;
+    }
+    @media (max-width: 960px) {
+      .control-panel-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+    }
+
     .category-section {
       margin-bottom: 2.5rem;
     }
@@ -47,6 +116,9 @@
       margin-bottom: 1rem;
       padding-left: 0.75rem;
       border-left: 5px solid #6c757d;
+    }
+    .link-list li.dragging {
+      opacity: 0.4;
     }
     .category-title.business { border-color: #2563eb; }
     .category-title.project { border-color: #d97706; }
@@ -58,33 +130,6 @@
     .category-title.operations { border-color: #475569; } /* Slate */
     .category-title.feature_docs { border-color: #818cf8; } /* Indigo */
 
-    details.add-link-section {
-      margin-bottom: 2.5rem;
-    }
-    details.add-link-section > summary {
-      list-style: none; /* Safari */
-      font-weight: 600;
-      font-size: 1.1rem;
-      cursor: pointer;
-      background-color: #fff;
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      padding: 0.8rem 1.2rem;
-    }
-    details.add-link-section > summary::-webkit-details-marker { display: none; } /* Chrome */
-    details.add-link-section[open] > summary {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
-    }
-    .add-link-content {
-      background-color: #fff;
-      border: 1px solid #dee2e6;
-      border-top: none;
-      border-radius: 0 0 8px 8px;
-      padding: 1.5rem 2rem;
-      margin-top: -1px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
     .link-form {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -109,6 +154,14 @@
       border-radius: 6px;
       font-size: 1rem;
       font-family: inherit;
+    }
+    #search-box {
+      width: 100%;
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      box-sizing: border-box;
     }
     .form-group button {
       padding: 0.7rem; border: none; border-radius: 6px; background-color: #198754;
@@ -170,91 +223,109 @@
     <h1>スプレッドシート リンク集</h1>
     <p class="lead">業務やプロジェクトで利用するGoogleスプレッドシートへのリンク一覧です。</p>
 
-    <div class="search-wrapper">
-      <input type="search" id="search-box" placeholder="タイトルや説明で検索...">
-    </div>
-
-    <details class="add-link-section">
-      <summary>🔗 新しいリンクを追加</summary>
-      <div class="add-link-content">
-        <form id="add-link-form" class="link-form">
-          <div class="form-group full-width">
-            <label for="link-title">タイトル</label>
-            <input type="text" id="link-title" placeholder="例: プロジェクトC 予算管理" required>
+    <details class="control-panel">
+      <summary>⚙️ 検索 & 操作パネル</summary>
+      <div class="control-panel-content">
+        <div class="main-controls">
+          <div class="control-group">
+            <label>新しいリンクを追加</label>
+            <form id="add-link-form" class="link-form">
+              <div class="form-group">
+                <label for="link-title">タイトル</label>
+                <input type="text" id="link-title" placeholder="例: プロジェクトC 予算管理" required>
+              </div>
+              <div class="form-group">
+                <label for="link-category">カテゴリ</label>
+                <select id="link-category">
+                  <option value="custom">その他（カスタム）</option>
+                  <option value="business">業務管理</option>
+                  <option value="project">プロジェクト</option>
+                  <option value="personal">個人用</option>
+                  <option value="progress">進捗管理</option>
+                  <option value="pj_management">PJ全体管理</option>
+                  <option value="pj_info">PJ関連情報</option>
+                  <option value="operations">運用関連</option>
+                  <option value="feature_docs">機能補足説明</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label for="link-url">URL</label>
+                <input type="url" id="link-url" placeholder="https://docs.google.com/spreadsheets/d/..." required>
+              </div>
+              <div class="form-group full-width">
+                <label for="link-desc">説明</label>
+                <input type="text" id="link-desc" placeholder="例: PM: 鈴木 / 随時更新">
+              </div>
+              <div class="form-group full-width">
+                <button type="submit">追加する</button>
+              </div>
+            </form>
           </div>
-          <div class="form-group full-width">
-            <label for="link-url">URL</label>
-            <input type="url" id="link-url" placeholder="https://docs.google.com/spreadsheets/d/..." required>
+        </div>
+        <div class="side-controls">
+          <div class="control-group">
+            <label for="search-box">キーワード検索</label>
+            <input type="search" id="search-box" placeholder="タイトルや説明で検索...">
           </div>
-          <div class="form-group">
-            <label for="link-desc">説明</label>
-            <input type="text" id="link-desc" placeholder="例: PM: 鈴木 / 随時更新">
+          <div class="control-group">
+            <label>データ入出力</label>
+            <div class="data-io-wrapper">
+              <button id="import-btn" class="btn">📥 インポート</button>
+              <button id="export-btn" class="btn">📤 エクスポート</button>
+              <input type="file" id="file-input" accept=".json" style="display:none;">
+              <span class="note">※ 変更内容はエクスポートで保存</span>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="link-category">カテゴリ</label>
-            <select id="link-category">
-              <option value="custom">その他（カスタム）</option>
-              <option value="business">業務管理</option>
-              <option value="project">プロジェクト</option>
-              <option value="personal">個人用</option>
-              <option value="progress">進捗管理</option>
-              <option value="pj_management">PJ全体管理</option>
-              <option value="pj_info">PJ関連情報</option>
-              <option value="operations">運用関連</option>
-              <option value="feature_docs">機能補足説明</option>
-            </select>
-          </div>
-          <div class="form-group full-width">
-            <button type="submit">追加する</button>
-          </div>
-        </form>
+        </div>
       </div>
     </details>
 
-    <section class="category-section">
-      <h2 class="category-title business">📊 業務管理</h2>
-      <ul id="link-list-business" class="link-list"></ul>
-    </section>
+    <div id="category-wrapper">
+      <section class="category-section">
+        <h2 class="category-title business">📊 業務管理</h2>
+        <ul id="link-list-business" class="link-list"></ul>
+      </section>
 
-    <section class="category-section">
-      <h2 class="category-title project">🚀 プロジェクト</h2>
-      <ul id="link-list-project" class="link-list"></ul>
-    </section>
+      <section class="category-section">
+        <h2 class="category-title project">🚀 プロジェクト</h2>
+        <ul id="link-list-project" class="link-list"></ul>
+      </section>
 
-    <section class="category-section">
-      <h2 class="category-title personal">👤 個人用</h2>
-      <ul id="link-list-personal" class="link-list"></ul>
-    </section>
+      <section class="category-section">
+        <h2 class="category-title personal">👤 個人用</h2>
+        <ul id="link-list-personal" class="link-list"></ul>
+      </section>
 
-    <section class="category-section">
-      <h2 class="category-title progress">📈 進捗管理</h2>
-      <ul id="link-list-progress" class="link-list"></ul>
-    </section>
+      <section class="category-section">
+        <h2 class="category-title progress">📈 進捗管理</h2>
+        <ul id="link-list-progress" class="link-list"></ul>
+      </section>
 
-    <section class="category-section">
-      <h2 class="category-title pj_management">👑 PJ全体管理</h2>
-      <ul id="link-list-pj_management" class="link-list"></ul>
-    </section>
+      <section class="category-section">
+        <h2 class="category-title pj_management">👑 PJ全体管理</h2>
+        <ul id="link-list-pj_management" class="link-list"></ul>
+      </section>
 
-    <section class="category-section">
-      <h2 class="category-title pj_info">ℹ️ PJ関連情報</h2>
-      <ul id="link-list-pj_info" class="link-list"></ul>
-    </section>
+      <section class="category-section">
+        <h2 class="category-title pj_info">ℹ️ PJ関連情報</h2>
+        <ul id="link-list-pj_info" class="link-list"></ul>
+      </section>
 
-    <section class="category-section">
-      <h2 class="category-title operations">⚙️ 運用関連</h2>
-      <ul id="link-list-operations" class="link-list"></ul>
-    </section>
+      <section class="category-section">
+        <h2 class="category-title operations">⚙️ 運用関連</h2>
+        <ul id="link-list-operations" class="link-list"></ul>
+      </section>
 
-    <section class="category-section">
-      <h2 class="category-title feature_docs">📖 機能補足説明</h2>
-      <ul id="link-list-feature_docs" class="link-list"></ul>
-    </section>
+      <section class="category-section">
+        <h2 class="category-title feature_docs">📖 機能補足説明</h2>
+        <ul id="link-list-feature_docs" class="link-list"></ul>
+      </section>
 
-    <section class="category-section">
-      <h2 class="category-title custom">⭐ その他（カスタム）</h2>
-      <ul id="link-list-custom" class="link-list"></ul>
-    </section>
+      <section class="category-section">
+        <h2 class="category-title custom">⭐ その他（カスタム）</h2>
+        <ul id="link-list-custom" class="link-list"></ul>
+      </section>
+    </div>
 
   </div>
 
@@ -278,6 +349,13 @@
 
       const form = document.getElementById('add-link-form');
       const searchBox = document.getElementById('search-box');
+      const importBtn = document.getElementById('import-btn');
+      const exportBtn = document.getElementById('export-btn');
+      const fileInput = document.getElementById('file-input');
+      const categoryWrapper = document.getElementById('category-wrapper');
+
+      let customLinks = []; // localStorageの代わりにメモリで管理
+
       const lists = {
         business: document.getElementById('link-list-business'),
         project: document.getElementById('link-list-project'),
@@ -290,14 +368,6 @@
         feature_docs: document.getElementById('link-list-feature_docs'),
       };
 
-      function getCustomLinks() {
-        return JSON.parse(localStorage.getItem('customSpreadsheetLinks') || '[]');
-      }
-
-      function saveCustomLinks(links) {
-        localStorage.setItem('customSpreadsheetLinks', JSON.stringify(links));
-      }
-
       function createLinkElement(link, index = -1) {
         const li = document.createElement('li');
         const isCustom = index !== -1;
@@ -305,6 +375,8 @@
         let deleteButton = '';
         if (isCustom) {
           deleteButton = `<button class="delete-btn" data-index="${index}" title="このリンクを削除">×</button>`;
+          li.draggable = true;
+          li.dataset.linkData = JSON.stringify(link);
         }
 
         li.innerHTML = `
@@ -330,11 +402,12 @@
         }
 
         // Render custom links
-        const customLinks = getCustomLinks();
         customLinks.forEach((link, index) => {
           if ((link.title.toLowerCase() + link.description.toLowerCase()).includes(searchTerm)) {
-            const categoryList = lists[link.category] || lists.custom;
-            categoryList.appendChild(createLinkElement(link, index));
+            const categoryList = lists[link.category];
+            if (categoryList) {
+              categoryList.appendChild(createLinkElement(link, index));
+            }
           }
         });
       }
@@ -347,9 +420,7 @@
           description: document.getElementById('link-desc').value,
           category: document.getElementById('link-category').value,
         };
-        const customLinks = getCustomLinks();
         customLinks.push(newLink);
-        saveCustomLinks(customLinks);
         renderLinks();
         form.reset();
       });
@@ -358,15 +429,105 @@
         if (e.target.classList.contains('delete-btn')) {
           const index = parseInt(e.target.dataset.index, 10);
           if (confirm('このリンクを削除してもよろしいですか？')) {
-            let customLinks = getCustomLinks();
             customLinks.splice(index, 1);
-            saveCustomLinks(customLinks);
             renderLinks();
           }
         }
       });
 
       searchBox.addEventListener('input', renderLinks);
+
+      // --- Import/Export Logic ---
+      importBtn.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (Array.isArray(data)) {
+              customLinks = data;
+              renderLinks();
+              alert('データをインポートしました。');
+            } else {
+              alert('エラー: 無効なファイル形式です。JSON配列である必要があります。');
+            }
+          } catch (err) {
+            alert('エラー: ファイルの読み込みに失敗しました。\n' + err.message);
+          }
+        };
+        reader.readAsText(file);
+        fileInput.value = ''; // 同じファイルを再度選択できるようにリセット
+      });
+
+      exportBtn.addEventListener('click', () => {
+        const dataStr = JSON.stringify(customLinks, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'spreadsheet-data.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // --- Drag & Drop Logic ---
+      let draggedItem = null;
+
+      categoryWrapper.addEventListener('dragstart', (e) => {
+        if (e.target.tagName === 'LI' && e.target.draggable) {
+          draggedItem = e.target;
+          setTimeout(() => e.target.classList.add('dragging'), 0);
+        }
+      });
+
+      categoryWrapper.addEventListener('dragend', (e) => {
+        if (draggedItem) {
+          draggedItem.classList.remove('dragging');
+          draggedItem = null;
+          syncCustomLinksFromDOM();
+        }
+      });
+
+      categoryWrapper.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const container = e.target.closest('.link-list');
+        if (!container || !draggedItem) return;
+
+        const afterElement = getDragAfterElement(container, e.clientY);
+        if (draggedItem) {
+          if (afterElement == null) {
+            container.appendChild(draggedItem);
+          } else {
+            container.insertBefore(draggedItem, afterElement);
+          }
+        }
+      });
+
+      function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
+        return draggableElements.reduce((closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - box.height / 2;
+          return (offset < 0 && offset > closest.offset) ? { offset: offset, element: child } : closest;
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+      }
+
+      function syncCustomLinksFromDOM() {
+        const newLinks = [];
+        document.querySelectorAll('.link-list li[data-link-data]').forEach(li => {
+          const linkData = JSON.parse(li.dataset.linkData);
+          const newCategory = li.closest('.category-section').querySelector('.category-title').classList[1];
+          linkData.category = newCategory;
+          newLinks.push(linkData);
+        });
+        customLinks = newLinks;
+        renderLinks(); // Re-render to update indices and ensure consistency
+      }
 
       // Initial render
       renderLinks();
