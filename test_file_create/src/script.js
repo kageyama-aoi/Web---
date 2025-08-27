@@ -24,10 +24,7 @@ const formatters = {
   JSON: (rowsAsObjects, { newline }) => toJSON(rowsAsObjects, newline),
   YAML: (rowsAsObjects, { newline }) => toYAML(rowsAsObjects, newline),
   XML: (rowsAsObjects, { preset, newline }) => toXML(rowsAsObjects, headerLabels(preset), newline),
-  Markdown: (rowsAsObjects, { preset, newline, withHeader }) => {
-    // toMarkdownにwithHeaderを渡すように修正
-    return toMarkdown(rowsAsObjects, headerLabels(preset), withHeader, newline);
-  },
+  Markdown: (rowsAsObjects, { preset, newline, withHeader }) => toMarkdown(rowsAsObjects, headerLabels(preset), newline, withHeader),
   TXT: (rowsAsObjects, { newline }) => toTXT(rowsAsObjects, newline),
   HTML: (rowsAsObjects, { preset, newline }) => toHTML(rowsAsObjects, headerLabels(preset), newline),
   SQL: (rowsAsObjects, { preset, newline }) => toSQL(rowsAsObjects, headerLabels(preset), newline),
@@ -156,18 +153,34 @@ function renderStructuredPreview(rowIndex, rowsAsObjects, preset) {
 
   headers.forEach(header => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <th>${header}</th>
-      <td>${dataToShow[header] ?? ''}</td>
-    `;
+
+    const th = document.createElement('th');
+    th.textContent = header;
+    tr.appendChild(th);
+
+    const td = document.createElement('td');
+    td.textContent = dataToShow[header] ?? '';
+    // データ行の場合のみ編集可能にし、どのフィールドかを示す属性を付与
+    if (rowIndex !== -1) {
+      td.contentEditable = 'true';
+      td.dataset.fieldKey = header;
+    }
+    tr.appendChild(td);
+
     tbody.appendChild(tr);
   });
 
   table.appendChild(tbody);
   container.appendChild(table);
+
+  // 新しい行を描画したので、「編集を反映」ボタンを隠す
+  const reflectButton = $('#btnReflect');
+  if (reflectButton) {
+    reflectButton.style.display = 'none';
+  }
 }
 
-function updateUI({ text, preset, ext, warnings, rowsAsObjects }) {
+function updateUI({ text, preset, ext, warnings, rowsAsObjects }, isFullUpdate = true) {
   $('#preview').value = text;
   const p = preset; // 短縮用
   $('#fileName').textContent = `sample_${p.id}.${ext}`;
@@ -189,10 +202,12 @@ function updateUI({ text, preset, ext, warnings, rowsAsObjects }) {
   $('#lineCount').textContent = (text.match(/\r\n|\r|\n/g)?.length ?? 0) + 1;
 
   // 構造化プレビューの更新
-  populateRowSelector(rowsAsObjects, withHeader());
-  const initialRowIndex = (rowsAsObjects.length > 0) ? 0 : -1;
-  $('#rowSelector').value = initialRowIndex;
-  renderStructuredPreview(initialRowIndex, rowsAsObjects, p);
+  if (isFullUpdate) {
+    populateRowSelector(rowsAsObjects, withHeader());
+    const initialRowIndex = (rowsAsObjects.length > 0) ? 0 : -1;
+    $('#rowSelector').value = initialRowIndex;
+    renderStructuredPreview(initialRowIndex, rowsAsObjects, p);
+  }
 
   // メタチェック（先頭行を schema で見る：固定長系のみ）
   renderChecks(p, getFormat(), rowsAsObjects);
@@ -265,6 +280,51 @@ function doDownload() {
 }
 
 /**
+ * 構造化プレビューでの編集を反映し、メインのプレビューを再生成する
+ */
+function reformatAndUpatePreview() {
+  const { rowsAsObjects, preset } = lastGeneratedResult;
+
+  // 現在のUI設定を再取得
+  const config = {
+    preset: preset,
+    format: getFormat(),
+    delimiter: getDelimiter(),
+    newline: getNewline(),
+    withHeader: withHeader(),
+    headers: headerLabels(preset), // formatterが必要とするheadersプロパティ
+  };
+
+  const formatter = formatters[config.format];
+  if (!formatter) return;
+
+  const text = formatter(rowsAsObjects, config);
+
+  // lastGeneratedResult の状態を更新
+  lastGeneratedResult.text = text;
+
+  // UIの一部（構造化プレビュー以外）を更新
+  updateUI({ ...lastGeneratedResult, text: text }, false);
+}
+
+function handleStructuredPreviewEdit(event) {
+  const td = event.target.closest('td[contenteditable="true"]');
+  if (!td) return;
+
+  const rowIndex = parseInt($('#rowSelector').value, 10);
+  const fieldKey = td.dataset.fieldKey;
+
+  if (rowIndex >= 0 && fieldKey && lastGeneratedResult.rowsAsObjects[rowIndex]) {
+    lastGeneratedResult.rowsAsObjects[rowIndex][fieldKey] = td.textContent;
+    // プレビューの即時更新の代わりに、「編集を反映」ボタンを表示する
+    const reflectButton = $('#btnReflect');
+    if (reflectButton) {
+      reflectButton.style.display = 'inline-block';
+    }
+  }
+}
+
+/**
  * UIイベントを起点に、データ生成フロー全体を管理するコントローラー関数
  */
 function handleGenerationRequest() {
@@ -286,7 +346,7 @@ function handleGenerationRequest() {
   lastGeneratedResult = result;
 
   // 4. 結果をUIに反映
-  updateUI(result);
+  updateUI(result, true);
 }
 
 /* ------------------ イベント ------------------ */
@@ -307,7 +367,27 @@ function initEventListeners() {
   });
 
   const rowSelector = $("#rowSelector");
-  if (rowSelector) rowSelector.addEventListener("change", (e) => renderStructuredPreview(parseInt(e.target.value, 10), lastGeneratedResult.rowsAsObjects, lastGeneratedResult.preset));
+  if (rowSelector) {
+    rowSelector.addEventListener("change", (e) => {
+      renderStructuredPreview(parseInt(e.target.value, 10), lastGeneratedResult.rowsAsObjects, lastGeneratedResult.preset);
+    });
+
+    // 「編集を反映」ボタンを動的に作成して追加
+    const reflectButton = document.createElement('button');
+    reflectButton.id = 'btnReflect';
+    reflectButton.textContent = '編集を反映';
+    reflectButton.style.display = 'none';
+    reflectButton.style.marginLeft = '8px';
+    rowSelector.parentElement.appendChild(reflectButton);
+
+    reflectButton.addEventListener('click', reformatAndUpatePreview);
+  }
+
+  // 構造化プレビューの編集イベントをコンテナで捕捉 (イベントデリゲーション)
+  const structuredPreviewContainer = $("#structuredPreview");
+  if (structuredPreviewContainer) {
+    structuredPreviewContainer.addEventListener('input', handleStructuredPreviewEdit);
+  }
   $("#btnPreview").addEventListener("click", handleGenerationRequest);
   $("#btnDownload").addEventListener("click", ()=>{
     doDownload();

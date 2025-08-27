@@ -32,3 +32,31 @@
     .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
     .foot{padding:12px 16px;color:#93c5fd;border-top:1px solid #1f2937}
     .kbd{border:1px solid #334155;border-bottom-width:2px;border-radius:6px;padding:1px 6px;background:#0b1220}
+
+    /* 開閉セクション */
+    .collapsible-section {
+      border-top: 1px solid #273244;
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+    .collapsible-section summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      list-style: none; /* デフォルトのマーカーを非表示 */
+      margin-bottom: 12px;
+      font-weight: 700;
+      color: #c7d2fe;
+    }
+    .collapsible-section summary::-webkit-details-marker { display: none; }
+    .collapsible-section .indicator {
+      width: 8px; height: 8px;
+      border-left: 2px solid var(--muted);
+      border-bottom: 2px solid var(--muted);
+      transform: rotate(-45deg);
+      transition: transform 0.2s;
+    }
+    .collapsible-section[open] > summary .indicator {
+      transform: rotate(135deg);
+    }
