@@ -143,35 +143,73 @@ header {
     header{padding-bottom:.5rem}
     .theme-toggle{display:none}
   }
-  .label{display:inline-block;min-width:2.5rem;font-weight:600;color:var(--muted)}
   /* --- 会話劇のスタイル --- */
   .chat-container {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
   }
   .chat-line {
-    padding: .5rem 1rem;
-    border-radius: 8px;
+    position: relative;
+    padding: .8rem 1.2rem;
+    border-radius: 12px;
     max-width: 85%;
     line-height: 1.5;
+    border: 1px solid;
+    background-color: var(--card);
   }
+  .chat-line.right {
+    align-self: flex-end;
+  }
+  .chat-line::after {
+    content: "";
+    position: absolute;
+    top: 16px;
+    width: 12px;
+    height: 12px;
+    background-color: var(--card);
+    transform: rotate(45deg);
+  }
+  .chat-line:not(.right)::after {
+    left: -7px;
+    border-left: 1px solid;
+    border-bottom: 1px solid;
+  }
+  .chat-line.right::after {
+    right: -7px;
+    border-right: 1px solid;
+    border-top: 1px solid;
+  }
+
   .chat-kacho {
-    border-inline-start: 4px solid var(--fg-kacho);
-    background-color: color-mix(in oklab, var(--fg-kacho) 12%, transparent);
+    border-color: var(--fg-kacho);
+  }
+  .chat-kacho:not(.right)::after {
+    border-left-color: var(--fg-kacho);
+    border-bottom-color: var(--fg-kacho);
   }
   .chat-kubo {
-    align-self: flex-end;
-    border-inline-end: 4px solid var(--fg-kubo);
-    background-color: color-mix(in oklab, var(--fg-kubo) 12%, transparent);
+    border-color: var(--fg-kubo);
+  }
+  .chat-kubo.right::after {
+    border-right-color: var(--fg-kubo);
+    border-top-color: var(--fg-kubo);
   }
   .chat-shinohara {
-    border-inline-start: 4px solid var(--fg-shinohara);
-    background-color: color-mix(in oklab, var(--fg-shinohara) 10%, transparent);
+    border-color: var(--fg-shinohara);
   }
-  .chat-kacho .label { color: var(--fg-kacho); }
-  .chat-kubo .label { color: var(--fg-kubo); }
-  .chat-shinohara .label { color: var(--fg-shinohara); }
+  .chat-shinohara:not(.right)::after {
+    border-left-color: var(--fg-shinohara);
+    border-bottom-color: var(--fg-shinohara);
+  }
+  .chat-line strong {
+    display: inline;
+    font-weight: 700;
+  }
+  .chat-line strong::after { content: "："; }
+  .chat-kacho strong { color: var(--fg-kacho); }
+  .chat-kubo strong { color: var(--fg-kubo); }
+  .chat-shinohara strong { color: var(--fg-shinohara); }
 </style>
 <script>
 (function(){
@@ -286,17 +324,17 @@ header {
     <details id="intro-script">
       <summary class="section-summary">2. 導入（アイスブレイク台本）</summary>
       <div class="card">
-        <p><span class="label">進行</span>「みなさん、こんにちは！集まってくれてありがとうございます！」</p>
-        <p><span class="label">進行</span>「今日はAIについて、一緒に見ていきましょう。リラックスして聞いてくださいね。」</p>
-        <p><span class="label">進行</span>「さっそくですが、皆さんは『AI』って聞くと、どんなイメージがありますか？良いことでも悪いことでも、何でもOKです。ちょっと時間をとるので、チャットに気軽に書き込んでみてください。」</p>
+        <p><span class="label">進行</span>みなさん、こんにちは！集まってくれてありがとうございます！</p>
+        <p><span class="label">進行</span>今日はAIについて、一緒に見ていきましょう。リラックスして聞いてくださいね。</p>
+        <p><span class="label">進行</span>さっそくですが、皆さんは『AI』って聞くと、どんなイメージがありますか？良いことでも悪いことでも、何でもOKです。ちょっと時間をとるので、チャットに気軽に書き込んでみてください。</p>
         <div class="tip">（ここで30秒～1分ほど待つ。参加者の書き込みをいくつか拾って読み上げる）</div>
-        <p><span class="label">進行</span>「ありがとうございます！ 『仕事が速くなりそう』って期待もあれば、『難しそう』『仕事がなくなるかも…』みたいな不安の声もありますね。うんうん、色々なイメージがあると思います。」</p>
-        <p><span class="label">進行</span>「今日の目的は、まさにその漠然としたイメージを、<strong>『明日から使える具体的な道具』</strong>に変えることです。AIを『よく分からない何か』から『頼れる相棒』にする、その第一歩を一緒に見ていきましょう！」</p>
+        <p><span class="label">進行</span>ありがとうございます！ 『仕事が速くなりそう』って期待もあれば、『難しそう』『仕事がなくなるかも…』みたいな不安の声もありますね。うんうん、色々なイメージがあると思います。</p>
+        <p><span class="label">進行</span>今日の目的は、まさにその漠然としたイメージを、<strong>『明日から使える具体的な道具』</strong>に変えることです。AIを『よく分からない何か』から『頼れる相棒』にする、その第一歩を一緒に見ていきましょう！</p>
       </div>
     </details>
 
     <details id="drama-script">
-      <summary class="section-summary">3. 会話劇：職場シーン風の台本作成例</summary>
+      <summary class="section-summary">3. 会話：AIって仕事につかえる？</summary>
         <div class="card">
           <h3>登場人物</h3>
           <ul>
@@ -305,40 +343,41 @@ header {
             <li><strong>篠原：</strong>AIに詳しい社員。具体的な使い方を紹介してリード役。</li>
           </ul>
           <hr class="divider">
-          <h3>会話劇の例</h3>
+          <h3>とある職場の会話を想定して作ってみました</h3>
           <div class="chat-container">
-            <p class="chat-line chat-kacho"><span class="label">課長</span>「最近AIを業務に活かそうって話が出てるけど、正直うちには向かない気がするな。」</p>
-            <p class="chat-line chat-kubo"><span class="label">久保</span>「わかりますよ、課長。この前試したら答え間違ってて、全然ダメだったっす。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「久保さん、それなら“それ間違ってるよ”って突っ込めばいいんです。AIなら怒らないし、修正してくれますよ。」</p>
-            <p class="chat-line chat-kacho"><span class="label">課長</span>「人間相手だと角が立つけど、AIなら突っ込めるってわけか。」</p>
-            <p class="chat-line chat-kubo"><span class="label">久保</span>「でも篠原さん、答えがちょっと物足りなくないっすか？ 現場で使うにはもう少し詳しくほしいっす。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そういうときは“そっちの方向性じゃない。もっと具体的に”って突っ込めば、追加で具体的な情報を出してくれます。」</p>
-            <p class="chat-line chat-kacho"><span class="label">課長</span>「でも最新情報が出てこないのは困るな。法改正やシステム変更が絡むからな。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「たとえば“これ古くない？ 2024年以降の情報を探して”って指定すれば精度が上がります。課長、それで足りなければ検索や公式資料を組み合わせれば十分です。」</p>
-            <p class="chat-line chat-kubo"><span class="label">久保</span>「なるほどっす。でも、ついAIに万能の先生を期待しちゃうんすよね。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「AIは“突っ込んで調整できる派遣スタッフ”くらいに思うのがちょうどいいんです。」</p>
-            <p class="chat-line chat-kubo"><span class="label">久保</span>「でも、どう聞けばいいか分からないんすよ。言い方が難しくて。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そこもAIに頼めばいいんです。“この質問の仕方を直して”とか、“議事録をまとめるのにいいお願いの言い方を作って”って頼めば、雛形を作ってくれますよ。」</p>
-            <p class="chat-line chat-kacho"><span class="label">課長</span>「へぇ、言い方そのものもAIに考えさせればいいのか。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「例えば“議事録をまとめるのにいいお願いの言い方を作って”って頼むと――」</p>
-            <p class="chat-line chat-kubo"><span class="label">久保</span>「AIはどう返すんすか？」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「“決定事項、議論の経緯、アクション、次回課題の4つに整理してMarkdownで出力してください”みたいに、すぐ使える形を返してくれます。」</p>
-            <p class="chat-line chat-kacho"><span class="label">課長</span>「なるほど…。ゼロから考えなくて済むのは助かるな。」</p>
-            <p class="chat-line chat-kacho"><span class="label">課長</span>「ただ、答えに近づくまで何度もやりとりするのは面倒だな。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「課長、それは発想を変える必要があります。“違う”“もっと掘り下げて”と突っ込む前提で会話する。1回で完璧を求めるより、磨き上げた方が早いんです。」</p>
-            <p class="chat-line chat-kubo"><span class="label">久保</span>「でも課長、業務データは機密だから使えないっすよね。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「本番データはNGです。ただ“マニュアルの下書き”“会議メモの整理”“説明資料の雛形”なら安心して使えます。そこから始めるのが現実的です。」</p>
-            <p class="chat-line chat-kacho"><span class="label">課長</span>「なるほど…。周辺業務からならリスクも低いし効率化もできそうだな。」</p>
-            <p class="chat-line chat-kubo"><span class="label">久保</span>「確かに、“使えない”と思ってたのは、期待の仕方を間違えてただけかもしれないっす。」</p>
-            <p class="chat-line chat-shinohara"><span class="label">篠原</span>「そうなんです。AIは万能じゃない。でも“突っ込んで調整できる派遣スタッフ”としては優秀。周辺業務からでも導入すれば、現場はかなり楽になりますよ。」</p>
+            <p class="chat-line chat-kacho"><strong>課長</strong>最近AIを業務に活かそうって話が出てるけど、正直うちには向かない気がするな。</p>
+            <p class="chat-line chat-kubo right"><strong>久保</strong>わかりますよ、課長。この前試したら答え間違ってて、全然ダメだったっす。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>久保さん、それなら“それ間違ってるよ”って突っ込めばいいんです。AIなら怒らないし、修正してくれますよ。</p>
+            <p class="chat-line chat-kacho"><strong>課長</strong>人間相手だと角が立つけど、AIなら突っ込めるってわけか。</p>
+            <p class="chat-line chat-kubo right"><strong>久保</strong>でも篠原さん、答えがちょっと物足りなくないっすか？ 現場で使うにはもう少し詳しくほしいっす。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>そういうときは“そっちの方向性じゃない。もっと具体的に”って突っ込めば、追加で具体的な情報を出してくれます。</p>
+            <p class="chat-line chat-kacho"><strong>課長</strong>でも最新情報が出てこないのは困るな。法改正やシステム変更が絡むからな。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>たとえば“これ古くない？ 2024年以降の情報を探して”って指定すれば精度が上がります。課長、それで足りなければ検索や公式資料を組み合わせれば十分です。</p>
+            <p class="chat-line chat-kubo right"><strong>久保</strong>なるほどっす。でも、ついAIに万能の先生を期待しちゃうんすよね。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>AIは“突っ込んで調整できる派遣スタッフ”くらいに思うのがちょうどいいんです。</p>
+            <p class="chat-line chat-kubo right"><strong>久保</strong>でも、どう聞けばいいか分からないんすよ。言い方が難しくて。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>そこもAIに聞けばいいんです。「Aという物事を調べたい。でも自分の生活に使えそうか判断したいから。でもあなたにどう聞けばいいか分からない。質問の仕方を考えて」って頼むんです。</p>
+            <p class="chat-line chat-kacho"><strong>課長</strong>ほう…つまり「聞き方そのもの」をAIに相談できるってわけか。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>そうです！ そうするとAIが「こんなふうに聞けば整理できますよ」って雛形を返してくれる。だから“使えない”じゃなくて、むしろ“聞き方から一緒に考えてくれる”相手なんです。</p>
+            <p class="chat-line chat-kubo right"><strong>久保</strong>なるほど、それなら“どう聞けばいいか分からない問題”ごとAIに丸投げできるっすね。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>例えば“議事録をまとめるのにいいお願いの言い方を作って”って頼むと――</p>
+            <p class="chat-line chat-kubo right"><strong>久保</strong>AIはどう返すんすか？</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>“決定事項、議論の経緯、アクション、次回課題の4つに整理してMarkdownで出力してください”みたいに、すぐ使える形を返してくれます。</p>
+            <p class="chat-line chat-kacho"><strong>課長</strong>なるほど…。ゼロから考えなくて済むのは助かるな。ただ、答えに近づくまで何度もやりとりするのは面倒だな。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>課長、それは発想を変える必要があります。“違う”“もっと掘り下げて”と突っ込む前提で会話する。1回で完璧を求めるより、磨き上げた方が早いんです。</p>
+            <p class="chat-line chat-kubo right"><strong>久保</strong>でも課長、業務データは機密だから使えないっすよね。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>本番データはNGです。ただ“マニュアルの下書き”“会議メモの整理”“説明資料の雛形”なら安心して使えます。そこから始めるのが現実的です。</p>
+            <p class="chat-line chat-kacho"><strong>課長</strong>なるほど…。周辺業務からならリスクも低いし効率化もできそうだな。</p>
+            <p class="chat-line chat-kubo right"><strong>久保</strong>確かに、“使えない”と思ってたのは、期待の仕方を間違えてただけかもしれないっす。</p>
+            <p class="chat-line chat-shinohara"><strong>篠原</strong>そうなんです。AIは万能じゃない。でも“突っ込んで調整できる派遣スタッフ”としては優秀。周辺業務からでも導入すれば、現場はかなり楽になりますよ。</p>
           </div>
           <hr class="divider">
           <h3>コラム：実務で使える「突っ込み」例</h3>
           <ul>
-            <li><strong>最新情報を指定したいとき</strong><br>「これ古くない？ 2024年以降の情報を探して」<br>👉 年を入れると精度アップ</li>
-            <li><strong>一般論で終わったとき</strong><br>「そっちの方向性じゃない。現場で使えるレベルまで具体的に」</li>
-            <li><strong>説明が長すぎるとき</strong><br>「要点だけで。3行以内でまとめて」</li>
-            <li><strong>判断根拠が欲しいとき</strong><br>「その答えの根拠や出典を教えて」</li>
+            <li><strong>最新情報を指定したいとき</strong><br>これ古くない？ 2024年以降の情報を探して<br>👉 年を入れると精度アップ</li>
+            <li><strong>一般論で終わったとき</strong><br>そっちの方向性じゃない。現場で使えるレベルまで具体的に</li>
+            <li><strong>説明が長すぎるとき</strong><br>要点だけで。3行以内でまとめて</li>
+            <li><strong>判断根拠が欲しいとき</strong><br>その答えの根拠や出典を教えて</li>
           </ul>
         </div>
     </details>
@@ -352,12 +391,43 @@ header {
           <p>しっかり言語化してから依頼したい人向け。後で資料にも残しやすい。</p>
           <div class="code-block">
             <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>【目的】◯◯をしたい
-【対象】中学生向け／社会人向け／初心者向け
-【形式】会話形式／表形式／箇条書き
-【条件】例を3つ／公式URLを添えて／よくある注意点も
-【質問】＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿</code></pre>
+            <pre><code># 目的
+◯◯をしたい  
+
+# 対象
+中学生向け／社会人向け／初心者向け
+
+# 形式
+会話形式／表形式／箇条書き  
+
+# 条件
+例を3つ／公式URLを添えて／よくある注意点も</code></pre>
           </div>
+          <details>
+            <summary>具体例プロンプトを見る</summary>
+            <div class="code-block">
+              <button type="button" class="copy-btn" title="コピー">📋</button>
+              <pre><code># 目的
+スプレッドシートである関数を作って縦方向に貼り付けるのめんどくさい
+もっと楽に対応できる関数とかないのか知りたい
+
+# 対象
+初心者向け
+
+# 形式
+会話形式  
+
+# 条件
+よくある注意点もおりまぜて
+
+# 具体例
+会話式の場合
+生徒：「先生、スプレッドシートで日付から曜日を出したいんでござるが、どうしたらいいナリ？」
+先生：「いい質問ですね。まずは、TEXT関数を使う方法があります。例えばセルA1に日付が入っているとします。その場合、=TEXT(A1,"aaa") と入力すると…何が出ると思いますか？」
+生徒：「うむ、、、“aaa”って何ナリ？」
+先生：「これは書式コードといって、aaaは“曜日の略称”を意味します。だから、月とか火が表示されるんです。さっきからその口調なんなの？」</code></pre>
+            </div>
+          </details>
           <div class="tip">
             <strong>例（スプシ関数）：</strong><br>
             <span class="label">目的</span>日付から曜日を日本語の短縮形で表示したい<br>
@@ -371,9 +441,15 @@ header {
           <p>“目的とか書くのめんどくさい派”はこちら。会話で進めて理解する。</p>
           <div class="code-block">
             <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>会話形式で説明してください。
-あなたは先生役、私は生徒役です。
-スプレッドシートで日付から曜日を出す方法を、質問と答えのやり取りで教えてください。</code></pre>
+            <pre><code>あなたは先生役、私は生徒役として会話形式で説明してください。  
+テーマは「Googleスプレッドシートで日付から曜日を表示する方法」です。  
+
+ポイント：  
+- 会話は短すぎず、理解を深められるやり取りにしてください。  
+- 生徒が疑問を挟み、先生が丁寧に答える流れにしてください。  
+- 数式の例（=TEXT(A1,"aaa") など）を会話の中で出してください。  
+- 最後には「なるほど！こうすれば曜日が出せるんですね」と生徒が理解する形で締めてください。  
+</code></pre>
           </div>
           <div class="code-block">
             <button type="button" class="copy-btn" title="コピー">📋</button>
@@ -381,6 +457,28 @@ header {
 社会人向けに、3分で読める要点だけ。表形式で「制度名／対象／金額／URL」を整理してください。</code></pre>
           </div>
           <p class="section-note">※ 会話型で理解 → 必要に応じて整理型に「転記」すると再利用が楽。</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>1C. クイズ生成型（理解度チェック）</h3>
+        <p>学んだ知識が定着したか確認したいときに便利。AIに問題と解答を作ってもらいます。</p>
+        <div class="code-block">
+          <button type="button" class="copy-btn" title="コピー">📋</button>
+          <pre><code>Googleスプレッドシートの関数理解を確認したいので、
+さきほどあなたに質問した内容で初心者向けに徐々に難易度が上がる問題を3つ作ってください。
+回答は必ず別枠で示してください。</code></pre>
+        </div>
+        <div class="tip">
+          <strong>AIの回答例：</strong>
+          <p><strong>問1（初級）：</strong>セルA1からA5までの合計値を計算する関数は何でしょう？</p>
+          <details><summary>回答を見る</summary><pre><code>=SUM(A1:A5)</code></pre></details>
+          <hr class="divider">
+          <p><strong>問2（中級）：</strong>セルB列の中で「完了」という文字が含まれるセルの数を数える関数は何でしょう？</p>
+          <details><summary>回答を見る</summary><pre><code>=COUNTIF(B:B, "完了")</code></pre></details>
+          <hr class="divider">
+          <p><strong>問3（応用）：</strong>セルC1の日付データ（例: 2024/8/20）から、「火曜日」のように日本語の曜日を正式名称で表示する関数は何でしょう？</p>
+          <details><summary>回答を見る</summary><pre><code>=TEXT(C1, "dddd")</code></pre></details>
         </div>
       </div>
 
