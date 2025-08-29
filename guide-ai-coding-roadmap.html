@@ -46,25 +46,145 @@
     .two-col{columns:2;column-gap:16px}
     @media (max-width:720px){.two-col{columns:1}}
   </style>
+  <style>
+    /* --- Sidebar --- */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+      transition: grid-template-columns .3s ease;
+    }
+    .content-wrapper {
+      min-width: 0;
+    }
+    .sidebar {
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      padding: 1rem;
+      overflow-y: auto;
+      transition: all .3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar-header {
+      margin-bottom: 1rem;
+    }
+    .sidebar-header strong {
+      font-size: 1.2rem;
+      display: block;
+      margin-bottom: .8rem;
+      color: var(--fg);
+    }
+    #tocSearch {
+      width: 100%;
+      padding: .5rem .7rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--fg);
+      font-size: .9rem;
+    }
+    #tocSearch:focus {
+      outline: 2px solid var(--brand);
+      border-color: var(--brand);
+    }
+    .sidebar .toc {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      flex-grow: 1;
+    }
+    .sidebar .toc li {
+      margin: .2rem 0;
+    }
+    .sidebar .toc a {
+      display: block;
+      padding: .5rem .8rem;
+      border-radius: 8px;
+      text-decoration: none;
+      color: var(--muted);
+      transition: all .2s ease;
+      font-size: .9rem;
+    }
+    .sidebar .toc a:hover {
+      background: var(--bg);
+      color: var(--fg);
+      transform: translateX(4px);
+    }
+    .sidebar .toc a.active {
+      background: var(--brand);
+      color: #fff;
+      font-weight: 600;
+    }
+    .sidebar-toggle {
+      display: none; /* Hidden on PC */
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .sidebar-toggle svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--fg);
+    }
+
+    /* Responsive & Collapsed */
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: fixed; top: 0; left: 0; bottom: 0;
+        width: 280px; z-index: 100;
+        transform: translateX(-100%);
+        box-shadow: 0 0 40px rgba(0,0,0,.2);
+        background: var(--bg);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-toggle { display: block; }
+      header .wrap { display: flex; align-items: center; gap: 12px; }
+      .header-content { flex: 1; }
+    }
+
+    .layout.sidebar-collapsed { grid-template-columns: 0 1fr; }
+    .layout.sidebar-collapsed .sidebar {
+      padding-left: 0; padding-right: 0; opacity: 0; pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <h1>私なりのバイブコーディング・ロードマップ</h1>
-    <p class="lead">「作って出す」を最速で回すための4週間（ゆっくり8週間）プラン。10本の小アプリ → 即公開 → ちょい改善。</p>
-    <div class="toc">
-      <a href="#overview">全体像</a>
-      <a href="#steps">5ステップ</a>
-      <a href="#weekly">週ごとの進め方</a>
-      <a href="#deploy">デプロイ手順ミニメモ</a>
-      <a href="#notion">Notionトラッカー</a>
-      <a href="#prompt">AIプロンプト雛形</a>
-      <a href="#why">この設計にした理由</a>
+<div class="layout">
+  <nav id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <strong>目次</strong>
+      <input id="tocSearch" type="search" placeholder="目次を検索..." aria-label="目次を検索">
     </div>
-  </div>
-</header>
+    <ol id="tocList" class="toc">
+      <li><a href="#overview">全体像</a></li>
+      <li><a href="#steps">5ステップ</a></li>
+      <li><a href="#weekly">週ごとの進め方</a></li>
+      <li><a href="#deploy">デプロイ手順ミニメモ</a></li>
+      <li><a href="#notion">Notionトラッカー</a></li>
+      <li><a href="#prompt">AIプロンプト雛形</a></li>
+      <li><a href="#why">この設計にした理由</a></li>
+    </ol>
+  </nav>
 
-<main class="wrap">
+  <div class="content-wrapper">
+    <header>
+      <div class="wrap">
+        <button class="sidebar-toggle" aria-label="サイドバーを開閉">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <div class="header-content">
+          <h1>私なりのバイブコーディング・ロードマップ</h1>
+          <p class="lead">「作って出す」を最速で回すための4週間（ゆっくり8週間）プラン。10本の小アプリ → 即公開 → ちょい改善。</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="wrap">
   <section id="overview" class="card">
     <h2>全体像（ゴールとやり方）</h2>
     <ul>
@@ -272,10 +392,69 @@
       <li><strong>1アプリ=1テーマ</strong>で知識が定着、疲れにくい</li>
     </ul>
   </section>
+    </main>
 
-  <footer>
-    <p class="small">© バイブコーディング・ロードマップ（あなた用）</p>
-  </footer>
-</main>
+    <footer>
+      <p class="small">© バイブコーディング・ロードマップ（あなた用）</p>
+    </footer>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  function setupSidebar() {
+    const layout = document.querySelector('.layout');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const tocSearch = document.getElementById('tocSearch');
+    const tocList = document.getElementById('tocList');
+    const tocLinks = tocList.querySelectorAll('a');
+    const sections = document.querySelectorAll('main > section[id]');
+
+    if (!sidebar || !sidebarToggle || !tocList) return;
+
+    // 1. Toggle logic
+    sidebarToggle.addEventListener('click', () => {
+      if (window.innerWidth < 900) {
+        sidebar.classList.toggle('open');
+      } else {
+        layout.classList.toggle('sidebar-collapsed');
+      }
+    });
+
+    // 2. Search logic
+    tocSearch.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      tocLinks.forEach(link => {
+        const li = link.parentElement;
+        const text = link.textContent.toLowerCase();
+        li.style.display = text.includes(query) ? '' : 'none';
+      });
+    });
+
+    // 3. Close on mobile link click
+    tocList.addEventListener('click', (e) => {
+      if (e.target.tagName === 'A' && window.innerWidth < 900) {
+        sidebar.classList.remove('open');
+      }
+    });
+
+    // 4. Scroll-spy
+    if (window.IntersectionObserver) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const id = entry.target.getAttribute('id');
+          const link = tocList.querySelector(`a[href="#${id}"]`);
+          if (link && entry.isIntersecting) {
+            tocLinks.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+          }
+        });
+      }, { rootMargin: "0px 0px -80% 0px" });
+      sections.forEach(section => observer.observe(section));
+    }
+  }
+  setupSidebar();
+});
+</script>
 </body>
 </html>
