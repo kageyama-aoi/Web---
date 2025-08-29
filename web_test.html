@@ -55,9 +55,40 @@
       font-size: inherit;
     }
     .error { color: var(--bad); font-weight: bold; }
-    .fix { color: var(--ok); font-weight: bold; margin-bottom: 1.5em; }
+    .fix { color: var(--ok); font-weight: bold; }
     ul { padding-left: 20px; }
     li { margin-bottom: 0.5em; }
+
+    /* --- Accordion for Troubleshooting --- */
+    details.trouble-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      background: color-mix(in srgb, var(--bg) 50%, var(--card));
+      transition: background .2s;
+    }
+    details.trouble-item[open] {
+      background: var(--card);
+    }
+    details.trouble-item:last-of-type {
+      margin-bottom: 0;
+    }
+    details.trouble-item summary {
+      padding: 14px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    details.trouble-item summary::-webkit-details-marker { display: none; }
+    details.trouble-item summary::before {
+      content: '▶'; font-size: 0.7em; transition: transform .2s ease;
+    }
+    details.trouble-item[open] > summary::before { transform: rotate(90deg); }
+    .trouble-item .content { padding: 0 16px 16px; border-top: 1px solid var(--border); margin-top: 8px; }
+    .trouble-item .content .error { margin-top: 16px; }
 
     @media print{
       .toolbar{ display:none !important; }
@@ -116,26 +147,41 @@ npm -v</code></pre>
 
       <div class="card">
         <h2>2. トラブルシュート集</h2>
-
-        <h3>Docker エンジン接続エラー</h3>
-        <p class="error">unable to get image 'postgres:15.1' ... dockerDesktopLinuxEngine not found</p>
-        <p class="fix">→ Docker Desktop を起動し、WSL Integration をONにして <code>docker context use desktop-linux</code></p>
-
-        <h3>fnm インストール時の依存不足</h3>
-        <p class="error">Not installing fnm due to missing dependencies (unzip)</p>
-        <p class="fix">→ <code>sudo apt install unzip</code> で解決</p>
-
-        <h3>sudo 実行時にパスワード要求</h3>
-        <p class="error">sudo: a password is required</p>
-        <p class="fix">→ rootでログインして <code>passwd &lt;ユーザー&gt;</code> で再設定</p>
-
-        <h3>GitHub CLI が認識されない</h3>
-        <p class="error">'gh' is not recognized as a command</p>
-        <p class="fix">→ Windowsは <code>winget install --id GitHub.cli</code>、WSLは <code>sudo apt install gh</code></p>
-
-        <h3>docker-compose.yml の警告</h3>
-        <p class="error">the attribute `version` is obsolete</p>
-        <p class="fix">→ YAMLから <code>version:</code> 行を削除</p>
+        <details class="trouble-item">
+          <summary>Docker エンジン接続エラー</summary>
+          <div class="content">
+            <p class="error">unable to get image 'postgres:15.1' ... dockerDesktopLinuxEngine not found</p>
+            <p class="fix">→ Docker Desktop を起動し、WSL Integration をONにして <code>docker context use desktop-linux</code></p>
+          </div>
+        </details>
+        <details class="trouble-item">
+          <summary>fnm インストール時の依存不足</summary>
+          <div class="content">
+            <p class="error">Not installing fnm due to missing dependencies (unzip)</p>
+            <p class="fix">→ <code>sudo apt install unzip</code> で解決</p>
+          </div>
+        </details>
+        <details class="trouble-item">
+          <summary>sudo 実行時にパスワード要求</summary>
+          <div class="content">
+            <p class="error">sudo: a password is required</p>
+            <p class="fix">→ rootでログインして <code>passwd &lt;ユーザー&gt;</code> で再設定</p>
+          </div>
+        </details>
+        <details class="trouble-item">
+          <summary>GitHub CLI が認識されない</summary>
+          <div class="content">
+            <p class="error">'gh' is not recognized as a command</p>
+            <p class="fix">→ Windowsは <code>winget install --id GitHub.cli</code>、WSLは <code>sudo apt install gh</code></p>
+          </div>
+        </details>
+        <details class="trouble-item">
+          <summary>docker-compose.yml の警告</summary>
+          <div class="content">
+            <p class="error">the attribute `version` is obsolete</p>
+            <p class="fix">→ YAMLから <code>version:</code> 行を削除</p>
+          </div>
+        </details>
       </div>
 
       <div class="card">
