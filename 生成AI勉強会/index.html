@@ -407,9 +407,23 @@ header {
       });
     });
 
-    // 3. モバイルでリンククリック時にサイドバーを閉じる
+    // 3. リンククリック時の処理（セクションを開く＆モバイルでサイドバーを閉じる）
     tocList.addEventListener('click', (e) => {
-      if (e.target.tagName === 'A' && window.innerWidth < 900) {
+      const link = e.target.closest('a');
+      if (!link) return;
+
+      // リンク先のセクション（details）を開く
+      const href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        const targetId = href.substring(1);
+        const targetSection = document.getElementById(targetId);
+        if (targetSection && targetSection.tagName === 'DETAILS') {
+          targetSection.open = true;
+        }
+      }
+
+      // モバイル表示の場合、サイドバーを閉じる
+      if (window.innerWidth < 900) {
         sidebar.classList.remove('open');
       }
     });
