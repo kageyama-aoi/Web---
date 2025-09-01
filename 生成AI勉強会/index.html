@@ -489,11 +489,11 @@ header {
         <input id="tocSearch" type="search" placeholder="目次を検索..." aria-label="目次を検索">
       </div>
       <ol id="tocList" class="toc">
-        <li><a href="#agenda">勉強会の全体構成（45分）</a></li>
+        <li><a href="#agenda">勉強会の全体構成（90分）</a></li>
         <li><a href="#intro-script">導入（アイスブレイク台本）</a></li>
         <li><a href="#drama-script">会話劇：職場シーン風の台本作成例</a></li>
         <li><a href="#prompt-intro">プロンプトの工夫（入口体験：整理型／会話型）</a></li>
-        <li><a href="#prep">当日までの準備</a></li>
+        <li><a href="#advanced-prompts">応用プロンプト（思考の壁打ち）</a></li>
         <li><a href="#slides">スライド台本（実演・ワーク・まとめ）</a></li>
         <li><a href="#worksheets">ワークシート雛形</a></li>
         <li><a href="#appendix">付録：質問テンプレ＆話し方メモ</a></li>
@@ -731,27 +731,74 @@ header {
       </div>
     </details>
 
-    <details id="prep">
-      <summary class="section-summary">5. 当日までの準備</summary>
+    <details id="advanced-prompts">
+      <summary class="section-summary">5. 応用プロンプト（思考の壁打ち相手にする）</summary>
+      <p class="section-note">基本の型に慣れたら、AIを「思考のパートナー」にするための応用的な聞き方を試してみましょう。</p>
       <div class="grid cols-2">
         <div class="card">
-          <h3>主催側の準備</h3>
-          <ul>
-            <li>進行スライド：目的／ルール／AIできることマップ／実演スクショ</li>
-            <li>デモ環境：AIツール表示、<span class="badge">スプシ</span>（関数サンプル）、<span class="badge">助成金質問テンプレ</span></li>
-            <li>ワーク資料：<span class="badge">条件整理シート</span>、<span class="badge">関数検索WS</span></li>
-          </ul>
+          <h3>応用1：ペルソナ設定（役割を与える）</h3>
+          <p>AIに専門家の役割を与えることで、回答の視点や質をコントロールします。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>あなたは[役割]です。
+[役割]の視点から、以下のテーマについて[形式]で説明してください。
+
+# 役割の例
+- プロのマーケター
+- 経験豊富な人事担当者
+- 顧客サポートのリーダー
+- 厳しい品質管理者
+
+# テーマ
+(ここに相談したい内容)</code></pre>
+          </div>
+          <div class="tip"><strong>例：</strong>「あなたはプロの編集者です。以下の文章を、中学生でも理解できるように、より簡潔で魅力的な表現に修正してください。」</div>
         </div>
+
         <div class="card">
-          <h3>参加者への事前案内</h3>
-          <ul>
-            <li>PC/タブレット（スマホ可だが制限あり）</li>
-            <li>Googleアカウント（スプシ利用）</li>
-            <li>事前アンケート：AIで解決したい作業を1つ</li>
-          </ul>
+          <h3>応用2：多角的思考（視点を増やす）</h3>
+          <p>一つの物事を複数の視点から検討させ、思考の漏れを防ぎます。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>以下の提案について、3つの異なる視点から意見をください。
+
+1. 賛成の立場（メリット）
+2. 反対の立場（デメリットやリスク）
+3. 長期的な視点（3年後の影響）
+
+# 提案
+(ここに検討したいアイデア)</code></pre>
+          </div>
+          <div class="tip">これにより、自分一人では気づきにくい論点や懸念点を洗い出すことができます。</div>
+        </div>
+
+        <div class="card">
+          <h3>応用3：思考の深掘り（なぜ？を繰り返す）</h3>
+          <p>表面的な答えで終わらせず、根本的な原因や目的を掘り下げさせます。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>(AIの回答に対して...)
+
+その回答の背景にある最も重要な理由は何ですか？
+なぜそれが重要だと考えますか？
+そのアプローチを取らなかった場合、どのような代替案が考えられますか？</code></pre>
+          </div>
+          <div class="tip">トヨタ式の「なぜなぜ5回」のように、AIとの対話で本質に迫ります。</div>
+        </div>
+
+        <div class="card">
+          <h3>応用4：メタ認知（質問を改善させる）</h3>
+          <p>自分の質問自体をAIに評価させ、より良い聞き方を発見します。（会話劇でも登場したテクニックです）</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>「(ここに自分の質問)」
+
+上記は、私が本当に知りたいことを引き出すための最適な質問でしょうか？
+もし改善できる点があれば、より効果的な質問の仕方を3パターン提案してください。</code></pre>
+          </div>
+          <div class="tip">「どう聞けばいいか分からない」という悩みそのものを解決する強力な方法です。</div>
         </div>
       </div>
-      <p class="section-note">※ スクリーン共有とフォントサイズ拡大（130%目安）を当日すぐ切り替えられるように。</p>
     </details>
 
     <details id="slides">
