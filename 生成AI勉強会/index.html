@@ -493,10 +493,9 @@ header {
         <li><a href="#intro-script">導入（アイスブレイク台本）</a></li>
         <li><a href="#drama-script">会話劇：職場シーン風の台本作成例</a></li>
         <li><a href="#prompt-intro">プロンプトの工夫（入口体験：整理型／会話型）</a></li>
+        <li><a href="#nurture-prompts">プロンプトを育てる（回答精度を上げる）</a></li>
         <li><a href="#advanced-prompts">応用プロンプト（思考の壁打ち）</a></li>
         <li><a href="#slides">スライド台本（実演・ワーク・まとめ）</a></li>
-        <li><a href="#worksheets">ワークシート雛形</a></li>
-        <li><a href="#appendix">付録：質問テンプレ＆話し方メモ</a></li>
       </ol>
     </nav>
 
@@ -731,8 +730,83 @@ header {
       </div>
     </details>
 
+    <details id="nurture-prompts">
+      <summary class="section-summary">5. プロンプトを育てる（回答精度を上げるには）</summary>
+      <p class="section-note">一度で完璧な答えを求めず、対話を通じてAIの回答を「育てる」という意識が重要です。精度を上げるための4つのテクニックを紹介します。</p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>① フィードバックと制約追加</h3>
+          <p>回答がズレていたら、遠慮なく指摘・修正させます。制約を追加して出力を絞り込むのも有効です。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>(AIの回答に対して...)
+
+- その解釈は違います。◯◯という観点で修正してください。
+- もっと具体的に。専門用語を使わずに説明してください。
+- 回答は3つのポイントに絞り、箇条書きでお願いします。</code></pre>
+          </div>
+          <div class="tip">AIは人間と違って感情がないので、何度でも遠慮なく「やり直し」を命じることができます。</div>
+        </div>
+
+        <div class="card">
+          <h3>② 良い例・悪い例の提示 (Few-shot)</h3>
+          <p>期待するアウトプットの形式が明確な場合、具体的な例を示すことでAIの理解を助けます。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>以下の文章を要約してください。
+
+# 良い例
+入力: (長い文章)
+出力: (短い要約)
+
+# 悪い例
+入力: (長い文章)
+出力: (単語の羅列)
+
+# 本題
+入力: (今回要約してほしい文章)
+出力:</code></pre>
+          </div>
+          <div class="tip">特に、独自のフォーマットで出力させたい場合に強力です。</div>
+        </div>
+
+        <div class="card">
+          <h3>③ 思考プロセスの要求 (CoT)</h3>
+          <p>複雑な問題や計算を依頼するとき、結論だけを求めずに思考の過程を説明させると、間違いが減ります。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>以下の問題について、ステップ・バイ・ステップで考えて、最終的な結論を導き出してください。
+
+# 問題
+(ここに複雑な問題や計算)
+
+# 回答形式
+1. 問題の分析: ...
+2. 計算過程: ...
+3. 結論: ...</code></pre>
+          </div>
+          <div class="tip">「Chain of Thought (思考の連鎖)」と呼ばれるテクニックです。</div>
+        </div>
+
+        <div class="card">
+          <h3>④ 役割の再確認と深掘り</h3>
+          <p>会話が長くなるとAIが当初の役割を忘れることがあります。役割を再確認させたり、より深く掘り下げさせましょう。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>(会話の途中で...)
+
+あなたは引き続き[役割]です。その視点を忘れずに、先ほどの回答について以下の点を深掘りしてください。
+
+- なぜその方法が最適だと考えますか？
+- 他に考えられるリスクはありませんか？</code></pre>
+          </div>
+          <div class="tip">「なぜ？」を繰り返すことで、表面的な回答から本質的な洞察を引き出せます。</div>
+        </div>
+      </div>
+    </details>
+
     <details id="advanced-prompts">
-      <summary class="section-summary">5. 応用プロンプト（思考の壁打ち相手にする）</summary>
+      <summary class="section-summary">6. 応用プロンプト（思考の壁打ち相手にする）</summary>
       <p class="section-note">基本の型に慣れたら、AIを「思考のパートナー」にするための応用的な聞き方を試してみましょう。</p>
       <div class="grid cols-2">
         <div class="card">
@@ -802,7 +876,7 @@ header {
     </details>
 
     <details id="slides">
-      <summary class="section-summary">6. スライド台本（実演・ワーク・まとめ）</summary>
+      <summary class="section-summary">7. スライド台本（実演・ワーク・まとめ）</summary>
       <details>
         <summary>スライド1：タイトル</summary>
         <div class="card">
@@ -909,69 +983,6 @@ header {
           </ul>
         </div>
       </details>
-    </details>
-
-    <details id="worksheets">
-      <summary class="section-summary">7. ワークシート雛形</summary>
-
-      <h3>ワークシート1：AI質問づくり練習（スプシ関数）</h3>
-      <table>
-        <thead><tr><th style="width:22%">ステップ</th><th>記入欄（例を消して自分用に）</th></tr></thead>
-        <tbody>
-          <tr><td>目的</td><td>日付から曜日を出したい</td></tr>
-          <tr><td>条件</td><td>日本語表示／短縮形／関数で</td></tr>
-          <tr><td>形式</td><td>ステップ→関数→注意点（箇条書き）</td></tr>
-          <tr><td>完成質問</td><td>Googleスプレッドシートで、A1の日付の曜日を日本語の短縮形で表示する関数と注意点を、ステップ＋関数例＋よくあるミスの順で教えて。</td></tr>
-          <tr><td>実装メモ</td><td>=TEXT(A1,"aaaa") など／検証結果と気づき</td></tr>
-        </tbody>
-      </table>
-
-      <h3>ワークシート2：未知の知識の検索（助成金）</h3>
-      <table>
-        <thead><tr><th style="width:22%">ステップ</th><th>記入欄（例を消して自分用に）</th></tr></thead>
-        <tbody>
-          <tr><td>全体像の質問</td><td>日本の小規模事業者向け助成金の種類を表で。</td></tr>
-          <tr><td>条件追加</td><td>東京都／従業員2名／機材導入・広告費可／締切の近い順</td></tr>
-          <tr><td>公式情報依頼</td><td>必ず公式募集要項のURLを併記</td></tr>
-          <tr><td>比較依頼</td><td>金額の多さ・採択率・申請の手軽さで比較表</td></tr>
-          <tr><td>最終メモ</td><td>候補A／B／Cの所感、次アクション（誰が・いつ）</td></tr>
-        </tbody>
-      </table>
-
-      <h3>ワークシート3：AI活用アイデアメモ</h3>
-      <table>
-        <thead><tr><th style="width:30%">活用場面</th><th>AIにお願いできそうなこと</th><th>最初の一歩</th></tr></thead>
-        <tbody>
-          <tr><td>書類作成</td><td>契約書や通知文のたたき台作成</td><td>既存文面を貼って「誤解なき表現に修正」</td></tr>
-          <tr><td>情報収集</td><td>業界トレンド／制度変更の要約</td><td>週1で「重要点3つ＋出典URL」を生成</td></tr>
-          <tr><td>データ整理</td><td>関数提案・整形・チェック式</td><td>対象表を貼って「検証式も一緒に」依頼</td></tr>
-        </tbody>
-      </table>
-    </details>
-
-    <details id="appendix">
-      <summary class="section-summary">8. 付録：質問テンプレ＆話し方メモ</summary>
-      <div class="grid cols-2">
-        <div class="card">
-          <h3>質問テンプレ（コピペ用）</h3>
-          <div class="code-block">
-            <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>【目的】◯◯をしたい
-【条件】（例）初心者向け／日本語／表で／例は3つ
-【形式】ステップ→例→注意点 の順で
-【質問】＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿</code></pre>
-          </div>
-          <p class="section-note">例：<em>「Googleスプレッドシートで、A1の日時から“日本語の曜日（短縮形）”を表示する関数と、よくあるエラーの回避策を教えて。」</em></p>
-        </div>
-        <div class="card">
-          <h3>話し方メモ（隊長向け）</h3>
-          <ul>
-            <li>最初に「正解は1つじゃない」前提を置く</li>
-            <li>実演→手元で再現→気づき共有の3拍子</li>
-            <li>わからなさは“設計不足”。条件を一緒に言語化</li>
-          </ul>
-        </div>
-      </div>
     </details>
 
     <footer>
