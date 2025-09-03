@@ -554,7 +554,14 @@ header {
         <p><span class="label">進行</span>さっそくですが、皆さんは『AI』って聞くと、どんなイメージがありますか？良いことでも悪いことでも、何でもOKです。ちょっと時間をとるので、チャットに気軽に書き込んでみてください。</p>
         <div class="tip">（ここで30秒～1分ほど待つ。参加者の書き込みをいくつか拾って読み上げる）</div>
         <p><span class="label">進行</span>ありがとうございます！ 『仕事が速くなりそう』って期待もあれば、『難しそう』『仕事がなくなるかも…』みたいな不安の声もありますね。うんうん、色々なイメージがあると思います。</p>
-        <p><span class="label">進行</span>今日の目的は、まさにその漠然としたイメージを、<strong>『明日から使える具体的な道具』</strong>に変えることです。AIを『よく分からない何か』から『頼れる相棒』にする、その第一歩を一緒に見ていきましょう！</p>
+        <p><span class="label">進行</span>今日の目的は、まさにその漠然としたイメージを、<strong>『明日から使える具体的な道具』</strong>に変えることです。そのために、今日は4つのステップで進めます。</p>
+        <ol>
+          <li>まず、AIとの上手な付き合い方を、職場のあるあるな<strong>会話劇</strong>で見ていきます。（→ <a href="#drama-script">3. 会話劇</a>）</li>
+          <li>次に、誰でも真似できる<strong>プロンプトの基本の型</strong>を学びます。（→ <a href="#prompt-intro">4. プロンプトの工夫</a>）</li>
+          <li>そして、AIの回答を自分好みに変えていく<strong>「育て方」のコツ</strong>を紹介します。（→ <a href="#nurture-prompts">5. プロンプトを育てる</a>）</li>
+          <li>最後に、AIを思考のパートナーにするための<strong>応用的な聞き方</strong>も見ていきます。（→ <a href="#advanced-prompts">6. 応用プロンプト</a>）</li>
+        </ol>
+        <p><span class="label">進行</span>この4つを押さえれば、AIは「よく分からない何か」から「頼れる相棒」に変わります。さっそく一緒に見ていきましょう！</p>
       </div>
     </details>
 
@@ -612,7 +619,30 @@ header {
 
       <div class="grid cols-2">
         <div class="card">
-          <h3>1A. 整理型（目的・条件・形式で書く）</h3>
+          <h3>1A. 会話型（先生と生徒のやりとり）</h3>
+          <p>“目的とか書くのめんどくさい派”はこちら。会話で進めて理解する。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>あなたは先生役、私は生徒役として会話形式で説明してください。  
+テーマは「Googleスプレッドシートで日付から曜日を表示する方法」です。  
+
+ポイント：  
+- 会話は短すぎず、理解を深められるやり取りにしてください。  
+- 生徒が疑問を挟み、先生が丁寧に答える流れにしてください。  
+- 数式の例（=TEXT(A1,"aaa") など）を会話の中で出してください。  
+- 最後には「なるほど！こうすれば曜日が出せるんですね」と生徒が理解する形で締めてください。  
+</code></pre>
+          </div>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>助成金について説明してください。
+社会人向けに、3分で読める要点だけ。表形式で「制度名／対象／金額／URL」を整理してください。</code></pre>
+          </div>
+          <p class="section-note">※ 会話型で理解 → 必要に応じて整理型に「転記」すると再利用が楽。</p>
+        </div>
+
+        <div class="card">
+          <h3>1B. 整理型（目的・条件・形式で書く）</h3>
           <p>しっかり言語化してから依頼したい人向け。後で資料にも残しやすい。</p>
           <div class="code-block">
             <button type="button" class="copy-btn" title="コピー">📋</button>
@@ -659,29 +689,6 @@ header {
             <span class="label">形式</span>ステップ→関数→注意点（箇条書き）<br>
             <span class="label">質問</span>Googleスプレッドシートで、A1の日付の曜日を日本語の短縮形で表示する関数と注意点を、ステップ＋関数例＋よくあるミスの順で教えて。
           </div>
-        </div>
-
-        <div class="card">
-          <h3>1B. 会話型（先生と生徒のやりとり）</h3>
-          <p>“目的とか書くのめんどくさい派”はこちら。会話で進めて理解する。</p>
-          <div class="code-block">
-            <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>あなたは先生役、私は生徒役として会話形式で説明してください。  
-テーマは「Googleスプレッドシートで日付から曜日を表示する方法」です。  
-
-ポイント：  
-- 会話は短すぎず、理解を深められるやり取りにしてください。  
-- 生徒が疑問を挟み、先生が丁寧に答える流れにしてください。  
-- 数式の例（=TEXT(A1,"aaa") など）を会話の中で出してください。  
-- 最後には「なるほど！こうすれば曜日が出せるんですね」と生徒が理解する形で締めてください。  
-</code></pre>
-          </div>
-          <div class="code-block">
-            <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>助成金について説明してください。
-社会人向けに、3分で読める要点だけ。表形式で「制度名／対象／金額／URL」を整理してください。</code></pre>
-          </div>
-          <p class="section-note">※ 会話型で理解 → 必要に応じて整理型に「転記」すると再利用が楽。</p>
         </div>
       </div>
 
@@ -749,25 +756,53 @@ header {
         </div>
 
         <div class="card">
-          <h3>② 良い例・悪い例の提示 (Few-shot)</h3>
-          <p>期待するアウトプットの形式が明確な場合、具体的な例を示すことでAIの理解を助けます。</p>
+          <h3>② お手本提示 (Few-shot)</h3>
+          <p>AIに「お手本」をいくつか見せることで、期待する回答の形式や文体を具体的に教え込むテクニックです。</p>
           <div class="code-block">
             <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>以下の文章を要約してください。
+            <pre><code>以下のテキストを、指定のフォーマットに変換してください。
 
-# 良い例
-入力: (長い文章)
-出力: (短い要約)
-
-# 悪い例
-入力: (長い文章)
-出力: (単語の羅列)
+# お手本
+入力: りんご, 150円, 産地：青森
+出力: ・りんご（青森産） - 150円
 
 # 本題
-入力: (今回要約してほしい文章)
+入力: みかん, 120円, 産地：愛媛
 出力:</code></pre>
           </div>
-          <div class="tip">特に、独自のフォーマットで出力させたい場合に強力です。</div>
+          <div class="tip">単に「フォーマットして」と指示するより、具体的な「入力→出力」の例を1つか2つ見せるだけで、AIはルールを推測し、複雑な形式でも正確に再現してくれます。</div>
+          <details>
+            <summary>応用例：SQL整形アシスタント</summary>
+            <p class="section-note">整形ルールと入出力例を具体的に示すことで、自分好みのコーディングスタイルをAIに学習させることができます。</p>
+            <div class="code-block">
+              <button type="button" class="copy-btn" title="コピー">📋</button>
+              <pre><code>あなたはSQL整形アシスタントです。以下のルールでSQLを整形してください。
+
+【出力ルール】
+- 出力はSQLのみ（前後の説明文なし）
+- インデントは例に従う事 
+- 例の「コメントの付け方・位置・粒度」を踏襲する
+- 末尾にセミコロンを付ける
+
+【入力例と整形例】
+入力例:
+select id, name from users where age > 20 order by name;
+
+整形例:
+-- ユーザのIDと名前を取得 
+SELECT
+    users.id,   -- ユーザID
+    users.name -- ユーザ名
+FROM
+    users
+WHERE
+    users.age > 20;
+
+
+【整形対象SQL】
+select id, name, branch_name from account join branch b on branch_id = branch_id where city='Tokyo' order by name;</code></pre>
+            </div>
+          </details>
         </div>
 
         <div class="card">
@@ -876,113 +911,112 @@ header {
     </details>
 
     <details id="slides">
-      <summary class="section-summary">7. スライド台本（実演・ワーク・まとめ）</summary>
-      <details>
-        <summary>スライド1：タイトル</summary>
+      <summary class="section-summary">7. 開発者向け 実践サンプル集</summary>
+      <p class="section-note">AIを「思考の壁打ち相手」から「コーディングの副操縦士」へ。システム開発の各工程で役立つ、より専門的な6つの活用サンプルを紹介します。</p>
+      <div class="grid cols-2">
         <div class="card">
-          <p><strong>タイトル：</strong>AI初心者向け勉強会～今日から使える！AIで仕事と調べものを効率化～</p>
-          <ul>
-            <li>自己紹介＆開催背景</li>
-            <li>今日のゴール共有：「AIを相棒に」</li>
-          </ul>
-        </div>
-      </details>
-
-      <details>
-        <summary>スライド2：今日のゴール</summary>
-        <div class="card">
-          <ul>
-            <li>AIを「怖い未知」→「頼れる相棒」に</li>
-            <li>スプシ関数・調べものを実務に直結</li>
-            <li>自分に合った使い方を見つける</li>
-          </ul>
-          <div class="tip">一言フレーズ：「全部できなくてOK。<strong>1つ</strong>持ち帰れたら成功です。」</div>
-        </div>
-      </details>
-
-      <details>
-        <summary>スライド3：本日の流れ</summary>
-        <div class="card"><p>5ブロック（全体像→実演×2→ワーク→まとめ）。</p></div>
-      </details>
-
-      <details>
-        <summary>スライド4：AIでできることマップ</summary>
-        <div class="card">
-          <ul>
-            <li>文章作成（メール／説明文）</li>
-            <li>情報検索（未知の用語・制度）</li>
-            <li>データ処理（関数や計算式）</li>
-            <li>アイデア出し（企画／コピー）</li>
-            <li>コード生成（スクリプト／マクロ）</li>
-          </ul>
-          <p class="section-note">今日は<strong>スプシ関数</strong>と<strong>未知の知識の調べ方</strong>に絞って体験。</p>
-        </div>
-      </details>
-
-      <details>
-        <summary>スライド5：AI質問の黄金ルール</summary>
-        <div class="card">
-          <ol>
-            <li><strong>目的＋条件＋形式</strong>で聞く</li>
-            <li>最初は大まか→徐々に具体化</li>
-            <li>条件は漏れなく短く（箇条書き歓迎）</li>
-            <li>最後は<strong>公式情報</strong>で確認</li>
-          </ol>
+          <h3>テストケースを網羅的に生成</h3>
+          <p>仕様やコードを元に、正常系・異常系・境界値を含むテストケースを自動生成。テスト設計の工数を削減し、品質を向上させます。</p>
           <div class="code-block">
             <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre class="card"><code>例）「Googleスプレッドシートで、A1の<span aria-label="日付">日付</span>から<span aria-label="曜日">曜日</span>を<span aria-label="日本語の短縮形">日本語の短縮形</span>で表示する<span aria-label="関数">関数</span>と注意点を教えて。
-形式はステップ＋関数例＋よくあるミスでお願いします。」</code></pre>
+            <pre><code>以下の仕様を持つJavaScript関数 `calculatePrice(age)` のテストケースを、Jest形式で5つ生成してください。
+
+# 仕様
+- 6歳未満は無料
+- 6歳以上18歳未満は500円
+- 18歳以上は1000円
+- ageが数値でない、または負数の場合は例外を投げる
+
+# 条件
+- 正常系、異常系、境界値を必ず含めること。</code></pre>
           </div>
+          <div class="tip"><strong>ポイント：</strong>仕様を明確に箇条書きで伝えることで、AIはテストの意図を正確に汲み取ります。</div>
         </div>
-      </details>
 
-      <details>
-        <summary>スライド6：実演① スプシ関数の調べ方</summary>
         <div class="card">
-          <p><strong>例題：</strong>「日付から曜日を日本語で出すには？」 → <code>=TEXT(A1,"aaaa")</code></p>
-          <ul>
-            <li>質問を<strong>“やりたいこと”起点</strong>で作る</li>
-            <li>引数・注意点・代替案（<code>TEXT</code>/<code>TEXTJOIN</code>等）も一緒に聞く</li>
-            <li>サンプル表に関数を入れて実際に動作確認</li>
-          </ul>
-        </div>
-      </details>
+          <h3>複雑な正規表現を瞬時に作成</h3>
+          <p>「こういう文字列を抽出したい」という曖昧な要望から、複雑な正規表現を生成させ、さらにその意味を解説させることができます。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>日本の携帯電話番号（`090-1234-5678` や `08012345678` など、ハイフンの有無両方）にマッチする正規表現を生成してください。
 
-      <details>
-        <summary>スライド7：実演② 未知の知識（助成金）を“自分用”に引っ張る</summary>
-        <div class="card">
-          <ol>
-            <li><strong>全体像</strong>：「日本の小規模事業者向け助成金の種類を表で」</li>
-            <li><strong>条件追加</strong>：「東京都／従業員2名／機材・広告OK」</li>
-            <li><strong>公式URL</strong>：「必ず募集要項のURL併記」</li>
-            <li><strong>比較</strong>：「金額・採択率・手軽さで比較表」</li>
-          </ol>
-          <div class="tip">ポイント：<strong>条件設計</strong>で“自分にフィット”が決まる。</div>
+また、生成した正規表現の各部分が何を意味するのか、初心者にも分かるように解説してください。</code></pre>
+          </div>
+          <div class="tip"><strong>ポイント：</strong>「解説も一緒に」と頼むことで、ブラックボックス化を防ぎ、学習にも繋がります。</div>
         </div>
-      </details>
 
-      <details>
-        <summary>スライド8：ワークショップ</summary>
         <div class="card">
-          <ol>
-            <li>ペアで関数をAIに聞いてスプシへ実装</li>
-            <li>未知の制度（例：助成金）を各自条件で検索</li>
-            <li>実務アイデアを1つ書き出し、1分共有</li>
-          </ol>
-          <p class="section-note">司会の動き：質問文の添削と“条件の言語化”支援に集中。</p>
-        </div>
-      </details>
+          <h3>API仕様書(OpenAPI)の雛形作成</h3>
+          <p>APIの概要を伝えるだけで、OpenAPI (Swagger) 形式のYAMLやJSONの雛形を生成。面倒なドキュメント作成の初動を高速化します。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>ユーザー管理（CRUD）のためのREST API仕様を、OpenAPI 3.0形式のYAMLで記述してください。
 
-      <details>
-        <summary>スライド9：まとめ・次のステップ</summary>
-        <div class="card">
-          <ul>
-            <li>今日の学びを1人1行で共有（チャットor口頭）</li>
-            <li>宿題：「今週AIに1回質問」→テーマをその場で宣言</li>
-            <li>次回予告：「GASで作る簡単自動化（メール下書き／定型処理）」</li>
-          </ul>
+# エンドポイント
+- `GET /users`: ユーザー一覧取得
+- `POST /users`: 新規ユーザー作成
+- `GET /users/{id}`: 特定ユーザー取得
+- `PUT /users/{id}`: ユーザー情報更新
+
+# Userモデル
+- id (integer)
+- name (string)
+- email (string)</code></pre>
+          </div>
+          <div class="tip"><strong>ポイント：</strong>エンティティの構造とエンドポイントを明確に指定するのがコツです。</div>
         </div>
-      </details>
+
+        <div class="card">
+          <h3>コードのリファクタリング提案</h3>
+          <p>既存のコードを貼り付け、より可読性や保守性の高いコードへの改善案を理由付きで提案させます。セルフコードレビューに最適です。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>以下のJavaScriptコードは動作しますが、ネストが深くなっています。
+`async/await` を使って、より可読性の高いコードにリファクタリングしてください。
+変更点とその理由も簡潔に説明してください。
+
+(ここにリファクタリングしたいコードを貼り付け)</code></pre>
+          </div>
+          <div class="tip"><strong>ポイント：</strong>「なぜその変更が良いのか」という理由をセットで聞くことで、チームでの合意形成にも役立ちます。</div>
+        </div>
+
+        <div class="card">
+          <h3>コミットメッセージを自動生成</h3>
+          <p>`git diff` の結果を元に、Conventional Commitsのような規約に沿ったコミットメッセージを複数パターン提案させることができます。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>以下の `git diff` の結果を分析し、Conventional Commits規約に沿ったコミットメッセージを3つ提案してください。
+
+(ここに `git diff --staged` の結果を貼り付け)</code></pre>
+          </div>
+          <div class="tip"><strong>AIの回答例：</strong><br>
+          1. `feat: ユーザーアイコンのアップロード機能を追加`<br>
+          2. `fix: プロフィール画像が更新されないバグを修正`<br>
+          3. `refactor: 画像処理ロジックを専用モジュールに分離`</div>
+        </div>
+
+        <div class="card">
+          <h3>DBスキーマ設計を支援</h3>
+          <p>作りたいシステムの概要から、テーブル定義（DDL）やER図（Mermaid記法）を生成。設計のたたき台として活用できます。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>簡単なブログシステムのデータベースを設計します。
+以下のエンティティ間の関係性を考慮し、MySQL用のCREATE TABLE文を生成してください。
+
+# エンティティ
+- User (ユーザー)
+- Post (投稿)
+- Comment (コメント)
+- Tag (タグ)
+
+# 関係性
+- 1人のUserは複数のPostを持つ
+- 1つのPostは複数のCommentを持つ
+- 1つのPostは複数のTagを持つ（多対多）</code></pre>
+          </div>
+          <div class="tip"><strong>ポイント：</strong>エンティティ間の関係性（1対多、多対多など）を明記すると、中間テーブルなども考慮した精度の高いDDLが生成されます。</div>
+        </div>
+      </div>
     </details>
 
     <footer>
