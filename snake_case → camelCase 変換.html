@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>snake_case → camelCase 変換</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Helvetica,Arial,sans-serif;max-width:760px;margin:24px auto;padding:0 12px}
+  textarea{width:100%;min-height:160px;font-family:ui-monospace,Consolas,monospace}
+  .row{display:flex;gap:8px;align-items:center;margin:8px 0}
+  .out{white-space:pre-wrap;border:1px solid #ddd;border-radius:8px;padding:12px;min-height:120px;background:#fafafa}
+  .hint{color:#666;font-size:12px}
+  button{padding:8px 12px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer}
+</style>
+<h1>snake_case → camelCase 変換</h1>
+<p class="hint">入力例: <code>shouhizei_gaku</code> / <code>keijou_month gensenzei_rate</code> / 改行区切り など</p>
+<textarea id="inp" placeholder="ここに snake_case を1つでも複数でも貼り付け"></textarea>
+<div class="row">
+  <button id="btnConvert">変換する</button>
+  <button id="btnCopy">結果をコピー</button>
+  <label><input type="checkbox" id="uniq" checked> 重複は除外</label>
+  <label><input type="checkbox" id="csv"> CSVで出力</label>
+</div>
+<div id="out" class="out" aria-live="polite"></div>
+
+<script>
+function toCamel(str){
+  return String(str)
+    .toLowerCase()
+    .replace(/_+([a-z0-9])/g, (_, c) => c.toUpperCase())
+    .replace(/^_+|_+$/g, '');
+}
+function splitInput(s){
+  // 改行 / カンマ / セミコロン / タブ / スペース で分割
+  return s.split(/[\s,;]+/).filter(Boolean);
+}
+function convertAll(raw, {unique=false, csv=false}={}){
+  const items = splitInput(raw).map(toCamel);
+  const arr = unique ? Array.from(new Set(items)) : items;
+  return csv ? arr.join(",") : arr.join("\n");
+}
+const $ = (id)=>document.getElementById(id);
+$("btnConvert").onclick = ()=>{
+  $("out").textContent = convertAll($("inp").value, {unique:$("uniq").checked, csv:$("csv").checked});
+};
+$("btnCopy").onclick = async ()=>{
+  const text = $("out").textContent;
+  if(!text){ alert("結果が空です"); return; }
+  await navigator.clipboard.writeText(text);
+  alert("コピーしました！");
+};
+// 入力の度に即時変換（好みでオフにしてOK）
+$("inp").addEventListener("input", ()=> $("btnConvert").click());
+$("btnConvert").click();
+</script>

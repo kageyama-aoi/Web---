@@ -1,0 +1,69 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>MySQL型 → JSONプリミティブ（純出力+説明）</title>
+<style>
+  body{font-family:ui-monospace,Consolas,monospace;font-size:15px;max-width:900px;margin:20px auto;padding:0 12px}
+  textarea{width:100%;min-height:180px;padding:8px;font-family:ui-monospace,Consolas,monospace}
+  .row{margin:10px 0;display:flex;gap:10px;align-items:center}
+  .out{white-space:pre;border:1px solid #ccc;padding:12px;min-height:160px;background:#fafafa}
+  button{padding:6px 12px;font-size:14px}
+  details{margin:1em 0;padding:.5em 1em;border:1px solid #ccc;border-radius:6px;background:#f9f9f9}
+  summary{cursor:pointer;font-weight:bold}
+</style>
+
+<h1>MySQL型 → JSONプリミティブ（純出力）</h1>
+
+<details>
+  <summary>変換の方針（要点）</summary>
+  <ul>
+    <li><b>整数型（INT/SMALLINT/BIGINT…）</b> → <code>number</code></li>
+    <li><b>浮動小数（FLOAT/DOUBLE/DECIMAL/NUMERIC）</b> → <code>number</code></li>
+    <li><b>TINYINT(1) / BOOLEAN</b> → <code>boolean</code></li>
+    <li><b>文字列（CHAR/VARCHAR/TEXT/ENUM…）</b> → <code>string</code></li>
+    <li><b>SET</b> → <code>array</code></li>
+    <li><b>日付/時刻（DATE/TIME/DATETIME/TIMESTAMP）</b> → <code>string</code></li>
+    <li><b>JSON / GEOMETRY系</b> → <code>object</code></li>
+    <li><b>BLOB/BINARY系</b> → <code>string</code>（base64などで表現する想定）</li>
+    <li>不明な型は <code>string</code> にフォールバック</li>
+  </ul>
+</details>
+
+<textarea id="inp" placeholder="INT\nTINYINT(1)\nVARCHAR(255)\nDECIMAL(10,2)\nJSON"></textarea>
+<div class="row">
+  <button id="btnConvert">変換</button>
+  <button id="btnCopy">コピー</button>
+</div>
+<div id="out" class="out"></div>
+
+<script>
+function pickMysqlType(line){
+  const s=String(line).trim(); if(!s)return null;
+  const m=s.match(/\b([a-zA-Z]+)\s*(\([^)]*\))?/); if(!m)return null;
+  return {type:(m[1]||'').toLowerCase(), args:(m[2]||'').toLowerCase()};
+}
+function toPrimitive(e){
+  const t=e.type,a=e.args||"";
+  if(t==="boolean"||t==="bool"||(t==="tinyint"&&/\(\s*1\s*\)/.test(a)))return"boolean";
+  if(["tinyint","smallint","mediumint","int","integer","bigint","bit","year"].includes(t))return"number";
+  if(["float","double","real","decimal","numeric"].includes(t))return"number";
+  if(["char","varchar","text","tinytext","mediumtext","longtext","enum","uuid"].includes(t))return"string";
+  if(["set"].includes(t))return"array";
+  if(["date","time","datetime","timestamp"].includes(t))return"string";
+  if(["json","geometry","point","linestring","polygon","multipoint","multilinestring","multipolygon","geometrycollection"].includes(t))return"object";
+  if(["blob","tinyblob","mediumblob","longblob","binary","varbinary"].includes(t))return"string";
+  return"string";
+}
+function convertAll(raw){
+  return String(raw).split(/\r?\n/).map(s=>s.trim()).filter(Boolean).map(line=>{
+    const p=pickMysqlType(line); if(!p)return"";
+    return toPrimitive(p);
+  }).join("\n");
+}
+document.getElementById("btnConvert").onclick=()=>{
+  document.getElementById("out").textContent=convertAll(document.getElementById("inp").value);
+};
+document.getElementById("btnCopy").onclick=async()=>{
+  const t=document.getElementById("out").textContent;if(!t)return;
+  await navigator.clipboard.writeText(t);alert("コピーしました");
+};
+</script>
