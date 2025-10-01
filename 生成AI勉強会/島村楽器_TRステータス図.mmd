@@ -1,0 +1,51 @@
+---
+config:
+  theme: neutral
+---
+stateDiagram-v2
+  [*] --> S01:TR発行
+  state Test <<choice>>
+  state MergeCheck <<choice>>
+  state BetaCheck <<choice>>
+  state UATCheck <<choice>>
+  state ReleaseCheck <<choice>>
+  state "01.Open/New" as S01
+  state "02.Developing" as S02
+  state "03.PH_testing" as S03
+  state "04.PH Done" as S04
+  state "05.JP_testing" as S05
+  state "06.Merge Apprvl Rq" as S06
+  state "07.Merge Rq" as S07
+  state "08.Merged/upload Rq." as S08
+  state "09.Beta Uploaded" as S09
+  state "10.Beta OK" as S10
+  state "11.Staging Uploaded" as S11
+  state "12.Staging OK" as S12
+  state "14.Released" as S14
+  state "94.MerageErr" as S94
+  state "99.Colosed" as S99
+  state "999.Error" as E01
+  S01 --> S02: PHに渡す/翻訳/PH開発開始
+  S02 --> S03: 開発完了/翻訳者に渡す
+  S03 --> S04: 翻訳者テスト完了
+  S04 --> S05: 日本へ戻す/テスト開始
+  S05 --> Test: テスト結果
+  Test --> S06: OK（マージ依頼準備）
+  Test --> S02: NG（差戻し）
+  S06 --> S07: 管理者へ依頼/管理者に渡す
+  S07 --> S08: PHへ渡す/マージ作業完了
+  S08 --> MergeCheck: マージ資材確認
+  MergeCheck --> S09: OK_資材反映（Beta）
+  MergeCheck --> S94: NG_資材扱い検討/新TR検討
+  S09 --> BetaCheck: Beta動作確認
+  BetaCheck --> S10: OK
+  BetaCheck --> S94: NG_再開発/新TR検討
+  S10 --> S11: 資材UP依頼/資材反映（UAT）
+  S11 --> UATCheck: 顧客がUAT確認
+  UATCheck --> S12: OK
+  UATCheck --> ReleaseCheck:NG
+  ReleaseCheck --> S12: リリース許容
+  ReleaseCheck --> E01: NG_リリース無し
+  S12 --> S14: 本番リリース
+  S14 --> S99: 任意のタイミングでクローズ
+  S99 --> [*]
