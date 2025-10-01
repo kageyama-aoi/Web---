@@ -489,13 +489,14 @@ header {
         <input id="tocSearch" type="search" placeholder="目次を検索..." aria-label="目次を検索">
       </div>
       <ol id="tocList" class="toc">
-        <li><a href="#agenda">勉強会の全体構成（90分）</a></li>
-        <li><a href="#intro-script">導入（アイスブレイク台本）</a></li>
-        <li><a href="#drama-script">会話劇：職場シーン風の台本作成例</a></li>
-        <li><a href="#prompt-intro">プロンプトの工夫（入口体験：整理型／会話型）</a></li>
-        <li><a href="#nurture-prompts">プロンプトを育てる（回答精度を上げる）</a></li>
-        <li><a href="#advanced-prompts">応用プロンプト（思考の壁打ち）</a></li>
-        <li><a href="#slides">スライド台本（実演・ワーク・まとめ）</a></li>
+        <li><a href="#agenda">1. 勉強会の全体構成（90分）</a></li>
+        <li><a href="#intro-script">2. 導入（アイスブレイク台本）</a></li>
+        <li><a href="#drama-script">3. 会話：AIって仕事につかえる？</a></li>
+        <li><a href="#prompt-intro">4. プロンプトの工夫（入口体験：整理型／会話型）</a></li>
+        <li><a href="#nurture-prompts">5. プロンプトを育てる（回答精度を上げる）</a></li>
+        <li><a href="#advanced-usage">6. さらに進んだAI活用テクニック</a></li>
+        <li><a href="#slides">7. 開発者向け 実践サンプル集</a></li>
+        <li><a href="#advanced-prompts">8. 応用プロンプト（思考の壁打ち）</a></li>
       </ol>
     </nav>
 
@@ -840,73 +841,78 @@ select id, name, branch_name from account join branch b on branch_id = branch_id
       </div>
     </details>
 
-    <details id="advanced-prompts">
-      <summary class="section-summary">6. 応用プロンプト（思考の壁打ち相手にする）</summary>
-      <p class="section-note">基本の型に慣れたら、AIを「思考のパートナー」にするための応用的な聞き方を試してみましょう。</p>
+    <details id="advanced-usage">
+      <summary class="section-summary">6. さらに進んだAI活用テクニック</summary>
+      <p class="section-note">プロンプトの基本をマスターした方向けに、AIの可能性をさらに広げる実践的なテクニックやツールを紹介します。</p>
       <div class="grid cols-2">
         <div class="card">
-          <h3>応用1：ペルソナ設定（役割を与える）</h3>
-          <p>AIに専門家の役割を与えることで、回答の視点や質をコントロールします。</p>
-          <div class="code-block">
-            <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>あなたは[役割]です。
-[役割]の視点から、以下のテーマについて[形式]で説明してください。
-
-# 役割の例
-- プロのマーケター
-- 経験豊富な人事担当者
-- 顧客サポートのリーダー
-- 厳しい品質管理者
-
-# テーマ
-(ここに相談したい内容)</code></pre>
-          </div>
-          <div class="tip"><strong>例：</strong>「あなたはプロの編集者です。以下の文章を、中学生でも理解できるように、より簡潔で魅力的な表現に修正してください。」</div>
+          <h3>専用Gemでプロンプトを共有</h3>
+          <p>頻繁に使うプロンプトは、自分専用のGemとして保存・共有すると非常に便利です。以下はすぐに使えるサンプルです。</p>
+          <ul>
+            <li><a href="https://gemini.google.com/gem/1mgh2aUwS9KEd9WD3fH7UvL_PSGJbHwXK?usp=sharing" target="_blank" rel="noopener">学習：スプシ関数（1日1個がんばれ！）</a></li>
+            <li><a href="https://gemini.google.com/gem/1QBZcedOwU5DI5NzatVVMOvtrhkJ0M2cn?usp=sharing" target="_blank" rel="noopener">指導：正規表現</a></li>
+            <li><a href="https://gemini.google.com/gem/1oXXskP1JLGV6HfMnS-UUJYtzFbFT571r?usp=sharing" target="_blank" rel="noopener">指導：スプレッドシート関数</a></li>
+          </ul>
+          <div class="tip"><strong>使い方：</strong> 分からない関数や正規表現があったら、これらのGemにそのまま質問を投げかけるだけで、専用のチューニングがされた回答を得られます。</div>
         </div>
-
         <div class="card">
-          <h3>応用2：多角的思考（視点を増やす）</h3>
-          <p>一つの物事を複数の視点から検討させ、思考の漏れを防ぎます。</p>
-          <div class="code-block">
-            <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>以下の提案について、3つの異なる視点から意見をください。
-
-1. 賛成の立場（メリット）
-2. 反対の立場（デメリットやリスク）
-3. 長期的な視点（3年後の影響）
-
-# 提案
-(ここに検討したいアイデア)</code></pre>
-          </div>
-          <div class="tip">これにより、自分一人では気づきにくい論点や懸念点を洗い出すことができます。</div>
+          <h3>マルチモーダル入力の活用</h3>
+          <p>AIには文章だけでなく、画像や動画も渡せます。これにより、活用の幅が大きく広がります。</p>
+          <ul>
+            <li><strong>スクリーンショットで質問：</strong> エラー画面のスクショを撮って「このバグの原因は何？」と聞く。</li>
+            <li><strong>動画の要約：</strong> YouTubeのリンクを渡して「この動画のダイジェストを作って」と頼む。</li>
+          </ul>
+          <p class="muted">※ 現在、YouTubeリンクの解析はGeminiの得意な機能の一つです。</p>
         </div>
-
-        <div class="card">
-          <h3>応用3：思考の深掘り（なぜ？を繰り返す）</h3>
-          <p>表面的な答えで終わらせず、根本的な原因や目的を掘り下げさせます。</p>
-          <div class="code-block">
-            <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>(AIの回答に対して...)
-
-その回答の背景にある最も重要な理由は何ですか？
-なぜそれが重要だと考えますか？
-そのアプローチを取らなかった場合、どのような代替案が考えられますか？</code></pre>
+      </div>
+      <div class="card">
+        <h3>対話のコツ：メタプロンプト</h3>
+        <p>AIとの対話が長くなったり、望む結果が得られない場合に使える、一歩引いた視点からの指示（メタプロンプト）です。</p>
+        <div class="grid cols-2">
+          <div>
+            <h4>対話内容の整理</h4>
+            <div class="code-block">
+              <button type="button" class="copy-btn" title="コピー">📋</button>
+              <pre><code>このチャット内であなたに質問したことを中心に、内容をまとめてください。</code></pre>
+            </div>
           </div>
-          <div class="tip">トヨタ式の「なぜなぜ5回」のように、AIとの対話で本質に迫ります。</div>
-        </div>
-
-        <div class="card">
-          <h3>応用4：メタ認知（質問を改善させる）</h3>
-          <p>自分の質問自体をAIに評価させ、より良い聞き方を発見します。（会話劇でも登場したテクニックです）</p>
-          <div class="code-block">
-            <button type="button" class="copy-btn" title="コピー">📋</button>
-            <pre><code>「(ここに自分の質問)」
-
-上記は、私が本当に知りたいことを引き出すための最適な質問でしょうか？
-もし改善できる点があれば、より効果的な質問の仕方を3パターン提案してください。</code></pre>
+          <div>
+            <h4>出力形式の指定</h4>
+            <div class="code-block">
+              <button type="button" class="copy-btn" title="コピー">📋</button>
+              <pre><code>コード部分だけをコピペできる形式で提供してください。</code></pre>
+            </div>
           </div>
-          <div class="tip">「どう聞けばいいか分からない」という悩みそのものを解決する強力な方法です。</div>
+          <div>
+            <h4>プロンプトの生成</h4>
+            <div class="code-block">
+              <button type="button" class="copy-btn" title="コピー">📋</button>
+              <pre><code>ここまでの対話を踏まえて、最終的な結果を一度で得るための完璧なプロンプトを生成してください。</code></pre>
+            </div>
+          </div>
+          <div>
+            <h4>前提知識の再注入</h4>
+            <div class="code-block">
+              <button type="button" class="copy-btn" title="コピー">📋</button>
+              <pre><code>ここまでの内容を一旦忘れて、この前提知識を元に回答してください： (ここに前提資料を貼り付け)</code></pre>
+            </div>
+          </div>
         </div>
+      </div>
+      <div class="card">
+        <h3>筆者の生成AI活用事例</h3>
+        <p>以下は、筆者が実際に生成AIを活用して作成・効率化した業務の一部です。</p>
+        <ul>
+          <li><strong>毎日の勤怠メール下書き自動作成</strong>（GASを利用）</li>
+          <li><strong>経費精算書の自動入力とPDF化</strong>（Excelマクロを利用）</li>
+          <li>上記PDFをメールに自動添付し、<strong>メール下書きを作成</strong>（GASを利用）</li>
+          <li><strong>TRステータス遷移図の作成</strong>（Mermaid記法で出力させ、SVG形式で保存）
+            <p class="section-note">→ 顧客向け資料には不向きな場合もあるが、自分の頭の整理や内部共有には非常に有効。</p>
+          </li>
+          <li><strong>結合試験のエビデンス作成</strong>（集計関数をAIに作らせ、テストの再実行を容易に）
+            <br><a href="https://docs.google.com/spreadsheets/d/1wqMgow8m-yqYDDW8tJKKN4SzPuSty8DS61HNLSnAE8A/edit?gid=670221716#gid=670221716" target="_blank" rel="noopener">→ 参考スプレッドシート</a>
+          </li>
+        </ul>
       </div>
     </details>
 
@@ -1015,6 +1021,76 @@ select id, name, branch_name from account join branch b on branch_id = branch_id
 - 1つのPostは複数のTagを持つ（多対多）</code></pre>
           </div>
           <div class="tip"><strong>ポイント：</strong>エンティティ間の関係性（1対多、多対多など）を明記すると、中間テーブルなども考慮した精度の高いDDLが生成されます。</div>
+        </div>
+      </div>
+    </details>
+
+    <details id="advanced-prompts">
+      <summary class="section-summary">8. 応用プロンプト（思考の壁打ち相手にする）</summary>
+      <p class="section-note">基本の型に慣れたら、AIを「思考のパートナー」にするための応用的な聞き方を試してみましょう。</p>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>応用1：ペルソナ設定（役割を与える）</h3>
+          <p>AIに専門家の役割を与えることで、回答の視点や質をコントロールします。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>あなたは[役割]です。
+[役割]の視点から、以下のテーマについて[形式]で説明してください。
+
+# 役割の例
+- プロのマーケター
+- 経験豊富な人事担当者
+- 顧客サポートのリーダー
+- 厳しい品質管理者
+
+# テーマ
+(ここに相談したい内容)</code></pre>
+          </div>
+          <div class="tip"><strong>例：</strong>「あなたはプロの編集者です。以下の文章を、中学生でも理解できるように、より簡潔で魅力的な表現に修正してください。」</div>
+        </div>
+
+        <div class="card">
+          <h3>応用2：多角的思考（視点を増やす）</h3>
+          <p>一つの物事を複数の視点から検討させ、思考の漏れを防ぎます。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>以下の提案について、3つの異なる視点から意見をください。
+
+1. 賛成の立場（メリット）
+2. 反対の立場（デメリットやリスク）
+3. 長期的な視点（3年後の影響）
+
+# 提案
+(ここに検討したいアイデア)</code></pre>
+          </div>
+          <div class="tip">これにより、自分一人では気づきにくい論点や懸念点を洗い出すことができます。</div>
+        </div>
+
+        <div class="card">
+          <h3>応用3：思考の深掘り（なぜ？を繰り返す）</h3>
+          <p>表面的な答えで終わらせず、根本的な原因や目的を掘り下げさせます。</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>(AIの回答に対して...)
+
+その回答の背景にある最も重要な理由は何ですか？
+なぜそれが重要だと考えますか？
+そのアプローチを取らなかった場合、どのような代替案が考えられますか？</code></pre>
+          </div>
+          <div class="tip">トヨタ式の「なぜなぜ5回」のように、AIとの対話で本質に迫ります。</div>
+        </div>
+
+        <div class="card">
+          <h3>応用4：メタ認知（質問を改善させる）</h3>
+          <p>自分の質問自体をAIに評価させ、より良い聞き方を発見します。（会話劇でも登場したテクニックです）</p>
+          <div class="code-block">
+            <button type="button" class="copy-btn" title="コピー">📋</button>
+            <pre><code>「(ここに自分の質問)」
+
+上記は、私が本当に知りたいことを引き出すための最適な質問でしょうか？
+もし改善できる点があれば、より効果的な質問の仕方を3パターン提案してください。</code></pre>
+          </div>
+          <div class="tip">「どう聞けばいいか分からない」という悩みそのものを解決する強力な方法です。</div>
         </div>
       </div>
     </details>
