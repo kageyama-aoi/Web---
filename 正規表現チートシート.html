@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>シーン別・正規表現パターン集（スマホ最適・メニュー付き）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root{
+      --bg:#ffffff;
+      --ink:#1e293b;
+      --muted:#64748b;
+      --line:#e2e8f0;
+      --brand:#2563eb;
+      --chip:#eff6ff;
+    }
+    /* Base */
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Hiragino Kaku Gothic ProN",Meiryo,"Apple Color Emoji","Segoe UI Emoji";}
+    body{line-height:1.6;}
+    a{color:var(--brand);text-decoration:none;}
+    h1,h2{line-height:1.25;margin:0 0 .5rem;}
+    .container{max-width:1000px;margin:0 auto;padding:16px;}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+    /* Sticky top nav */
+    .topbar{
+      position:sticky;top:0;z-index:20;background:rgba(255,255,255,.92);
+      backdrop-filter:saturate(120%) blur(6px);border-bottom:1px solid var(--line);
+    }
+    .topbar-inner{display:flex;align-items:center;gap:8px;padding:10px 16px;max-width:1000px;margin:0 auto;}
+    .brand{font-weight:700;}
+    .tabs{
+      overflow:auto;white-space:nowrap;display:flex;gap:8px;margin-left:auto;
+    }
+    .tab{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:14px;}
+    .tab:hover{background:var(--chip);}
+    /* Search box */
+    .searchbox{display:flex;gap:8px;align-items:center;margin:12px 16px 0;max-width:1000px;}
+    .searchbox input{
+      width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:15px;
+    }
+    /* Section header */
+    .section{scroll-margin-top:96px;margin-top:20px;}
+    .section-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+    .chip{display:inline-block;background:var(--chip);color:var(--brand);padding:2px 8px;border-radius:999px;border:1px solid #dbeafe;font-size:12px;}
+    /* Cards (responsive table) */
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .card{border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;}
+    .card h3{margin:.2rem 0 .4rem;font-size:15px;}
+    .row{display:flex;gap:6px;align-items:flex-start;margin:.15rem 0;}
+    .row label{min-width:72px;color:var(--muted);font-size:12px;}
+    code{background:#0f172a0f;padding:2px 6px;border-radius:6px;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;font-size:13px;word-break:break-all;}
+    .foot-actions{display:flex;justify-content:flex-end;margin-top:6px;}
+    .toplink{font-size:12px;color:var(--muted);}
+    /* Desktop table toggle */
+    .view-toggle{margin:12px 16px;display:flex;gap:8px;align-items:center;}
+    .btn{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:14px;}
+    .btn[aria-pressed="true"]{background:var(--chip);border-color:#bfdbfe;}
+    /* Desktop table (optional) */
+    .table{border-collapse:collapse;width:100%;display:none}
+    .table th,.table td{border:1px solid var(--line);padding:8px 10px;vertical-align:top;font-size:14px;}
+    .table th{background:#f8fafc;text-align:left;}
+    /* Floating quick menu for mobile */
+    .fab{position:fixed;right:16px;bottom:16px;width:48px;height:48px;border-radius:50%;
+      background:var(--brand);color:#fff;display:grid;place-items:center;font-size:22px;
+      box-shadow:0 8px 24px rgba(37,99,235,.35);z-index:30;border:none;
+    }
+    .drawer{position:fixed;inset:0;background:rgba(15,23,42,.25);backdrop-filter:blur(2px);display:none;z-index:40;}
+    .drawer-panel{position:absolute;right:0;top:0;bottom:0;width:min(88vw,360px);background:#fff;border-left:1px solid var(--line);padding:16px;overflow:auto;}
+    .menu a{display:block;padding:10px 12px;border-radius:8px;border:1px solid var(--line);margin-bottom:8px;}
+    .menu a:hover{background:#f8fafc;}
+    /* Responsive */
+    @media (max-width: 800px){
+      .grid{grid-template-columns:1fr;}
+      .tabs{display:none;} /* keep FAB menu on small screens */
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">正規表現チートシート</div>
+      <nav class="tabs" aria-label="セクションタブ">
+        <a class="tab" href="#log">ログ解析</a>
+        <a class="tab" href="#html">HTML・テキスト</a>
+        <a class="tab" href="#validate">入力チェック</a>
+        <a class="tab" href="#biz">業務データ</a>
+        <a class="tab" href="#mail">メール・通信</a>
+        <a class="tab" href="#adv">応用テクニック</a>
+        <a class="tab" href="#top">すべて</a>
+      </nav>
+    </div>
+    <div class="searchbox">
+      <label class="sr-only" for="q">検索</label>
+      <input id="q" type="search" placeholder="用途・正規表現・説明で絞り込み（例: 円, IP, 見出し, PASS, 非貪欲 など）" />
+    </div>
+    <div class="view-toggle">
+      <button id="asCards" class="btn" aria-pressed="true">カード表示</button>
+      <button id="asTable" class="btn" aria-pressed="false">表表示</button>
+    </div>
+  </div>
+
+  <main class="container" id="top">
+    <!-- ログ解析 -->
+    <section id="log" class="section">
+      <div class="section-header">
+        <h2>ログ解析</h2><span class="chip">3件</span>
+      </div>
+      <div class="grid">
+        <article class="card" data-scene="ログ解析" data-use="日時抽出" data-pattern="\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}" data-desc="例: 2025/09/05 12:34:56">
+          <h3>日時抽出</h3>
+          <div class="row"><label>正規表現</label><code>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}</code></div>
+          <div class="row"><label>説明</label><div>例: 2025/09/05 12:34:56</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="ログ解析" data-use="エラーレベル" data-pattern="(INFO|WARN|ERROR)" data-desc="ログレベルを検出">
+          <h3>エラーレベル</h3>
+          <div class="row"><label>正規表現</label><code>(INFO|WARN|ERROR)</code></div>
+          <div class="row"><label>説明</label><div>ログレベルを検出</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="ログ解析" data-use="IPアドレス" data-pattern="(?:\d{1,3}\.){3}\d{1,3}" data-desc="例: 192.168.0.1">
+          <h3>IPアドレス</h3>
+          <div class="row"><label>正規表現</label><code>(?:\d{1,3}\.){3}\d{1,3}</code></div>
+          <div class="row"><label>説明</label><div>例: 192.168.0.1</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- HTML・テキスト処理 -->
+    <section id="html" class="section">
+      <div class="section-header">
+        <h2>HTML・テキスト処理</h2><span class="chip">3件</span>
+      </div>
+      <div class="grid">
+        <article class="card" data-scene="HTML・テキスト" data-use="タグ全体" data-pattern="&lt;[^&gt;]+&gt;" data-desc="HTMLタグを検出・除去">
+          <h3>タグ全体</h3>
+          <div class="row"><label>正規表現</label><code>&lt;[^&gt;]+&gt;</code></div>
+          <div class="row"><label>説明</label><div>HTMLタグを検出・除去</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-use="リンクURL" data-scene="HTML・テキスト" data-pattern='href="([^"]+)"' data-desc='&lt;a href="URL"&gt; から URL を抽出'>
+          <h3>リンクURL</h3>
+          <div class="row"><label>正規表現</label><code>href="([^"]+)"</code></div>
+          <div class="row"><label>説明</label><div>&lt;a href="URL"&gt; から URL を抽出</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-use="見出しタグ" data-scene="HTML・テキスト" data-pattern="&lt;h[1-6]&gt;.*?&lt;/h[1-6]&gt;" data-desc="&lt;h1&gt;タイトル&lt;/h1&gt; 抽出">
+          <h3>見出しタグ</h3>
+          <div class="row"><label>正規表現</label><code>&lt;h[1-6]&gt;.*?&lt;/h[1-6]&gt;</code></div>
+          <div class="row"><label>説明</label><div>&lt;h1&gt;タイトル&lt;/h1&gt; 抽出</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 入力チェック -->
+    <section id="validate" class="section">
+      <div class="section-header">
+        <h2>入力チェック（バリデーション）</h2><span class="chip">3件</span>
+      </div>
+      <div class="grid">
+        <article class="card" data-scene="入力チェック" data-use="郵便番号（日本）" data-pattern="^\d{3}-\d{4}$" data-desc="例: 123-4567">
+          <h3>郵便番号（日本）</h3>
+          <div class="row"><label>正規表現</label><code>^\d{3}-\d{4}$</code></div>
+          <div class="row"><label>説明</label><div>例: 123-4567</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="入力チェック" data-use="クレジットカード番号" data-pattern="^\d{4}-\d{4}-\d{4}-\d{4}$" data-desc="16桁カード番号">
+          <h3>クレジットカード番号</h3>
+          <div class="row"><label>正規表現</label><code>^\d{4}-\d{4}-\d{4}-\d{4}$</code></div>
+          <div class="row"><label>説明</label><div>16桁カード番号</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="入力チェック" data-use="パスワード強度" data-pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$" data-desc="英大小＋数字＋記号＋8文字以上">
+          <h3>パスワード強度</h3>
+          <div class="row"><label>正規表現</label><code>^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$</code></div>
+          <div class="row"><label>説明</label><div>英大小＋数字＋記号＋8文字以上</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 業務データ処理 -->
+    <section id="biz" class="section">
+      <div class="section-header">
+        <h2>業務データ処理</h2><span class="chip">4件</span>
+      </div>
+      <div class="grid">
+        <article class="card" data-scene="業務データ" data-use="数字の繰り返し" data-pattern="\d+" data-desc="任意の桁数の数字">
+          <h3>数字の繰り返し</h3>
+          <div class="row"><label>正規表現</label><code>\d+</code></div>
+          <div class="row"><label>説明</label><div>任意の桁数の数字</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="業務データ" data-use="金額（カンマ付き）" data-pattern="\d{1,3}(,\d{3})*" data-desc="1,000 / 12,345,678">
+          <h3>金額（カンマ付き）</h3>
+          <div class="row"><label>正規表現</label><code>\d{1,3}(,\d{3})*</code></div>
+          <div class="row"><label>説明</label><div>1,000 / 12,345,678</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="業務データ" data-use="単位付き数値（円）" data-pattern="\d+(?=円)" data-desc="300円 → 300">
+          <h3>単位付き数値（円）</h3>
+          <div class="row"><label>正規表現</label><code>\d+(?=円)</code></div>
+          <div class="row"><label>説明</label><div>300円 → 300</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="業務データ" data-use="CSVの1列目" data-pattern="^[^,]+" data-desc="行頭から最初のカンマまで">
+          <h3>CSVの1列目</h3>
+          <div class="row"><label>正規表現</label><code>^[^,]+</code></div>
+          <div class="row"><label>説明</label><div>行頭から最初のカンマまで</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- メール・通信 -->
+    <section id="mail" class="section">
+      <div class="section-header">
+        <h2>メール・通信</h2><span class="chip">3件</span>
+      </div>
+      <div class="grid">
+        <article class="card" data-scene="メール・通信" data-use="メールアドレス" data-pattern="[\w._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}" data-desc="例: test@example.com">
+          <h3>メールアドレス</h3>
+          <div class="row"><label>正規表現</label><code>[\w._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}</code></div>
+          <div class="row"><label>説明</label><div>例: test@example.com</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="メール・通信" data-use="ドメイン部分" data-pattern="(?&lt;=@)[A-Za-z0-9.-]+\.[A-Za-z]{2,}" data-desc="@ の後ろだけ抽出">
+          <h3>ドメイン部分</h3>
+          <div class="row"><label>正規表現</label><code>(?&lt;=@)[A-Za-z0-9.-]+\.[A-Za-z]{2,}</code></div>
+          <div class="row"><label>説明</label><div>@ の後ろだけ抽出</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scenes="メール・通信" data-use="SPF/DKIM結果" data-pattern="(PASS|FAIL)" data-desc="認証結果を抽出">
+          <h3>SPF/DKIM結果</h3>
+          <div class="row"><label>正規表現</label><code>(PASS|FAIL)</code></div>
+          <div class="row"><label>説明</label><div>認証結果を抽出</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 応用テクニック -->
+    <section id="adv" class="section">
+      <div class="section-header">
+        <h2>応用テクニック</h2><span class="chip">14件</span>
+      </div>
+      <div class="grid">
+        <article class="card" data-scene="応用" data-use="OR条件" data-pattern="(cat|dog)" data-desc="「cat」または「dog」">
+          <h3>OR条件</h3>
+          <div class="row"><label>正規表現</label><code>(cat|dog)</code></div>
+          <div class="row"><label>説明</label><div>「cat」または「dog」</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="否定" data-pattern="[^0-9]" data-desc="数字以外">
+          <h3>否定</h3>
+          <div class="row"><label>正規表現</label><code>[^0-9]</code></div>
+          <div class="row"><label>説明</label><div>数字以外</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="繰り返し制御" data-pattern="a{2,} / \d{5,10}" data-desc="aa以上 / 5〜10桁数字">
+          <h3>繰り返し制御</h3>
+          <div class="row"><label>正規表現</label><code>a{2,}</code> / <code>\d{5,10}</code></div>
+          <div class="row"><label>説明</label><div>aa以上 / 5〜10桁数字</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="貪欲マッチ" data-pattern="&lt;.*&gt;" data-desc="&lt;div&gt;xxx&lt;/div&gt;zzz 全体">
+          <h3>貪欲マッチ</h3>
+          <div class="row"><label>正規表現</label><code>&lt;.*&gt;</code></div>
+          <div class="row"><label>説明</label><div>&lt;div&gt;xxx&lt;/div&gt;zzz 全体</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="非貪欲マッチ" data-pattern="&lt;.*?&gt;" data-desc="&lt;div&gt;xxx&lt;/div&gt; だけ">
+          <h3>非貪欲マッチ</h3>
+          <div class="row"><label>正規表現</label><code>&lt;.*?&gt;</code></div>
+          <div class="row"><label>説明</label><div>&lt;div&gt;xxx&lt;/div&gt; だけ</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="単語の境界" data-pattern="\bword\b" data-desc="「word」のみ、passwordは除外">
+          <h3>単語の境界</h3>
+          <div class="row"><label>正規表現</label><code>\bword\b</code></div>
+          <div class="row"><label>説明</label><div>「word」のみ、passwordは除外</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="改行含む全体" data-pattern="[\s\S]*" data-desc="改行をまたいで一致">
+          <h3>改行含む全体</h3>
+          <div class="row"><label>正規表現</label><code>[\s\S]*</code></div>
+          <div class="row"><label>説明</label><div>改行をまたいで一致</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="先読み" data-pattern="\d+(?=円)" data-desc="「円」の前の数字">
+          <h3>先読み</h3>
+          <div class="row"><label>正規表現</label><code>\d+(?=円)</code></div>
+          <div class="row"><label>説明</label><div>「円」の前の数字</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="後読み（￥）" data-pattern="(?&lt;=￥)\d+" data-desc="「￥」の後の数字">
+          <h3>後読み（￥）</h3>
+          <div class="row"><label>正規表現</label><code>(?&lt;=￥)\d+</code></div>
+          <div class="row"><label>説明</label><div>「￥」の後の数字</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="拡張子判定" data-pattern="\.(jpg|png|gif)$" data-desc="ファイル形式の確認">
+          <h3>拡張子判定</h3>
+          <div class="row"><label>正規表現</label><code>\.(jpg|png|gif)$</code></div>
+          <div class="row"><label>説明</label><div>ファイル形式の確認</div></div>
+        </article>
+        <article class="card" data-scenes="応用" data-use="16進カラーコード" data-pattern="#[0-9A-Fa-f]{6}" data-desc="例: #1a2b3c">
+          <h3>16進カラーコード</h3>
+          <div class="row"><label>正規表現</label><code>#[0-9A-Fa-f]{6}</code></div>
+          <div class="row"><label>説明</label><div>例: #1a2b3c</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <!-- 追加（応用で紹介していたうち未掲載分） -->
+        <article class="card" data-scene="応用" data-use="単語（英数字+_）" data-pattern="\w+" data-desc="単語っぽい文字列">
+          <h3>単語（英数字+_）</h3>
+          <div class="row"><label>正規表現</label><code>\w+</code></div>
+          <div class="row"><label>説明</label><div>単語っぽい文字列</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="空白" data-pattern="\s+" data-desc="空白・改行・タブなど">
+          <h3>空白</h3>
+          <div class="row"><label>正規表現</label><code>\s+</code></div>
+          <div class="row"><label>説明</label><div>空白・改行・タブなど</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="URL（ざっくり）" data-pattern="https?://[^\s]+" data-desc="http(s)で始まるURL">
+          <h3>URL（ざっくり）</h3>
+          <div class="row"><label>正規表現</label><code>https?://[^\s]+</code></div>
+          <div class="row"><label>説明</label><div>http(s)で始まるURL</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+        <article class="card" data-scene="応用" data-use="日付（YYYY-MM-DD）" data-pattern="\d{4}-\d{2}-\d{2}" data-desc="例: 2025-09-05">
+          <h3>日付（YYYY-MM-DD）</h3>
+          <div class="row"><label>正規表現</label><code>\d{4}-\d{2}-\d{2}</code></div>
+          <div class="row"><label>説明</label><div>例: 2025-09-05</div></div>
+          <div class="foot-actions"><a href="#top" class="toplink">↑ トップへ</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- デスクトップ向け：同内容の表（トグルで表示） -->
+    <section id="tableView" class="section" style="display:none;">
+      <div class="section-header">
+        <h2>一覧表（デスクトップ向け）</h2>
+      </div>
+      <table class="table" id="bigTable" aria-label="全項目の表">
+        <thead>
+          <tr><th>シーン</th><th>用途</th><th>正規表現</th><th>説明</th></tr>
+        </thead>
+        <tbody id="bigTableBody">
+          <!-- JavaScriptでカードから自動生成 -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <!-- Floating Action Button and Drawer -->
+  <button class="fab" id="openMenu" aria-label="クイックメニュー">☰</button>
+  <div class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+      <h2 id="menuTitle" style="margin:0 0 8px;">クイックメニュー</h2>
+      <p style="color:var(--muted);margin:0 0 12px;">セクションへジャンプ / 検索語の候補</p>
+      <div class="menu">
+        <a href="#log" data-fill="">📁 ログ解析</a>
+        <a href="#html" data-fill="">📝 HTML・テキスト</a>
+        <a href="#validate" data-fill="">✅ 入力チェック</a>
+        <a href="#biz" data-fill="">📊 業務データ</a>
+        <a href="#mail" data-fill="">✉️ メール・通信</a>
+        <a href="#adv" data-fill="">🧪 応用テクニック</a>
+      </div>
+      <h3 style="margin:12px 0 8px;font-size:14px;color:var(--muted);">よく使う検索キーワード</h3>
+      <div class="menu">
+        <a href="#top" data-fill="円">「円」</a>
+        <a href="#top" data-fill="IP">IP</a>
+        <a href="#top" data-fill="見出し">見出し</a>
+        <a href="#top" data-fill="PASS">PASS</a>
+        <a href="#top" data-fill="非貪欲">非貪欲</a>
+        <a href="#top" data-fill="拡張子">拡張子</a>
+      </div>
+      <p><a href="#top" id="closeDrawer">閉じる</a></p>
+    </div>
+  </div>
+
+  <details id="selftest" class="container" style="margin:16px;">
+    <summary>Self-test results（自動テスト結果を表示）</summary>
+    <p id="selftest-output">running...</p>
+  </details>
+
+  <script>
+    // ===== Utilities =====
+    function normalize(s){ return (s||'').toString().toLowerCase(); }
+    function safeReplaceHash(hash){
+      // Avoid history API in sandboxed about:srcdoc contexts
+      try{
+        const href = String(window.location && window.location.href || '');
+        const proto = String(window.location && window.location.protocol || '');
+        const isSrcdoc = proto === 'about:' || href.startsWith('about:');
+        if (isSrcdoc) return; // do nothing in sandbox
+        if (window.history && typeof window.history.replaceState === 'function'){
+          window.history.replaceState(null, '', hash);
+        }
+      }catch(_err){ /* swallow in restricted env */ }
+    }
+
+    // ===== DOM refs =====
+    const q = document.getElementById('q');
+    const cards = Array.from(document.querySelectorAll('.card'));
+    const sections = Array.from(document.querySelectorAll('section.section'));
+    const bigTable = document.getElementById('bigTable');
+    const bigTableBody = document.getElementById('bigTableBody');
+    const btnCards = document.getElementById('asCards');
+    const btnTable = document.getElementById('asTable');
+    const tableView = document.getElementById('tableView');
+
+    // ===== Filter =====
+    function applyFilter(){
+      const term = normalize(q.value);
+      cards.forEach(card => {
+        const text = [card.dataset.scene, card.dataset.use, card.dataset.pattern, card.dataset.desc]
+          .map(normalize).join(' ');
+        const show = text.includes(term);
+        card.style.display = show ? '' : 'none';
+      });
+      // hide whole section if no cards visible within
+      sections.forEach(sec => {
+        const hasVisible = Array.from(sec.querySelectorAll('.card')).some(c => c.style.display !== 'none');
+        sec.style.display = hasVisible || term === '' ? '' : 'none';
+      });
+    }
+    q.addEventListener('input', applyFilter);
+
+    // ===== Drawer menu =====
+    const drawer = document.getElementById('drawer');
+    document.getElementById('openMenu').addEventListener('click', () => {
+      drawer.style.display = 'block';
+      drawer.setAttribute('aria-hidden','false');
+    });
+    document.getElementById('closeDrawer').addEventListener('click', (e) => {
+      drawer.style.display = 'none';
+      drawer.setAttribute('aria-hidden','true');
+    });
+    drawer.addEventListener('click', (e)=>{
+      if(e.target === drawer){ // click backdrop to close
+        drawer.style.display = 'none';
+        drawer.setAttribute('aria-hidden','true');
+      }
+    });
+    // Quick fill search keywords from drawer
+    document.querySelectorAll('.drawer .menu a[data-fill]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const val = a.getAttribute('data-fill');
+        if(val){ q.value = val; applyFilter(); }
+        // let anchor jump happen; close drawer
+        drawer.style.display = 'none';
+        drawer.setAttribute('aria-hidden','true');
+      });
+    });
+
+    // ===== Build big table from cards =====
+    function buildTable(){
+      bigTableBody.innerHTML = '';
+      cards.forEach(card => {
+        const tr = document.createElement('tr');
+        const scene = card.dataset.scene || card.getAttribute('data-scenes') || '';
+        const use = card.dataset.use || '';
+        const pattern = card.querySelector('code')?.innerText || '';
+        const desc = card.querySelector('.row:nth-of-type(2) div')?.innerText || '';
+        tr.innerHTML = `<td>${scene}</td><td>${use}</td><td><code>${pattern}</code></td><td>${desc}</td>`;
+        bigTableBody.appendChild(tr);
+      });
+    }
+    buildTable();
+
+    // ===== View toggle =====
+    function setView(cardsOn){
+      if(cardsOn){
+        btnCards.setAttribute('aria-pressed','true');
+        btnTable.setAttribute('aria-pressed','false');
+        tableView.style.display = 'none';
+        bigTable.style.display = 'none';
+        document.querySelectorAll('.grid,.card').forEach(el => el.style.display = '');
+      }else{
+        btnCards.setAttribute('aria-pressed','false');
+        btnTable.setAttribute('aria-pressed','true');
+        tableView.style.display = '';
+        bigTable.style.display = 'table';
+        document.querySelectorAll('.grid,.card').forEach(el => el.style.display = 'none');
+      }
+    }
+    btnCards.addEventListener('click', ()=> setView(true));
+    btnTable.addEventListener('click', ()=> setView(false));
+
+    // ===== Smooth scroll for in-page links (sandbox-safe) =====
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e)=>{
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if(el){
+          e.preventDefault();
+          window.scrollTo({ top: el.getBoundingClientRect().top + window.pageYOffset - 84, behavior:'smooth'});
+          // Only try to update the URL hash when allowed (non-sandbox environments)
+          safeReplaceHash('#'+id);
+        }
+      });
+    });
+
+    // ===== Minimal self-tests (do not change existing behavior) =====
+    function runSelfTests(){
+      const out = document.getElementById('selftest-output');
+      if(!out) return;
+      const results = [];
+      function ok(name, cond){ results.push(`${cond ? '✅' : '❌'} ${name}`); }
+
+      // Test 1: filter finds something for "円"
+      const prev = q.value; q.value = '円'; applyFilter();
+      const visible = cards.filter(c=>c.style.display !== 'none').length; ok('検索フィルタ（円）で1件以上ヒット', visible >= 1);
+      q.value = prev; applyFilter();
+
+      // Test 2: toggle to table view
+      setView(false);
+      ok('表表示トグルが機能', tableView.style.display !== 'none' && bigTable.style.display !== 'none');
+      setView(true);
+
+      // Test 3: sandbox-safe history
+      let noThrow = true; try{ safeReplaceHash('#top'); }catch(e){ noThrow = false; }
+      ok('sandboxでもhistoryで例外を出さない', noThrow);
+
+      // Test 4: table rows built
+      ok('表に1行以上生成', bigTableBody.querySelectorAll('tr').length > 0);
+
+      out.textContent = results.join(' / ');
+    }
+    document.addEventListener('DOMContentLoaded', runSelfTests);
+  </script>
+</body>
+</html>

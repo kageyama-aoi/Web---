@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mermaid Live Viewer (Single HTML)</title>
+  <meta name="description" content="Mermaidのフローチャート等をブラウザで書いて即プレビュー、SVG/PNGで保存できる単一HTMLアプリ" />
+  <link rel="stylesheet" href="style.css">
+  <!-- 固定バージョンで安定表示（v10系） -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js" defer></script>
+  <script src="js/app.js" type="module"></script>
+</head>
+<body>
+  <div class="app" id="app">
+    <header>
+      <div class="toolbar">
+        <div class="left">
+          <h1>Mermaid Live Viewer</h1>
+          <label>テーマ
+            <select id="theme">
+              <option value="default">default</option>
+              <option value="neutral">neutral</option>
+              <option value="forest">forest</option>
+              <option value="dark">dark</option>
+            </select>
+          </label>
+          <label>配色（UI）
+            <select id="scheme">
+              <option value="light">ライト</option>
+              <option value="dark">ダーク</option>
+              <option value="auto" selected>自動</option>
+            </select>
+          </label>
+          <label>PNG倍率×<input id="scale" type="number" min="1" max="6" step="1" value="2" style="width:4.2rem"></label>
+          <button class="primary" id="renderBtn" title="Ctrl/Cmd+Enter">レンダー</button>
+          <label><input type="checkbox" id="autorun" checked> 自動レンダー</label>
+        </div>
+        <div class="right">
+          <label>サンプル
+            <select id="examples">
+              <option value="">選択…</option>
+              <!-- Options are populated by app.js -->
+            </select>
+          </label>
+          <button id="loadSample">挿入</button>
+          <button id="openFile">読み込み</button>
+          <input id="fileInput" class="file" type="file" accept=".mmd,.mermaid,.txt" hidden>
+          <button id="saveMmd">.mmd保存</button>
+          <button id="copySvg">SVGコピー</button>
+          <button id="downloadSvg">SVG保存</button>
+          <button id="downloadPng">PNG保存</button>
+          <button id="shareUrl">共有URL</button>
+          <button id="selfTest">自己テスト</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="title"><h2>エディタ</h2><span class="muted"></span></div>
+        <textarea id="editor" class="editor" spellcheck="false"></textarea>
+        <div class="footer">
+          <div>保存: 自動（ローカル） / ショートカット: <span class="kbd">Ctrl/⌘ + Enter</span></div>
+          <div id="status" class="muted"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="title"><h2>プレビュー</h2><span class="muted"></span></div>
+        <div id="preview" class="preview" aria-live="polite"></div>
+        <div class="footer">
+          <div id="error" class="error" role="alert" aria-live="assertive"></div>
+          <div class="muted">SVGは拡大しても劣化しません</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+</body>
+</html>
