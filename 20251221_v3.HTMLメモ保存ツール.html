@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>HTMLメモ保存ツール3</title>
+</head>
+<body>
+<!-- 20251221 -->
+<h1>HTMLメモ保存ツール3</h1>
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>HTMLメモ保存ツール</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f6f8;
+      padding: 32px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 28px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #555;
+      margin-bottom: 24px;
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      border-left: 4px solid #0066cc;
+      padding-left: 8px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    input[type="text"] {
+      width: 300px;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 320px;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      background: #f4f4f4;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #666;
+      margin-top: 6px;
+    }
+
+    .actions {
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    button {
+      padding: 14px 32px;
+      font-size: 16px;
+      background: #0066cc;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0055aa;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>HTMLメモ保存ツール</h1>
+    <div class="subtitle">
+      調べたこと・整理したHTMLを、そのままローカルに保存できます。
+    </div>
+
+    <!-- 基本情報 -->
+    <div class="section">
+      <div class="section-title">① 基本情報</div>
+
+      <label>
+        タイトル：
+        <input type="text" id="title" placeholder="例：GitHub API 調査メモ">
+      </label>
+
+      <label>
+        日付：
+        <input type="text" id="date" readonly>
+      </label>
+    </div>
+
+    <!-- HTML本文 -->
+    <div class="section">
+      <div class="section-title">② HTML本文（ここに貼り付け）</div>
+
+      <textarea
+        id="content"
+        spellcheck="false"
+        autocorrect="off"
+        autocomplete="off"
+        autocapitalize="off"
+      >
+<h2>調査内容</h2>
+<p>ここにHTMLを貼り付けます。</p>
+      </textarea>
+
+      <div class="hint">
+        ※ HTMLタグを含めてそのまま保存されます
+      </div>
+    </div>
+
+    <!-- 保存ボタン -->
+    <div class="actions">
+      <button onclick="saveHtml()">HTMLとして保存</button>
+    </div>
+  </div>
+
+  <script>
+    // 初期表示時に今日の日付（yyyymmdd）をセット
+    (function setToday() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      document.getElementById('date').value = `${yyyy}${mm}${dd}`;
+    })();
+
+    function saveHtml() {
+      const title = document.getElementById('title').value || '無題';
+      const date = document.getElementById('date').value;
+      const content = document.getElementById('content').value;
+
+      const html = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>${title}</title>
+</head>
+<body>
+<!-- ${date} -->
+<h1>${title}</h1>
+
+${content}
+</body>
+</html>
+      `.trim();
+
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${date}_${title}.html`;
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
+
+</body>
+</html>
