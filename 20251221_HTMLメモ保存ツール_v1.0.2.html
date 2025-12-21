@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>HTMLメモ保存ツールv5.1</title>
+</head>
+<body>
+<h1>HTMLメモ保存ツールv5.1</h1>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>HTMLメモ保存ツールv8</title>
+</head>
+<body>
+<h1>HTMLメモ保存ツールv8</h1>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>HTMLメモ保存ツール</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f6f8;
+      padding: 32px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 28px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      border-left: 4px solid #0066cc;
+      padding-left: 8px;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    input[type="text"] {
+      width: 300px;
+      padding: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 260px;
+      font-family: Consolas, Monaco, monospace;
+      padding: 14px;
+    }
+
+    pre {
+      background: #272822;
+      color: #f8f8f2;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    .cmd-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    button {
+      cursor: pointer;
+      border-radius: 6px;
+      border: none;
+    }
+
+    button.main {
+      padding: 12px 28px;
+      background: #0066cc;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    button.small {
+      padding: 6px 10px;
+      font-size: 12px;
+      background: #e0e0e0;
+    }
+
+    button.copy {
+      padding: 6px 10px;
+      font-size: 12px;
+      background: #4caf50;
+      color: white;
+      white-space: nowrap;
+    }
+
+    button.copy.copied {
+      background: #888;
+    }
+
+    .actions {
+      text-align: center;
+      margin-top: 24px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <div class="section">
+    <div class="section-title">① 基本情報</div>
+
+    <label>
+      タイトル：
+      <input type="text" id="title">
+      <button class="small" onclick="extractTitle()">HTMLから取得</button>
+    </label>
+
+    <label>
+      日付：
+      <input type="text" id="date" readonly>
+    </label>
+  </div>
+
+  <div class="section">
+    <div class="section-title">② HTML本文</div>
+    <textarea id="content"></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="main" onclick="saveHtml()">HTMLとして保存</button>
+  </div>
+
+  <div class="section">
+    <div class="section-title">③ 整理用 PowerShell コマンド</div>
+
+    <div class="cmd-row">
+      <pre id="cmd-fixed">保存後に生成されます</pre>
+      <button class="copy" onclick="copyCommand('cmd-fixed', this)">コピー</button>
+    </div>
+
+    <br>
+
+    <div class="cmd-row">
+      <pre id="cmd-latest">保存後に生成されます</pre>
+      <button class="copy" onclick="copyCommand('cmd-latest', this)">コピー</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // 日付初期化
+  (function () {
+    const d = new Date();
+    document.getElementById('date').value =
+      d.getFullYear()
+      + String(d.getMonth() + 1).padStart(2, '0')
+      + String(d.getDate()).padStart(2, '0');
+  })();
+
+  function extractTitle() {
+    const text = document.getElementById('content').value;
+    const match = text.match(/<title>([\s\S]*?)<\/title>/i);
+    if (!match) {
+      alert('<title> が見つかりません');
+      return;
+    }
+    document.getElementById('title').value = match[1].trim();
+  }
+
+  function saveHtml() {
+    const title = document.getElementById('title').value || '無題';
+    const date = document.getElementById('date').value;
+    const content = document.getElementById('content').value;
+
+    const filename = `${date}_${title}.html`;
+
+    const html = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>${title}</title>
+</head>
+<body>
+<h1>${title}</h1>
+${content}
+</body>
+</html>
+`.trim();
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    document.getElementById('cmd-fixed').textContent =
+`Copy-Item "C:\\Users\\kisar\\Downloads\\${filename}" "C:\\Users\\kisar\\Documents\\自作資料\\pages\"`;
+
+    document.getElementById('cmd-latest').textContent =
+`Get-ChildItem "C:\\Users\\kisar\\Downloads\\*.html" |
+Sort-Object LastWriteTime -Descending |
+Select-Object -First 1 |
+Copy-Item -Destination "C:\\Users\\kisar\\Documents\\自作資料\\pages\"`;
+  }
+
+  function copyCommand(id, button) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      button.textContent = 'コピー済';
+      button.classList.add('copied');
+      setTimeout(() => {
+        button.textContent = 'コピー';
+        button.classList.remove('copied');
+      }, 1500);
+    });
+  }
+</script>
+</body>
+</html>
+
+</body>
+</html>
+</body>
+</html>
