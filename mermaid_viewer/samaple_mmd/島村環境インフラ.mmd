@@ -1,0 +1,33 @@
+flowchart LR
+  classDef srv fill:#eef,stroke:#88a,stroke-width:1px
+  classDef db  fill:#efe,stroke:#8a8,stroke-width:1px
+  classDef ui  fill:#fff,stroke:#999,stroke-dasharray:3 3
+  classDef phpmy fill:#fff8dc,stroke:#d4c200,stroke-width:1.5px
+
+  U[Browser User PC]:::ui
+
+  subgraph VM[Compute Engine VM: pintail]
+    direction TB
+    DAPP["Web site app (Dev)<br>tcns.shimamura.co.jp/&lt;env&gt;"]:::srv
+    PMA["phpMyAdmin<br>tcns.shimamura.co.jp/phpMyAdmin"]:::phpmy
+    PAPP["Web site app (Prod)<br>tcns.shimamura.co.jp"]:::srv
+  end
+
+  subgraph DEV[Development]
+    direction TB
+    DDB[(Cloud SQL: xxxx-testdb-2)]:::db
+  end
+
+  subgraph PROD[Production]
+    direction TB
+    PDB[(Cloud SQL: xxxx-production-db)]:::db
+  end
+
+  U -- "HTTPS" --> DAPP
+  U -- "HTTPS" --> PAPP
+  U -- "HTTPS" --> PMA
+
+  DAPP -->|"DB connection"| DDB
+  PAPP -->|"DB connection"| PDB
+  PMA -. "choose by IP" .-> DDB
+  PMA -. "choose by IP" .-> PDB
