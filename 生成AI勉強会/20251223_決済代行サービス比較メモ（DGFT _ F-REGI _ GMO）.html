@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>決済代行サービス比較メモ（DGFT / F-REGI / GMO）</title>
+</head>
+<body>
+<h1>決済代行サービス比較メモ（DGFT / F-REGI / GMO）</h1>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>決済代行サービス比較メモ（DGFT / F-REGI / GMO）</title>
+    <style>
+        :root {
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-color: #333;
+            --primary-color: #1f3b7b;
+            --accent-bg: #eef1ff;
+            --border-color: #ccc;
+            --highlight: #fffce0;
+            --code-bg: #f7f7f7;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --primary-color: #8ab4f8;
+            --accent-bg: #2d334a;
+            --border-color: #444;
+            --highlight: #3e3a10;
+            --code-bg: #2d2d2d;
+        }
+
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0 0 100px 0;
+            color: var(--text-color);
+            background: var(--bg-color);
+            transition: background 0.3s;
+        }
+
+        /* ヘッダー */
+        header {
+            padding: 16px;
+            background: var(--card-bg);
+            border-bottom: 2px solid var(--accent-bg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 { font-size: 1.1rem; margin: 0; color: var(--primary-color); flex: 1; }
+
+        .theme-toggle {
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+
+        /* 導入文 */
+        .intro { padding: 16px; font-size: 14px; border-bottom: 1px solid var(--border-color); }
+        .highlight { background: var(--highlight); padding: 2px 4px; border-radius: 3px; }
+        .small-note { font-size: 12px; color: #888; margin-top: 8px; }
+
+        /* アコーディオン */
+        details {
+            margin: 8px 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        details[open] { border-color: var(--primary-color); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        summary {
+            padding: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            color: var(--primary-color);
+            position: relative;
+        }
+        
+        summary::after {
+            content: '▶';
+            font-size: 10px;
+            margin-left: auto;
+            transition: transform 0.2s;
+            opacity: 0.5;
+        }
+        details[open] summary::after { transform: rotate(90deg); }
+
+        .section-content {
+            padding: 0 14px 14px 14px;
+            border-top: 1px solid var(--accent-bg);
+            font-size: 14px;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 10px;
+            background: var(--accent-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            margin-top: 12px;
+        }
+
+        /* 読了チェック */
+        .read-check {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+        }
+
+        /* テーブル */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 12px 0;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 500px; /* スマホで横スクロールを発生させる */
+            background: var(--card-bg);
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 8px;
+            vertical-align: top;
+            font-size: 13px;
+        }
+
+        th { background: var(--accent-bg); text-align: left; white-space: nowrap; }
+
+        /* コードブロック */
+        pre {
+            background: var(--code-bg);
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+            border: 1px solid var(--border-color);
+            font-family: Consolas, monospace;
+        }
+
+        /* ナビゲーション */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--card-bg);
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 8px;
+            padding: 12px;
+            border-top: 1px solid var(--border-color);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            z-index: 100;
+            box-sizing: border-box;
+        }
+
+        .bottom-nav button, .bottom-nav select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 12px;
+        }
+
+        h3 { font-size: 1.1rem; border-left: 4px solid var(--primary-color); padding-left: 8px; margin-top: 20px; }
+        h4 { font-size: 0.95rem; margin-bottom: 8px; color: var(--primary-color); }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 6px; }
+
+    </style>
+</head>
+<body data-theme="light">
+
+<header>
+    <h1>決済代行サービス比較メモ</h1>
+    <button class="theme-toggle" onclick="toggleTheme()">🌓 テーマ切替</button>
+</header>
+
+<div class="intro">
+    <p>DGFT（ベリトランス）、F-REGI（コンビニ払い）、GMO を対象に、<span class="highlight">実務運用寄り</span>の視点で比較したメモです。<br>
+    特に「ベリトランス＋コンビニ支払いを主に使い、GMOは技術的には軽めに扱う」前提で整理しています。</p>
+    <p class="small-note">想定読者：決済連携の運用設計・ログ設計・入金消込・電子帳簿保存法対応などを担う実務担当者。</p>
+</div>
+
+<div id="content-area">
+
+    <details id="details-sec1">
+        <summary>
+            <input type="checkbox" class="read-check" onclick="event.stopPropagation()">
+            <span id="sec1">1. まず押さえるべき比較ポイント</span>
+        </summary>
+        <div class="section-content">
+            <div class="section-label">Summary</div>
+            <p>この3サービスを運用目線で比較する際、特に差が出るのは次の4点です。</p>
+            <ul>
+                <li><strong>API・通知の仕組み</strong>（同期/非同期、Webhook、バッチ）</li>
+                <li><strong>入金消込のしやすさ</strong>（ID体系、CSV仕様、リアルタイム性）</li>
+                <li><strong>未入金・エラー・再発行の運用</strong></li>
+                <li><strong>ログ・証跡設計</strong>（監査・電子帳簿保存法対応を見据えた記録構造）</li>
+            </ul>
+        </div>
+    </details>
+
+    <details id="details-sec2">
+        <summary>
+            <input type="checkbox" class="read-check" onclick="event.stopPropagation()">
+            <span id="sec2">2. 3サービスの全体比較</span>
+        </summary>
+        <div class="section-content">
+            <div class="section-label">Overview</div>
+            <h3>2-1. 全体比較表（運用寄り）</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>DGFT（ベリトランス）</th>
+                            <th>F-REGI（コンビニ）</th>
+                            <th>GMO（簡略）</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>主用途</td>
+                            <td>クレジットカード＋総合決済（コンビニ・ID決済など）</td>
+                            <td>コンビニ払い特化の収納代行</td>
+                            <td>コンビニ払い・Pay-easy・口座振替など幅広くカバー</td>
+                        </tr>
+                        <tr>
+                            <td>API方式</td>
+                            <td>RESTベース＋非同期通知（Webhook）</td>
+                            <td>REST/POST＋非同期通知（Webhook）＋日次CSV</td>
+                            <td>サービスによって SOAP/REST 混在、バッチ処理が多め</td>
+                        </tr>
+                        <tr>
+                            <td>ID体系</td>
+                            <td><code>orderId</code> を軸に決済を一元管理</td>
+                            <td><code>transactionId</code> や支払票番号と紐付く構造</td>
+                            <td><code>orderId</code> と <code>paymentId</code> の2階層管理が必要なケースが多い</td>
+                        </tr>
+                        <tr>
+                            <td>入金通知</td>
+                            <td>Webhook による即時通知が基本</td>
+                            <td>Webhook（即時）＋日次CSVによる補完</td>
+                            <td>日次バッチ中心でリアルタイム性は相対的に弱い</td>
+                        </tr>
+                        <tr>
+                            <td>CSV仕様</td>
+                            <td>構造が比較的シンプルで扱いやすい</td>
+                            <td>店舗コード・受付番号など項目が多く、やや複雑</td>
+                            <td>項目が多く冗長になりがちで、前処理が前提</td>
+                        </tr>
+                        <tr>
+                            <td>運用負荷（感覚値）</td>
+                            <td>低〜中（統一思想で管理しやすい）</td>
+                            <td>中（店舗別の例外処理が肝）</td>
+                            <td>中〜高（バッチ＆多項目CSVの扱いで工夫が必要）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </details>
+
+    <details id="details-sec3">
+        <summary>
+            <input type="checkbox" class="read-check" onclick="event.stopPropagation()">
+            <span id="sec3">3. 技術的な仕組みの違い</span>
+        </summary>
+        <div class="section-content">
+            <div class="section-label">Mechanism</div>
+            
+            <h3>3-1. DGFT（ベリトランス）</h3>
+            <h4>APIの特徴</h4>
+            <ul>
+                <li><strong>RESTベース</strong>で実装されており、HTTP＋JSON の一般的なパターンで扱いやすい。</li>
+                <li><code>orderId</code> をキーとして、同一注文に紐づく複数の決済イベント（成功／失敗／再決済など）を追跡しやすい。</li>
+                <li><strong>非同期通知（Webhook）</strong> が提供されており、決済完了やエラーがイベントドリブンに飛んでくる。</li>
+                <li>クレカ・コンビニ・ID決済など、決済手段が増えても基本思想は統一されていることが多い。</li>
+            </ul>
+            <h4>運用上のポイント</h4>
+            <ul>
+                <li><strong>ログ設計がシンプルにできる</strong>：<code>orderId</code> を軸にしておけば、クレカの失敗→再決済→成功の履歴が1本の線で追える。</li>
+                <li><strong>電子帳簿保存法対応の証跡設計にも向きやすい</strong>：イベントログ構造が素直なため、監査用のトレースもしやすい。</li>
+            </ul>
+
+            <hr>
+
+            <h3>3-2. F-REGI（コンビニ払い）</h3>
+            <h4>API・通知の特徴</h4>
+            <ul>
+                <li>コンビニ払いに特化し、<strong>支払票番号（バーコード番号等）</strong>を発行するフローが中心。</li>
+                <li>支払い完了は <strong>非同期のWebhook</strong> による通知が基本。</li>
+                <li>Webhookとは別に、<strong>日次の入金CSV</strong> で補完・照合を行う運用が前提となることが多い。</li>
+                <li>コンビニ店舗ごとに若干の仕様差（項目やタイミングの違い）が存在し、例外対応が必要になることがある。</li>
+            </ul>
+            <h4>運用上のポイント</h4>
+            <ul>
+                <li><strong>未入金の扱いが重要</strong>：
+                    <ul>
+                        <li>支払期限切れの自動キャンセル・状態更新</li>
+                        <li>ユーザーからの支払票再発行依頼への対応</li>
+                        <li>店舗ごとの通知タイミングの差による一時的な不一致</li>
+                    </ul>
+                </li>
+                <li><strong>CSV項目が多く複雑</strong>：
+                    <ul>
+                        <li>店舗コード・受付番号・加盟店IDなど、キー候補が複数存在。</li>
+                        <li>EmEditor や SQL での抽出・正規化テンプレートを用意しておくと運用が安定しやすい。</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <hr>
+
+            <h3>3-3. GMO（簡略）</h3>
+            <h4>特徴</h4>
+            <ul>
+                <li>コンビニ払い・Pay-easy・口座振替など、多数の決済手段をカバーする総合型。</li>
+                <li><strong>バッチ処理が多い構成</strong> があり、リアルタイム性より一括処理寄りの設計になっていることがある。</li>
+                <li>サービスによって API 仕様が揃っていない（SOAP/REST が混在する場合がある）。</li>
+            </ul>
+            <h4>運用上の注意点</h4>
+            <ul>
+                <li><strong>入金通知が日次バッチ中心</strong>になりがちで、リアルタイム反映が必要な業務とは相性を考える必要がある。</li>
+                <li><code>orderId</code> と <code>paymentId</code> のように、<strong>2階層のID管理</strong> を行うパターンがあり、設計時にキー設計を整理する必要がある。</li>
+                <li><strong>CSVの項目数が多く冗長</strong> なため、前処理・抽出ビュー・正規化テーブルの設計がほぼ必須。</li>
+            </ul>
+        </div>
+    </details>
+
+    <details id="details-sec4">
+        <summary>
+            <input type="checkbox" class="read-check" onclick="event.stopPropagation()">
+            <span id="sec4">4. 入金消込のしやすさ</span>
+        </summary>
+        <div class="section-content">
+            <div class="section-label">Reconciliation</div>
+            <h3>4-1. 比較表（入金消込観点）</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>DGFT</th>
+                            <th>F-REGI</th>
+                            <th>GMO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>キーの一意性</td>
+                            <td><code>orderId</code> 中心で高い一意性</td>
+                            <td>支払票番号＋<code>transactionId</code> などの組み合わせ</td>
+                            <td><code>orderId</code>＋<code>paymentId</code> の組み合わせ</td>
+                        </tr>
+                        <tr>
+                            <td>CSVの扱いやすさ</td>
+                            <td>◎：比較的シンプルでそのままSQL化しやすい</td>
+                            <td>△：項目が多く、前処理テンプレートが欲しい</td>
+                            <td>△：冗長なため、抽出ビュー設計が前提</td>
+                        </tr>
+                        <tr>
+                            <td>SQL化のしやすさ</td>
+                            <td>◎：正規化や集計ビューを作りやすい</td>
+                            <td>○：正規化すれば扱いやすいが初期設計はやや重め</td>
+                            <td>△：設計しないと「とりあえずCSV結合」になりやすい</td>
+                        </tr>
+                        <tr>
+                            <td>ログ設計のシンプルさ</td>
+                            <td>シンプル：<code>orderId</code> 軸で統一しやすい</td>
+                            <td>店舗別の例外考慮が必要</td>
+                            <td>イベント種別・サービス種別の分解設計が必要</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </details>
+
+    <details id="details-sec5">
+        <summary>
+            <input type="checkbox" class="read-check" onclick="event.stopPropagation()">
+            <span id="sec5">5. 入金消込・運用フロー</span>
+        </summary>
+        <div class="section-content">
+            <div class="section-label">Flow</div>
+            <h3>5-1. コンビニ払いの基本フロー（F-REGI想定）</h3>
+            <pre>
+① 支払票発行
+   - F-REGI に決済情報を送信
+   - 支払票番号・バーコード番号が発行される
+   - 自社DBに「未入金」として登録
+
+② Webhook 受信
+   - ユーザーがコンビニで支払い
+   - F-REGI から Webhook 通知（支払い完了）
+   - 対応する注文を「入金済」に更新
+
+③ 日次CSVで差分チェック
+   - F-REGI から日次の入金CSVを取得
+   - Webhookで取りこぼしたレコードがないか照合
+   - 不整合があればログ出力・手動確認フローへ
+
+④ 期限切れ処理
+   - 支払期限を過ぎた未入金データをバッチで抽出
+   - ステータスを「期限切れ」に更新
+   - 必要に応じてユーザーへの通知や注文取消
+
+⑤ 再発行対応
+   - ユーザーからの問い合わせで支払票再発行が必要な場合
+   - APIで再発行／新規支払票発行
+   - 旧支払票の扱い（無効化か、並行有効か）を運用ルールで明確にしておく</pre>
+        </div>
+    </details>
+
+    <details id="details-sec6">
+        <summary>
+            <input type="checkbox" class="read-check" onclick="event.stopPropagation()">
+            <span id="sec6">6. 推奨ログ構造（イベント駆動＋監査向け）</span>
+        </summary>
+        <div class="section-content">
+            <div class="section-label">Logging</div>
+            <h3>6-1. 決済イベントログの例</h3>
+            <p>どのサービスでも共通で扱えるよう、<strong>決済イベントを抽象化したテーブル</strong>を1つ用意しておくと便利です。</p>
+            <pre>
+event_id              : イベントを一意に識別するID
+order_id              : 自社側の注文ID（DGFTの orderId と対応）
+payment_method        : 'credit', 'convenience', 'id_payment', など
+provider              : 'DGFT', 'F-REGI', 'GMO' など
+event_type            : 'created' / 'paid' / 'expired' / 'failed' / 'refunded' など
+event_datetime        : プロバイダ基準 or 自社受信日時（両方あってもよい）
+raw_payload           : 受信したJSONやCSV行をそのまま保持（JSON文字列等）
+processed_flag        : 自社システム側で処理済かどうか（0/1）
+created_at            : ログ登録日時
+updated_at            : 最終更新日時</pre>
+            <p>ポイント：</p>
+            <ul>
+                <li><strong>raw_payload をそのまま保存</strong>しておくことで、「過去に何が来たか」を正確に再現できる。</li>
+                <li><strong>event_type を共通化</strong>しておくと、サービスをまたいだ横断集計がしやすい。</li>
+                <li><strong>provider・payment_method</strong>を分けておくことで、「F-REGI経由のコンビニ払い」などの切り出しが簡単になる。</li>
+            </ul>
+        </div>
+    </details>
+
+    <details id="details-sec7">
+        <summary>
+            <input type="checkbox" class="read-check" onclick="event.stopPropagation()">
+            <span id="sec7">7. メモ欄（自由記述）</span>
+        </summary>
+        <div class="section-content">
+            <div class="section-label">Notes</div>
+            <p>ここに、実運用で気づいたことや、各社との調整内容、障害時対応のノウハウなどを追記していく前提です。</p>
+            <ul>
+                <li>例）セブンイレブンだけ通知が遅れがちな時間帯がある、などの傾向メモ</li>
+                <li>例）DGFTの特定APIでタイムアウトが多い時間帯があれば、再試行戦略の調整メモ</li>
+                <li>例）GMO側CSVフォーマット変更時の影響範囲整理メモ</li>
+            </ul>
+            <p class="small-note">
+                このドキュメントはあくまで運用者向けの内部メモ想定です。外部共有用には不要な生ログ項目等を削る版を別途作ると安心です。
+            </p>
+        </div>
+    </details>
+
+</div>
+
+<div class="bottom-nav">
+    <button onclick="expandAll(true)">一括展開</button>
+    <button onclick="expandAll(false)">一括閉鎖</button>
+    <select onchange="handleNav(this.value)">
+        <option value="">章ジャンプ</option>
+        <option value="sec1">1. ポイント</option>
+        <option value="sec2">2. 全体比較</option>
+        <option value="sec3">3. 技術的仕組み</option>
+        <option value="sec4">4. 入金消込</option>
+        <option value="sec5">5. 運用フロー</option>
+        <option value="sec6">6. ログ構造</option>
+        <option value="sec7">7. メモ欄</option>
+    </select>
+</div>
+
+<script>
+    function toggleTheme() {
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        body.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+    }
+
+    function expandAll(isOpen) {
+        document.querySelectorAll('details').forEach(d => d.open = isOpen);
+    }
+
+    function handleNav(id) {
+        if (!id) return;
+        const target = document.getElementById('details-' + id);
+        if (target) {
+            target.open = true;
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+</script>
+
+</body>
+</html>
+</body>
+</html>
