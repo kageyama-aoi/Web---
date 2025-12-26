@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>資料一覧ポータル (Web---)</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+      line-height: 1.7;
+      margin: 0;
+      background-color: #f4f7f9;
+      color: #333;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem 2rem 2rem;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    h1 {
+      border-bottom: 2px solid #eef2f5;
+      padding-bottom: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 1.25rem;
+      color: #555;
+      border-left: 4px solid #ccc;
+      padding-left: 0.5rem;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin-bottom: 1rem;
+      border: 1px solid #eef2f5;
+      border-left-width: 5px;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      transition: box-shadow 0.2s ease;
+      background-color: #fff;
+    }
+    li:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    /* Categories mapping to directories */
+    .cat-knowledge { border-left-color: #3b82f6; } /* Blue */
+    .cat-infra { border-left-color: #ef4444; } /* Red */
+    .cat-tools { border-left-color: #f59e0b; } /* Amber */
+    .cat-design { border-left-color: #8b5cf6; } /* Violet */
+    .cat-localstack { border-left-color: #10b981; } /* Emerald */
+
+    a {
+      text-decoration: none;
+      color: #007bff;
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: block;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .file-path {
+      font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+      color: #888;
+      font-size: 0.8rem;
+      display: block;
+      margin-top: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>資料一覧ポータル (Web---)</h1>
+    <p>プロジェクト内の全資料・ツールへのリンク集です。</p>
+
+    <h2>📂 01_Knowledge (学習・チートシート)</h2>
+    <ul>
+      <li class="cat-knowledge">
+        <a href="../01_Knowledge/20250815_AIコーディングロードマップ.html" target="_blank">AIコーディングロードマップ</a>
+        <span class="file-path">01_Knowledge/20250815_AIコーディングロードマップ.html</span>
+      </li>
+      <li class="cat-knowledge">
+        <a href="../01_Knowledge/20250822_HTML_CSS_JS学習まとめ.html" target="_blank">HTML_CSS_JS学習まとめ</a>
+        <span class="file-path">01_Knowledge/20250822_HTML_CSS_JS学習まとめ.html</span>
+      </li>
+      <li class="cat-knowledge">
+        <a href="../01_Knowledge/20250905_正規表現チートシート.html" target="_blank">正規表現チートシート</a>
+        <span class="file-path">01_Knowledge/20250905_正規表現チートシート.html</span>
+      </li>
+      <li class="cat-knowledge">
+        <a href="../01_Knowledge/20250916_MySQL型からJSONプリミティブ変換.html" target="_blank">MySQL型からJSONプリミティブ変換</a>
+        <span class="file-path">01_Knowledge/20250916_MySQL型からJSONプリミティブ変換.html</span>
+      </li>
+      <li class="cat-knowledge">
+        <a href="../01_Knowledge/20250916_snake_caseからcamelCase変換.html" target="_blank">snake_caseからcamelCase変換</a>
+        <span class="file-path">01_Knowledge/20250916_snake_caseからcamelCase変換.html</span>
+      </li>
+    </ul>
+
+    <h2>📂 02_Infrastructure (環境構築・サーバー)</h2>
+    <ul>
+      <li class="cat-infra">
+        <a href="../02_Infrastructure/20250820_PHPMailer_DKIM不一致問題レポート.html" target="_blank">PHPMailer_DKIM不一致問題レポート</a>
+        <span class="file-path">02_Infrastructure/20250820_PHPMailer_DKIM不一致問題レポート.html</span>
+      </li>
+      <li class="cat-infra">
+        <a href="../02_Infrastructure/20250829_SPF_DKIM_DMARC設定図解.html" target="_blank">SPF_DKIM_DMARC設定図解</a>
+        <span class="file-path">02_Infrastructure/20250829_SPF_DKIM_DMARC設定図解.html</span>
+      </li>
+      <li class="cat-infra">
+        <a href="../02_Infrastructure/20250829_WSL2環境構築まとめ_トラブルシュート集.html" target="_blank">WSL2環境構築まとめ_トラブルシュート集</a>
+        <span class="file-path">02_Infrastructure/20250829_WSL2環境構築まとめ_トラブルシュート集.html</span>
+      </li>
+    </ul>
+
+    <h2>📂 03_Tools (ツール・コンポーネント)</h2>
+    <ul>
+      <li class="cat-tools">
+        <a href="../03_Tools/20250820_技術スタック比較ツール.html" target="_blank">技術スタック比較ツール</a>
+        <span class="file-path">03_Tools/20250820_技術スタック比較ツール.html</span>
+      </li>
+      <li class="cat-tools">
+        <a href="../03_Tools/20250823_円形プログレスバーコンポーネント.html" target="_blank">円形プログレスバーコンポーネント</a>
+        <span class="file-path">03_Tools/20250823_円形プログレスバーコンポーネント.html</span>
+      </li>
+      <li class="cat-tools">
+        <a href="../03_Tools/20251221_HTMLメモ保存ツール_v1.0.2.html" target="_blank">HTMLメモ保存ツール v1.0.2</a>
+        <span class="file-path">03_Tools/20251221_HTMLメモ保存ツール_v1.0.2.html</span>
+      </li>
+      <li class="cat-tools">
+        <a href="../03_Tools/20251221_v3.HTMLメモ保存ツール.html" target="_blank">HTMLメモ保存ツール v3</a>
+        <span class="file-path">03_Tools/20251221_v3.HTMLメモ保存ツール.html</span>
+      </li>
+    </ul>
+
+    <h2>📂 04_Design (デザイン・プロンプト)</h2>
+    <ul>
+      <li class="cat-design">
+        <a href="../04_Design/20250820_Webアプリ用カラーパレット集.html" target="_blank">Webアプリ用カラーパレット集</a>
+        <span class="file-path">04_Design/20250820_Webアプリ用カラーパレット集.html</span>
+      </li>
+      <li class="cat-design">
+        <a href="../04_Design/20250820_比較サイト用プロンプト集.html" target="_blank">比較サイト用プロンプト集</a>
+        <span class="file-path">04_Design/20250820_比較サイト用プロンプト集.html</span>
+      </li>
+    </ul>
+
+    <h2>📂 My Local Stack (Docs)</h2>
+    <ul>
+      <li class="cat-localstack">
+        <a href="../my-local-stack/docs/20250825_Docker_PHP_MySQLローカル開発ガイド.html" target="_blank">Docker_PHP_MySQLローカル開発ガイド</a>
+        <span class="file-path">my-local-stack/docs/20250825_Docker_PHP_MySQLローカル開発ガイド.html</span>
+      </li>
+      <li class="cat-localstack">
+        <a href="../my-local-stack/docs/20250825_VPS_Docker_MySQL実践ハンドブック.html" target="_blank">VPS_Docker_MySQL実践ハンドブック</a>
+        <span class="file-path">my-local-stack/docs/20250825_VPS_Docker_MySQL実践ハンドブック.html</span>
+      </li>
+      <li class="cat-localstack">
+        <a href="../my-local-stack/docs/20250825_学習ログ_phpMyAdmin設定とパーミッション問題.html" target="_blank">学習ログ_phpMyAdmin設定とパーミッション問題</a>
+        <span class="file-path">my-local-stack/docs/20250825_学習ログ_phpMyAdmin設定とパーミッション問題.html</span>
+      </li>
+      <li class="cat-localstack">
+        <a href="../my-local-stack/docs/20250826_VPS_GitHubActions自動デプロイハンドブック.html" target="_blank">VPS_GitHubActions自動デプロイハンドブック</a>
+        <span class="file-path">my-local-stack/docs/20250826_VPS_GitHubActions自動デプロイハンドブック.html</span>
+      </li>
+      <li class="cat-localstack">
+        <a href="../my-local-stack/docs/20250826_Webアプリ公開本番環境チェックリスト.html" target="_blank">Webアプリ公開本番環境チェックリスト</a>
+        <span class="file-path">my-local-stack/docs/20250826_Webアプリ公開本番環境チェックリスト.html</span>
+      </li>
+      <li class="cat-localstack">
+        <a href="../my-local-stack/docs/20250826_スプレッドシートリンク集.html" target="_blank">スプレッドシートリンク集</a>
+        <span class="file-path">my-local-stack/docs/20250826_スプレッドシートリンク集.html</span>
+      </li>
+    </ul>
+
+  </div>
+</body>
+</html>
