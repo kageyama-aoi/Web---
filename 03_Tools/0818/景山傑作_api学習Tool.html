@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>API Learning Lab – 1-file Web App</title>
+<style>
+  :root{--bg:#0b1020;--panel:#121a33;--muted:#8aa0c7;--text:#e9f1ff;--accent:#6bc1ff;--ok:#39d98a;--bad:#ff6b6b}
+  *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#0b1020,#0b1020 40%,#0e1530);color:var(--text);font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  header{padding:16px 20px;border-bottom:1px solid #243055;background:#0c1533;position:sticky;top:0;z-index:2}
+  header h1{margin:0;font-size:18px;letter-spacing:.2px}
+  header small{color:var(--muted)}
+  .wrap{padding:16px;display:grid;grid-template-columns: 360px 1fr;gap:16px}
+  .card{background:var(--panel);border:1px solid #233052;border-radius:14px;box-shadow:0 3px 20px rgba(0,0,0,.25)}
+  .card header{background:transparent;border:0;padding:12px 14px}
+  .card header h2{margin:0;font-size:14px;color:#cfe1ff}
+  .body{padding:12px 14px}
+  label{display:block;margin:.4rem 0 .2rem;color:#c8d7fb}
+  input,select,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #304066;background:#0e1731;color:var(--text);outline:none}
+  input::placeholder,textarea::placeholder{color:#6f85b0}
+  .row{display:flex;gap:8px;align-items:center}
+  .row > *{flex:1}
+  .kv-row{display:grid;grid-template-columns: 1fr 1fr auto;gap:6px;align-items:center;margin-bottom:6px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;border:1px solid #2a3a63;background:#0f1a3b;color:var(--text);cursor:pointer}
+  .btn:hover{background:#12204a}
+  .btn.primary{background:linear-gradient(180deg,#1e81ff,#1062d6);border-color:#0f5dd0}
+  .btn.warn{background:#2a1620;border-color:#5a2038}
+  .btn:disabled{opacity:.6;cursor:not-allowed}
+  .chip{font:12px/1 system-ui;padding:6px 8px;border-radius:999px;background:#0f1d3d;border:1px solid #2b3a69;color:#cde1ff;display:inline-flex;gap:6px;align-items:center}
+  .status{display:flex;gap:8px;flex-wrap:wrap}
+  pre{white-space:pre-wrap;background:#0c1430;border:1px solid #2a3963;border-radius:12px;padding:12px;overflow:auto}
+  code{font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .tabs{display:flex;gap:8px;border-bottom:1px solid #293557;padding:0 12px}
+  .tab{padding:10px 12px;cursor:pointer;border:1px solid transparent;border-radius:10px 10px 0 0}
+  .tab.active{border-color:#2b3a69;border-bottom-color:transparent;background:#0e1733}
+  .response{padding:12px}
+  .hint{color:#9ab1de;font-size:12px}
+  .pill-ok{color:var(--ok)} .pill-bad{color:var(--bad)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .footer{padding:10px 16px;color:#93a7d6}
+  .kbd{border:1px solid #405081;background:#0c1635;border-radius:6px;padding:2px 6px;font:12px ui-monospace}
+  .small{font-size:12px;color:#9ab1de}
+  .right{margin-left:auto}
+  /* JSON Viewer Styles */
+  .json-viewer { font-family: ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size: 13px; line-height: 1.6; }
+  .json-viewer .item { padding-left: 2em; position: relative; }
+  .json-viewer .toggler { cursor: pointer; display: inline-block; width: 1.5em; text-align: center; vertical-align: middle; user-select: none; position: absolute; left: 0; }
+  .json-viewer .toggler::before { content: '▼'; display: inline-block; transition: transform 0.1s; font-size: 0.7em; }
+  .json-viewer .item.collapsed > .toggler { transform: rotate(-90deg); }
+  .json-viewer .item.collapsed > .value { display: none; }
+  .json-viewer .item.collapsed > .ellipsis { display: inline; }
+  .json-viewer .ellipsis { color: var(--muted); margin-left: 0.5em; }
+  .json-viewer .key { color: #8ab4f8; } /* Light blue for keys */
+  .json-viewer .string { color: #a5d6a7; } /* Green for strings */
+  .json-viewer .number { color: #fdd835; } /* Yellow for numbers */
+  .json-viewer .boolean { color: #ffab91; } /* Orange for booleans */
+  .json-viewer .null { color: var(--muted); }
+  .json-viewer .brace, .json-viewer .bracket { color: var(--text); }
+  .json-viewer a { color: inherit; text-decoration: underline; }
+  /* Table Styles */
+  .json-viewer .table-container { overflow-x: auto; }
+  .json-viewer table { border-collapse: collapse; width: 100%; margin-top: 8px; margin-bottom: 8px; }
+  .json-viewer th, .json-viewer td { border: 1px solid #2a3963; padding: 8px 10px; text-align: left; vertical-align: top; }
+  .json-viewer th { background-color: #101c3c; font-weight: bold; }
+  .json-viewer tr:nth-child(even) { background-color: #0f1a3b; }
+
+  /* Schema Hint Styles */
+  .schema-info { font-size: 13px; }
+  .schema-info h4 { font-size: 14px; color: #cfe1ff; margin: 12px 0 6px; border-bottom: 1px solid #233052; padding-bottom: 4px; }
+  .schema-info p { margin: 0 0 10px; }
+  .schema-info code { background: #0c1430; padding: 2px 4px; border-radius: 4px; }
+  .schema-info a { color: var(--accent); }
+  .param-hint { font-size: 12px; color: var(--muted); margin-top: -4px; margin-bottom: 6px; padding-left: 8px; }
+</style>
+</head>
+<body>
+  <header>
+    <h1>API Learning Lab <small>— リクエストの中身とレスポンスを“見て学ぶ”最小アプリ</small></h1>
+  </header>
+  <div class="wrap">
+    <!-- Left: Builder / Presets -->
+    <section class="card">
+      <header><h2>① リクエストを作る</h2></header>
+      <div class="body">
+        <label>サンプルAPI（選ぶだけで学習できます）</label>
+        <select id="preset"></select>
+
+        <div class="row" style="margin-top:8px">
+          <select id="method" style="max-width:120px">
+            <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+          </select>
+          <input id="url" placeholder="https://example.com/api" />
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="row">
+            <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">クエリパラメータ</h3>
+            <button class="btn" id="addParam">＋ 追加</button>
+          </div>
+          <div id="params"></div>
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="row">
+            <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">HTTPヘッダー</h3>
+            <button class="btn" id="addHeader">＋ 追加</button>
+          </div>
+          <div id="headers"></div>
+        </div>
+
+        <div id="bodyWrap" style="margin-top:10px;display:none">
+          <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">リクエストボディ（JSON）</h3>
+          <textarea id="body" rows="8" placeholder='{"title":"foo"}'></textarea>
+        </div>
+
+        <div style="margin-top:10px" class="grid-2">
+          <button class="btn primary" id="send">▶ 送信（fetch）</button>
+          <button class="btn warn" id="cancel">■ 中止（Abort）</button>
+        </div>
+
+        <div style="margin-top:10px">
+          <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">cURL（同等コマンドの学習）</h3>
+          <pre id="curl"><code># ここに cURL が表示されます</code></pre>
+          <div class="small">Tips: <span class="kbd">Shift</span> + <span class="kbd">Enter</span> で cURL 全文コピー</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Results / Inspector -->
+    <section class="card" style="display:flex;flex-direction:column;min-height:60vh">
+      <header><h2>② 結果を観察する（Status / Header / Body / サイズ / 所要時間）</h2></header>
+      <div class="body" style="border-bottom:1px solid #25345d">
+        <div class="status">
+          <span class="chip">Status: <b id="st">—</b></span>
+          <span class="chip">Time: <b id="tm">—</b></span>
+          <span class="chip">Size: <b id="sz">—</b></span>
+          <span class="chip">Type: <b id="ct">—</b></span>
+          <span class="chip right hint">CORSでブロックされた場合は、サーバ設定 or 代理サーバが必要です</span>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" data-tab="json">JSON</div>
+        <div class="tab" data-tab="text">Raw Text</div>
+        <div class="tab" data-tab="headers">Response Headers</div>
+        <div class="tab" data-tab="request">Request Preview</div>
+      </div>
+      <div class="response" id="panel-json"><div id="json-viewer" class="json-viewer"><code>ここに JSON が表示されます</code></div></div>
+      <div class="response" id="panel-text" style="display:none"><pre id="text"><code>ここにテキストが表示されます</code></pre></div>
+      <div class="response" id="panel-headers" style="display:none"><pre id="respHeaders"><code>ここにレスポンスヘッダが表示されます</code></pre></div>
+      <div class="response" id="panel-request" style="display:none"><pre id="req"><code>ここに送信内容（method/url/headers/body）が表示されます</code></pre></div>
+      <div class="footer small">学習ポイント：HTTPメソッド／URL＋クエリ／ヘッダ／ボディの役割、CORS、JSON整形、cURL変換、AbortControllerによる中断、Content-Typeの扱い</div>
+    </section>
+
+    <div id="schema-info-container" class="card" style="display:none; grid-column: 1 / 2;">
+      <header><h2>API仕様のヒント</h2></header>
+      <div class="body" id="schema-info"></div>
+    </div>
+  </div>
+
+<section class="card" style="margin:0 16px 16px">
+  <header><h2>③ 使い方ガイド（困ったらここから）</h2></header>
+  <div class="body">
+    <details open>
+      <summary class="chip" style="cursor:pointer">📌 クイックスタート</summary>
+      <ol>
+        <li>左の「サンプルAPI」を選ぶ（まずは <b>Frankfurter（為替）</b>）。</li>
+        <li>必要なら <b>クエリパラメータ</b>を追加（例: <code>from=USD</code>, <code>to=JPY</code>）。</li>
+        <li><b>▶ 送信</b>を押す → 右パネルで <b>Status / Time / Size / Type</b> を確認。</li>
+        <li>タブで <b>JSON / Raw / Headers / Request</b> を切替え、差分で学ぶ。</li>
+        <li><b>cURL</b>をコピー（<span class="kbd">Shift</span>+<span class="kbd">Enter</span>）して、CLIでも再現。</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary class="chip" style="cursor:pointer">🧪 ハンズオン課題（5分ドリル）</summary>
+      <ol>
+        <li><b>HTTPメソッドの差</b>：<code>JSONPlaceholder</code> を <b>GET→POST</b>に切替え、Bodyに<code>{"title":"x"}</code>を入れて返り値の違いを観察。</li>
+        <li><b>クエリの影響</b>：<code>Open-Meteo</code> の <code>latitude/longitude</code> を東京→大阪に変え、値の差とレスポンスサイズを比較。</li>
+        <li><b>Content-Type</b>：<code>Content-Type</code> を外して送信→サーバが受理するか？ヘッダを戻すと何が変わるか。</li>
+        <li><b>エラー観察</b>：URLをわざと間違える→<b>Status</b> と <b>JSONパネルのエラー</b> を読む。</li>
+        <li><b>中断の学習</b>：重いAPIを投げた直後に<b>■ 中止</b>→<code>AbortError</code> を確認。</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary class="chip" style="cursor:pointer">🛠 よくある詰まり & トラブルシュート</summary>
+      <ul>
+        <li><b>CORSでブロック</b>：ブラウザから直接叩けないAPIは普通にあります。<br/>対処：① サーバ側で <code>Access-Control-Allow-Origin</code> を許可、② 学習目的なら <b>同一オリジンの簡易プロキシ</b>を挟む（下記サンプル）。</li>
+        <li><b>JSONが壊れる</b>：ボディに末尾カンマ/単一引用符。→ <b>JSON.stringify</b> を通す、または <b>エディタでJSON整形</b>。</li>
+        <li><b>401/403</b>：キーやトークン未設定。→ <b>Authorization</b> ヘッダ、もしくは <code>?apikey=</code> を確認。</li>
+        <li><b>429（レート制限）</b>：一定回数でブロック。→ レスポンスヘッダの <code>Retry-After</code> を読んで待つ／指数バックオフ。</li>
+        <li><b>400/422（バリデーション）</b>：クエリ名のスペル・型（文字列/数値/配列）見直し。</li>
+      </ul>
+      <p class="small">※ 本ツールは学習用。業務利用では秘密情報（APIキー等）をフロントに直接置かないでください（下記セキュリティ参照）。</p>
+    </details>
+
+    <details>
+      <summary class="chip" style="cursor:pointer">🔒 セキュリティ & APIキーの扱い</summary>
+      <ul>
+        <li><b>原則：キーはサーバ側で保持</b>。フロントからは自前API（サーバ）にリクエスト→サーバから外部API。</li>
+        <li>学習時にキーを試すなら：<b>.env</b> で管理＋ローカル開発 or 一時的な <b>無料枠</b> キー。</li>
+        <li>公開時：<b>参照専用キー/スコープ制限</b>・<b>レート制限</b>・<b>ドメイン制限</b>を設定。</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary class="chip" style="cursor:pointer">🌐 簡易プロキシ例（CORS回避／キー隠し）</summary>
+      <pre><code>// Cloudflare Workers（学習用最小）
+export default {
+  async fetch(req) {
+    const u = new URL(req.url);
+    const target = u.searchParams.get('url');
+    if(!target) return new Response('missing url', {status:400});
+    const r = await fetch(target, { headers: { 'Authorization': 'Bearer YOUR_API_KEY' }});
+    return new Response(r.body, { headers: { 'content-type': r.headers.get('content-type') || 'application/json', 'Access-Control-Allow-Origin': '*' }});
+  }
+}
+// 使い方: https://your-worker.workers.dev/?url=https%3A%2F%2Fapi.example.com%2Fv1%2Fdata</code></pre>
+      <p class="small">※ 実運用では <b>許可リスト</b>・<b>署名</b>・<b>監査ログ</b> を必ず入れてください。</p>
+    </details>
+
+    <details>
+      <summary class="chip" style="cursor:pointer">🧭 観察ポイント（プロの視点）</summary>
+      <ul>
+        <li><b>安定性</b>：<code>Status</code>／<code>Time</code> のブレ。失敗時の <b>エラーメッセージの質</b>。</li>
+        <li><b>コスト</b>：レスポンス <b>Size</b> の削減（不要フィールドは <code>fields=</code> で限定）。</li>
+        <li><b>互換性</b>：<code>content-type</code> の違い（<code>application/json</code> / <code>text/plain</code> / <code>image/*</code>）。</li>
+        <li><b>再現性</b>：<b>cURL</b> 比較、保存した <b>クエリ・ヘッダ</b> の再利用。</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary class="chip" style="cursor:pointer">📚 さらに学ぶ：RESTの基本とリクエスト設計</summary>
+      <ol>
+        <li><b>リソース指向</b>：URLは「名詞」、操作はHTTPメソッド（GET/POST/PUT/PATCH/DELETE）。</li>
+        <li><b>クエリ設計</b>：<code>limit</code>/<code>offset</code>/<code>sort</code>/<code>fields</code> で最小限のデータ取得。</li>
+        <li><b>エラー設計</b>：機械可読な <code>code</code>/<code>message</code>/<code>details</code> を返すAPIは使いやすい。</li>
+      </ol>
+    </details>
+
+    <details>
+      <summary class="chip" style="cursor:pointer">📝 宿題（実務寄り）</summary>
+      <ol>
+        <li>為替＋祝日APIを組み合わせ：<b>営業日</b>のレート一覧を取得（JPの祝日を除外）。</li>
+        <li>位置情報APIで店舗間<b>距離マトリクス</b>を作成し、最短移動順を仮設計。</li>
+        <li>レート制限を再現：<b>429</b> を受けたら <b>Retry-After</b> を読みリトライ。</li>
+      </ol>
+    </details>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  const $ = (s) => document.querySelector(s);
+  const $$ = (s) => document.querySelectorAll(s);
+  const presetEl = $('#preset');
+  const methodEl = $('#method');
+  const urlEl = $('#url');
+  const paramsEl = $('#params');
+  const headersEl = $('#headers');
+  const bodyWrap = $('#bodyWrap');
+  const bodyEl = $('#body');
+  const sendBtn = $('#send');
+  const cancelBtn = $('#cancel');
+  const curlEl = $('#curl code');
+  const stEl = $('#st');
+  const tmEl = $('#tm');
+  const szEl = $('#sz');
+  const ctEl = $('#ct');
+  const jsonViewerEl = $('#json-viewer');
+  const textEl = $('#text code');
+  const respHeadersEl = $('#respHeaders code');
+  const reqEl = $('#req code');
+  const schemaInfoContainer = $('#schema-info-container');
+  const schemaInfoEl = $('#schema-info');
+  let controller = null;
+
+  const presets = [];
+
+  function renderSchemaInfo(schema) {
+    if (!schema) {
+      schemaInfoContainer.style.display = 'none';
+      return;
+    }
+
+    let html = '';
+    if (schema.docs) {
+      html += `<p><a href="${schema.docs}" target="_blank">公式ドキュメントはこちら ↗</a></p>`;
+    }
+
+    const renderSection = (title, params) => {
+      if (!params || Object.keys(params).length === 0) return '';
+      let sectionHtml = `<h4>${title}</h4>`;
+      sectionHtml += '<ul>';
+      for (const [key, desc] of Object.entries(params)) {
+        sectionHtml += `<li><code>${key}</code>: ${desc}</li>`;
+      }
+      sectionHtml += '</ul>';
+      return sectionHtml;
+    };
+
+    html += renderSection('URLパスパラメータ', schema.url_params);
+    html += renderSection('クエリパラメータ', schema.params);
+    html += renderSection('リクエストボディ (JSON)', schema.body);
+
+    schemaInfoEl.innerHTML = html;
+    schemaInfoContainer.style.display = html.trim() ? '' : 'none';
+  }
+
+  function loadPresets(){
+    presetEl.innerHTML = '';
+    presets.forEach((p,i)=>{
+      const o=document.createElement('option');o.value=i;o.textContent=p.name;presetEl.appendChild(o);
+    });
+    presetEl.selectedIndex=0;
+    applyPreset(0);
+  }
+
+  function applyPreset(idx){
+    const p = presets[idx];
+    methodEl.value = p.method;
+    urlEl.value = p.url;
+    renderKV(paramsEl, p.params || [], p.schema?.params);
+    renderKV(headersEl, p.headers || [], p.schema?.headers);
+    bodyEl.value = p.body || '';
+    bodyWrap.style.display = ['POST','PUT','PATCH','DELETE'].includes(p.method) ? '' : 'none';
+    renderSchemaInfo(p.schema);
+    updateCurl();
+  }
+
+  function renderKV(container, data, schema) {
+    container.innerHTML='';
+    const items = (data && data.length > 0) ? data : [['','']];
+    items.forEach(([k,v])=> addKV(container, k, v, schema));
+  }
+
+  function addKV(container, k='', v='', schema){
+    const row=document.createElement('div');
+    const inputRow = document.createElement('div');
+    inputRow.className='kv-row';
+    const kEl=document.createElement('input');kEl.placeholder='key';kEl.value=k;
+    const vEl=document.createElement('input');vEl.placeholder='value';vEl.value=v;
+    const rm=document.createElement('button');rm.className='btn';rm.textContent='－';
+    rm.onclick=()=>{row.remove();updateCurl()};
+    
+    const hint = document.createElement('div');
+    hint.className = 'param-hint';
+
+    const updateHint = () => {
+      const key = kEl.value;
+      if (schema && schema[key]) {
+        hint.textContent = schema[key];
+      } else {
+        hint.textContent = '';
+      }
+    };
+
+    kEl.addEventListener('input', () => { updateCurl(); updateHint(); });
+    vEl.addEventListener('input', updateCurl);
+
+    inputRow.append(kEl,vEl,rm);
+    row.appendChild(inputRow);
+    row.appendChild(hint);
+    container.appendChild(row);
+    updateHint();
+  }
+
+  $('#addParam').onclick=()=>addKV(paramsEl, '', '', presets[presetEl.value]?.schema?.params);
+  $('#addHeader').onclick=()=>addKV(headersEl, '', '', presets[presetEl.value]?.schema?.headers);
+
+  methodEl.onchange=()=>{bodyWrap.style.display=['POST','PUT','PATCH','DELETE'].includes(methodEl.value)?'':'none';updateCurl()};
+  urlEl.oninput=updateCurl; bodyEl.oninput=updateCurl;
+  presetEl.onchange=(e)=>applyPreset(+e.target.value);
+
+  function collectKV(container){
+    const list=[]; container.querySelectorAll('.kv-row').forEach(row=>{
+      const [kEl,vEl]=row.querySelectorAll('input');
+      if(kEl.value) list.push([kEl.value,vEl.value]);
+    }); return list;
+  }
+
+  function buildURL(){
+    const base = urlEl.value.trim();
+    const ps = collectKV(paramsEl);
+    if (!base) return '';
+    try {
+      const u = new URL(base);
+      ps.forEach(([k,v])=>{ if(k) u.searchParams.set(k,v) });
+      return u.toString();
+    } catch(e) {
+      return base;
+    }
+  }
+
+  function buildHeaders(){
+    const hs = collectKV(headersEl);
+    const h = {}; hs.forEach(([k,v])=>{ if(k) h[k]=v });
+    if(['POST','PUT','PATCH','DELETE'].includes(methodEl.value)){
+      try{ if(bodyEl.value && !h['Content-Type']) h['Content-Type']='application/json' }catch(e){}
+    }
+    return h;
+  }
+
+  function updateCurl(){
+    const method = methodEl.value;
+    const full = buildURL();
+    const headers = buildHeaders();
+    const hs = Object.entries(headers).map(([k,v])=>`-H ${q(k+': '+v)}`).join(' ');
+    const body = (['POST','PUT','PATCH','DELETE'].includes(method) && bodyEl.value) ? `--data ${q(bodyEl.value)}` : '';
+    const cmd = `curl -X ${method} ${hs} ${body} ${q(full)}`.replace(/\s+/g,' ').trim();
+    curlEl.textContent = cmd;
+    reqEl.textContent = JSON.stringify({method,url:full,headers,body:bodyEl.value||null}, null, 2);
+  }
+
+  function q(s){return `'`+String(s).replaceAll(`'`,`'"'"'`)+`'`}
+
+  function prettyBytes(n){
+    if(n==null||isNaN(n)) return '—';
+    const u=['B','KB','MB','GB'];
+    let i=0;while(n>=1024&&i<u.length-1){n/=1024;i++}return n.toFixed(2)+' '+u[i];
+  }
+
+  async function send(){
+    sendBtn.disabled=true; stEl.textContent='...';
+    controller = new AbortController(); const signal = controller.signal;
+    const method=methodEl.value; const url=buildURL(); const headers=buildHeaders();
+    if (!url) {
+      stEl.innerHTML = `<span class="pill-bad">Error</span>`;
+      renderJsonViewer(jsonViewerEl, {error: 'URLが空です'});
+      sendBtn.disabled = false;
+      return;
+    }
+    let body=null; if(['POST','PUT','PATCH','DELETE'].includes(method) && bodyEl.value){
+      try{ body = JSON.stringify(JSON.parse(bodyEl.value)); }catch(e){ body = bodyEl.value }
+    }
+    const t0 = performance.now(); let size=null; let type='—';
+    try{
+      const res = await fetch(url,{method,headers,body,signal});
+      const t1 = performance.now();
+      stEl.innerHTML = `${res.status} ${res.ok?'<span class="pill-ok">OK</span>':'<span class="pill-bad">NG</span>'}`;
+      tmEl.textContent = (t1 - t0).toFixed(1)+' ms';
+      type = res.headers.get('content-type')||'—'; ctEl.textContent=type;
+      const cl = res.headers.get('content-length');
+      let text = await res.text();
+      size = cl ? parseInt(cl,10) : (new TextEncoder().encode(text)).length;
+      szEl.textContent = prettyBytes(size);
+      respHeadersEl.textContent = [...res.headers.entries()].map(([k,v])=>k+': '+v).join('\n')||'(no headers)';
+      try {
+        const jsonData = JSON.parse(text);
+        renderJsonViewer(jsonViewerEl, jsonData);
+        setTab('json');
+      } catch(e) {
+        textEl.textContent = text;
+        setTab('text');
+      }
+    }catch(err){
+      tmEl.textContent = '—'; ctEl.textContent='—';
+      szEl.textContent = '—'; stEl.innerHTML = `<span class="pill-bad">Error</span>`;
+      const msg = (err.name==='AbortError')? '中止されました（AbortController）' : (err.message||String(err));
+      renderJsonViewer(jsonViewerEl, {error: msg, hint: 'CORS が原因の場合は同一オリジンのプロキシを挟むか、サーバ側で Access-Control-Allow-Origin を設定してください。'});
+      setTab('json');
+    } finally{
+      sendBtn.disabled=false; controller=null;
+    }
+  }
+
+  function abort(){ if(controller) controller.abort() }
+
+  function setTab(name){
+    $$('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+    ['json','text','headers','request'].forEach(id=>{
+      $('#panel-'+id).style.display = (id===name)?'block':'none';
+    });
+  }
+
+  $$('.tab').forEach(t=> t.addEventListener('click',()=> setTab(t.dataset.tab)) );
+  $('#send').onclick=send; $('#cancel').onclick=abort;
+
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter' && e.shiftKey){
+      e.preventDefault();
+      const r=document.createRange(); r.selectNodeContents(curlEl);
+      const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      try{ document.execCommand('copy'); showToast('cURL をコピーしました') }catch(_){ }
+      sel.removeAllRanges();
+    }
+  });
+
+  function showToast(msg){
+    const d=document.createElement('div');
+    d.textContent=msg; d.style.position='fixed'; d.style.bottom='16px'; d.style.right='16px';
+    d.style.background='#0c1b3d'; d.style.border='1px solid #2b3a69'; d.style.borderRadius='10px';
+    d.style.padding='10px 12px'; d.style.boxShadow='0 6px 20px rgba(0,0,0,.35)'; d.style.zIndex=5;
+    document.body.appendChild(d); setTimeout(()=>d.remove(),1500);
+  }
+
+  
+
+  // JSON Viewer Functions
+  function renderJsonViewer(container, data) {
+    container.innerHTML = '';
+    const tree = buildTreeElement(data, false, 0);
+    container.appendChild(tree);
+  }
+
+  function isTableau(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) return false;
+    const firstEl = arr[0];
+    if (typeof firstEl !== 'object' || firstEl === null || Array.isArray(firstEl)) return false;
+    const firstKeys = Object.keys(firstEl);
+    if (firstKeys.length === 0) return false;
+    return arr.every(item => {
+      if (typeof item !== 'object' || item === null || Array.isArray(item)) return false;
+      const keys = Object.keys(item);
+      if (keys.length !== firstKeys.length) return false;
+      return firstKeys.every(key => keys.includes(key));
+    });
+  }
+
+  function createTableauResult(arr, depth) {
+    const mainContainer = document.createElement('div');
+    const tableContainer = document.createElement('div');
+    tableContainer.className = 'table-container';
+    const table = document.createElement('table');
+    const thead = document.createElement('thead');
+    const tbody = document.createElement('tbody');
+    const headers = Object.keys(arr[0]);
+
+    const headerRow = document.createElement('tr');
+    headers.forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header;
+      headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+
+    arr.forEach(obj => {
+      const row = document.createElement('tr');
+      headers.forEach(header => {
+        const td = document.createElement('td');
+        td.appendChild(buildTreeElement(obj[header], true, depth + 1));
+        row.appendChild(td);
+      });
+      tbody.appendChild(row);
+    });
+
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    tableContainer.appendChild(table);
+
+    const treeContainer = createArrayTreeElement(arr, true, depth);
+    treeContainer.style.display = 'none';
+
+    const toggleButton = document.createElement('button');
+    toggleButton.className = 'btn';
+    toggleButton.textContent = 'ツリー表示に切替';
+    toggleButton.style.marginBottom = '8px';
+    toggleButton.style.fontSize = '12px';
+    toggleButton.style.padding = '4px 8px';
+
+    toggleButton.onclick = () => {
+      const isTableVisible = tableContainer.style.display !== 'none';
+      tableContainer.style.display = isTableVisible ? 'none' : '';
+      treeContainer.style.display = isTableVisible ? '' : 'none';
+      toggleButton.textContent = isTableVisible ? 'テーブル表示に切替' : 'ツリー表示に切替';
+    };
+    
+    mainContainer.appendChild(toggleButton);
+    mainContainer.appendChild(tableContainer);
+    mainContainer.appendChild(treeContainer);
+
+    return mainContainer;
+  }
+
+  function createArrayTreeElement(data, isCollapsed, depth) {
+      const item = document.createElement('div');
+      item.className = 'item' + (isCollapsed ? ' collapsed' : '');
+
+      const toggler = document.createElement('span');
+      toggler.className = 'toggler';
+      toggler.onclick = (e) => {
+        item.classList.toggle('collapsed');
+        e.stopPropagation();
+      };
+
+      const valueContainer = document.createElement('div');
+      valueContainer.className = 'value';
+
+      const startBrace = document.createElement('span');
+      startBrace.className = 'bracket';
+      startBrace.textContent = '[';
+      
+      const ellipsis = document.createElement('span');
+      ellipsis.className = 'ellipsis';
+      ellipsis.textContent = `[...] (${data.length} items)`;
+      ellipsis.style.display = 'none';
+
+      item.appendChild(toggler);
+      item.appendChild(startBrace);
+      item.appendChild(ellipsis);
+      
+      const entries = Object.entries(data);
+      if (entries.length > 0) {
+        item.appendChild(valueContainer);
+        entries.forEach(([key, val], index) => {
+          const child = document.createElement('div');
+          child.className = 'item';
+          
+          const shouldCollapse = depth > 0;
+          child.appendChild(buildTreeElement(val, shouldCollapse, depth + 1));
+
+          if (index < entries.length - 1) {
+            child.appendChild(document.createTextNode(','));
+          }
+          valueContainer.appendChild(child);
+        });
+      }
+
+      const endBrace = document.createElement('span');
+      endBrace.className = 'bracket';
+      endBrace.textContent = ']';
+      item.appendChild(endBrace);
+
+      return item;
+  }
+
+  function buildTreeElement(data, isCollapsed, depth) {
+    const type = typeof data;
+    const isArray = Array.isArray(data);
+
+    if (data === null) return createValueElement('null', 'null');
+    if (type === 'string') {
+      if (data.startsWith('http://') || data.startsWith('https://')) {
+        const a = document.createElement('a');
+        a.href = data;
+        a.target = '_blank';
+        a.textContent = `"${data}"`;
+        return createValueElement(null, 'string', a);
+      }
+      return createValueElement(`"${data}"`, 'string');
+    }
+    if (type === 'number') return createValueElement(data, 'number');
+    if (type === 'boolean') return createValueElement(data, 'boolean');
+
+    if (type === 'object') {
+      if (isArray) {
+        if (isTableau(data)) {
+          return createTableauResult(data, depth);
+        }
+        return createArrayTreeElement(data, isCollapsed, depth);
+      }
+
+      const item = document.createElement('div');
+      item.className = 'item' + (isCollapsed ? ' collapsed' : '');
+
+      const toggler = document.createElement('span');
+      toggler.className = 'toggler';
+      toggler.onclick = (e) => {
+        item.classList.toggle('collapsed');
+        e.stopPropagation();
+      };
+
+      const valueContainer = document.createElement('div');
+      valueContainer.className = 'value';
+
+      const startBrace = document.createElement('span');
+      startBrace.className = 'brace';
+      startBrace.textContent = '{';
+      
+      const ellipsis = document.createElement('span');
+      ellipsis.className = 'ellipsis';
+      ellipsis.textContent = '{...}';
+      ellipsis.style.display = 'none';
+
+      item.appendChild(toggler);
+      item.appendChild(startBrace);
+      item.appendChild(ellipsis);
+      
+      const entries = Object.entries(data);
+      if (entries.length > 0) {
+        item.appendChild(valueContainer);
+        entries.forEach(([key, val], index) => {
+          const child = document.createElement('div');
+          child.className = 'item';
+          
+          if (!isArray) {
+            const keySpan = document.createElement('span');
+            keySpan.className = 'key';
+            keySpan.textContent = `"${key}": `;
+            child.appendChild(keySpan);
+          }
+          
+          const shouldCollapse = depth > 0;
+          child.appendChild(buildTreeElement(val, shouldCollapse, depth + 1));
+
+          if (index < entries.length - 1) {
+            child.appendChild(document.createTextNode(','));
+          }
+          valueContainer.appendChild(child);
+        });
+      }
+
+      const endBrace = document.createElement('span');
+      endBrace.className = 'brace';
+      endBrace.textContent = '}';
+      item.appendChild(endBrace);
+
+      return item;
+    }
+    return createValueElement('Unsupported', 'null');
+  }
+
+  function createValueElement(value, className, element = null) {
+    const span = document.createElement('span');
+    span.className = className;
+    if (element) {
+      span.appendChild(element);
+    } else {
+      span.textContent = value;
+    }
+    return span;
+  }
+
+  // ===== Windows 配慮の cURL 生成（Bash / PowerShell / cmd 切替） =====
+  const shellSel = document.createElement('select');
+  shellSel.id = 'shell'; shellSel.style.marginLeft = '8px';
+  shellSel.innerHTML = '<option value="bash">Bash</option><option value="pwsh">PowerShell</option><option value="cmd">cmd.exe</option>';
+  const curlWrap = document.querySelector('#curl');
+  if (curlWrap && curlWrap.parentElement) { curlWrap.parentElement.insertBefore(shellSel, curlWrap); }
+  shellSel.addEventListener('change', updateCurl);
+
+  function buildCurlFor(shell, method, full, headers, body) {
+    const hs = Object.entries(headers || {});
+    if (shell === 'bash') {
+      const H = hs.map(([k, v]) => `-H ${q_bash(k + ': ' + v)}`).join(' ');
+      const D = (['POST','PUT','PATCH','DELETE'].includes(method) && body) ? `--data ${q_bash(body)}` : '';
+      return `curl -X ${method} ${H} ${D} ${q_bash(full)}`.replace(/\s+/g, ' ').trim();
+    }
+    if (shell === 'pwsh') {
+      const H = hs.map(([k, v]) => `-H "${k}: ${v}"`).join(' ');
+      const D = (['POST','PUT','PATCH','DELETE'].includes(method) && body) ? `--data '${body}'` : '';
+      return `curl.exe -X ${method} ${H} ${D} "${full}"`.replace(/\s+/g, ' ').trim();
+    }
+    const H = hs.map(([k, v]) => `-H "${k}: ${v}"`).join(' ');
+    const bodyEsc = body ? body.replace(/"/g, '"') : '';
+    const D = (['POST','PUT','PATCH','DELETE'].includes(method) && body) ? `--data "${bodyEsc}"` : '';
+    return `curl -X ${method} ${H} ${D} "${full}"`.replace(/\s+/g, ' ').trim();
+  }
+
+  function q_bash(s) { return `'` + String(s).replaceAll(`'`, `'` + `"` + `'` + `"` + `'`) + `'`; }
+
+  const __oldUpdateCurl = updateCurl;
+  updateCurl = function () {
+    const method = methodEl.value;
+    const full = buildURL();
+    const headers = buildHeaders();
+    const body = (['POST','PUT','PATCH','DELETE'].includes(method) && bodyEl.value) ? bodyEl.value : '';
+    const shell = (document.querySelector('#shell') || { value: 'bash' }).value;
+    const cmd = buildCurlFor(shell, method, full, headers, body);
+    curlEl.textContent = cmd;
+    reqEl.textContent = JSON.stringify({ method, url: full, headers, body: bodyEl.value || null }, null, 2);
+  }
+
+})();
+</script>
+<section class="card" style="margin:0 16px 16px">
+  <header><h2>④ OAuth 2.0（PKCE）実演 & Windows向け cURL</h2></header>
+  <div class="body">
+    <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">PKCE 認可コードフロー（学習用）</h3>
+    <div class="small">※ Authorization / Token エンドポイントと client_id を入力。CORS で失敗する場合は下の <b>PowerShell / cmd</b> の cURL を使ってください。</div>
+
+    <div class="grid-2" style="margin-top:8px">
+      <div>
+        <label>Authorization Endpoint</label>
+        <input id="oa_auth" placeholder="https://example.com/oauth2/authorize" />
+      </div>
+      <div>
+        <label>Token Endpoint</label>
+        <input id="oa_token" placeholder="https://example.com/oauth2/token" />
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:8px">
+      <div>
+        <label>Client ID</label>
+        <input id="oa_client" placeholder="your_client_id" />
+      </div>
+      <div>
+        <label>Redirect URI（現在のページ）</label>
+        <input id="oa_redirect" placeholder="(自動設定)" />
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:8px">
+      <div>
+        <label>Scope（空白区切り）</label>
+        <input id="oa_scope" placeholder="openid profile email" />
+      </div>
+      <div>
+        <label>State（任意）</label>
+        <input id="oa_state" placeholder="auto" />
+      </div>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn primary" id="oa_begin">認可画面を開く（PKCE自動生成）</button>
+      <button class="btn" id="oa_reset">リセット</button>
+    </div>
+
+    <div style="margin-top:12px">
+      <div class="status"><span class="chip">OAuth Status: <b id="oa_status">—</b></span></div>
+
+      <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">トークン交換（学習用サンプル）</h3>
+      <pre id="oa_curl_ps"><code># PowerShell（Windows）推奨: curl.exe を明示
+# 認可成功後、{AUTH_CODE} を置き換えて実行
+$code = '{AUTH_CODE}'
+$verifier = '{CODE_VERIFIER}'
+$token = '{TOKEN_ENDPOINT}'
+$client = '{CLIENT_ID}'
+$redir = '{REDIRECT_URI}'
+$body = "grant_type=authorization_code&code=$code&client_id=$client&redirect_uri=$redir&code_verifier=$verifier"
+curl.exe -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data $body "$token"</code></pre>
+
+      <pre id="oa_curl_cmd"><code>REM cmd.exe 用（ダブルクォートとバックスラッシュで値をエスケープ）
+set CODE={AUTH_CODE}
+set VERIFIER={CODE_VERIFIER}
+set TOKEN={TOKEN_ENDPOINT}
+set CLIENT={CLIENT_ID}
+set REDIR={REDIRECT_URI}
+curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data "grant_type=authorization_code&code=%CODE%&client_id=%CLIENT%&redirect_uri=%REDIR%&code_verifier=%VERIFIER%" "%TOKEN%"</code></pre>
+
+      <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">レスポンス（fetch実行結果 or エラー）</h3>
+      <pre id="oa_result"><code>ここにトークン交換の結果が表示されます（CORSで失敗する場合は上の cURL をご利用ください）。</code></pre>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  const oa = {
+    auth: document.getElementById('oa_auth'),
+    token: document.getElementById('oa_token'),
+    client: document.getElementById('oa_client'),
+    redirect: document.getElementById('oa_redirect'),
+    scope: document.getElementById('oa_scope'),
+    state: document.getElementById('oa_state'),
+    begin: document.getElementById('oa_begin'),
+    reset: document.getElementById('oa_reset'),
+    status: document.getElementById('oa_status'),
+    curlPS: document.getElementById('oa_curl_ps').querySelector('code'),
+    curlCMD: document.getElementById('oa_curl_cmd').querySelector('code'),
+    result: document.getElementById('oa_result').querySelector('code'),
+  };
+  if (oa.redirect) oa.redirect.value = location.origin + location.pathname;
+
+  function rand(n){const a=new Uint8Array(n); crypto.getRandomValues(a); return a}
+  function b64u(buf){return btoa(String.fromCharCode(...buf)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+  async function sha256Buf(str){
+    const enc = new TextEncoder().encode(str);
+    const digest = await crypto.subtle.digest('SHA-256', enc);
+    return new Uint8Array(digest);
+  }
+  function genVerifier(){ return b64u(rand(32)) }
+
+  oa.begin && oa.begin.addEventListener('click', async()=>{
+    if(!oa.auth.value || !oa.token.value || !oa.client.value){ oa.status.textContent='必須項目が未入力です'; return; }
+    const verifier = genVerifier();
+    const challenge = b64u(await sha256Buf(verifier));
+    const state = oa.state.value || b64u(rand(8));
+    const u = new URL(oa.auth.value);
+    u.searchParams.set('response_type','code');
+    u.searchParams.set('client_id', oa.client.value);
+    u.searchParams.set('redirect_uri', oa.redirect.value);
+    u.searchParams.set('code_challenge_method','S256');
+    u.searchParams.set('code_challenge', challenge);
+    const scope = oa.scope.value || 'openid profile email';
+    u.searchParams.set('scope', scope);
+    u.searchParams.set('state', state);
+
+    sessionStorage.setItem('pkce_verifier', verifier);
+    sessionStorage.setItem('pkce_state', state);
+    sessionStorage.setItem('pkce_token_ep', oa.token.value);
+    sessionStorage.setItem('pkce_client', oa.client.value);
+    sessionStorage.setItem('pkce_redirect', oa.redirect.value);
+
+    oa.status.textContent = 'authorize へリダイレクト中…';
+    location.assign(u.toString());
+  });
+
+  oa.reset && oa.reset.addEventListener('click', ()=>{
+    ['pkce_verifier','pkce_state','pkce_token_ep','pkce_client','pkce_redirect'].forEach(k=> sessionStorage.removeItem(k));
+    oa.status.textContent='—'; oa.result.textContent='(cleared)';
+  });
+
+  // 認可戻り（code/state）を検知 → トークン交換を試行し、cURL（PS/cmd）を用意
+  (async function handleRedirect(){
+    const q = new URLSearchParams(location.search);
+    const code = q.get('code'); const state = q.get('state');
+    if(!code) return;
+    const expState = sessionStorage.getItem('pkce_state');
+    if(expState && state !== expState){ oa.status.textContent='state 不一致'; return; }
+    const verifier = sessionStorage.getItem('pkce_verifier');
+    const tokenEP = sessionStorage.getItem('pkce_token_ep');
+    const client = sessionStorage.getItem('pkce_client');
+    const redir = sessionStorage.getItem('pkce_redirect') || (location.origin + location.pathname);
+
+    oa.status.textContent = 'code 取得。トークン交換を試行中…';
+
+    const body = new URLSearchParams({
+      grant_type:'authorization_code', code, client_id:client, redirect_uri:redir, code_verifier:verifier
+    }).toString();
+
+    // PowerShell & cmd テンプレ置換
+    oa.curlPS.textContent = oa.curlPS.textContent
+      .replace('{AUTH_CODE}', code)
+      .replace('{CODE_VERIFIER}', verifier)
+      .replace('{TOKEN_ENDPOINT}', tokenEP)
+      .replace('{CLIENT_ID}', client)
+      .replace('{REDIRECT_URI}', redir);
+    oa.curlCMD.textContent = oa.curlCMD.textContent
+      .replace('{AUTH_CODE}', code)
+      .replace('{CODE_VERIFIER}', verifier)
+      .replace('{TOKEN_ENDPOINT}', tokenEP)
+      .replace('{CLIENT_ID}', client)
+      .replace('{REDIRECT_URI}', redir);
+
+    try{
+      const res = await fetch(tokenEP, {
+        method:'POST',
+        headers: { 'Content-Type':'application/x-www-form-urlencoded' },
+        body
+      });
+      const txt = await res.text();
+      try{ oa.result.textContent = JSON.stringify(JSON.parse(txt), null, 2) }
+      catch{ oa.result.textContent = txt }
+      oa.status.textContent = `token ${res.ok? 'OK' : 'NG'} (${res.status})`;
+    }catch(e){
+      oa.result.textContent = JSON.stringify({error:String(e), hint:'CORSで失敗する場合は上の PowerShell / cmd の cURL を使用してください。'}, null, 2);
+      oa.status.textContent = 'fetch エラー';
+    }
+  })();
+})();
+</script>
+
+</body>
+</html>

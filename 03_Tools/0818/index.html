@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>API Learning Lab – 1-file Web App</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>API Learning Lab <small>— リクエストの中身とレスポンスを“見て学ぶ”最小アプリ</small></h1>
+  </header>
+
+  <div class="wrap">
+    <!-- ① Request Builder -->
+    <section id="panel-1" class="card">
+      <header><h2>① リクエストを作る</h2></header>
+      <div class="body">
+        <label>サンプルAPI（選ぶだけで学習できます）</label>
+        <select id="preset"></select>
+
+        <div class="row" style="margin-top:8px">
+          <select id="method" style="max-width:120px">
+            <option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option>
+          </select>
+          <input id="url" placeholder="https://example.com/api" />
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="row">
+            <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">クエリパラメータ</h3>
+            <button class="btn" id="addParam">＋ 追加</button>
+          </div>
+          <div id="params"></div>
+        </div>
+
+        <div style="margin-top:10px">
+          <div class="row">
+            <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">HTTPヘッダー</h3>
+            <button class="btn" id="addHeader">＋ 追加</button>
+          </div>
+          <div id="headers"></div>
+        </div>
+
+        <div id="bodyWrap" style="margin-top:10px;display:none">
+          <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">リクエストボディ（JSON）</h3>
+          <textarea id="body" rows="8" placeholder='{"title":"foo"}'></textarea>
+        </div>
+
+        <div style="margin-top:10px" class="grid-2">
+          <button class="btn primary" id="send">▶ 送信（fetch）</button>
+          <button class="btn warn" id="cancel">■ 中止（Abort）</button>
+        </div>
+
+        <div style="margin-top:10px">
+          <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">cURL（同等コマンドの学習）</h3>
+          <pre id="curl"><code># ここに cURL が表示されます</code></pre>
+          <div class="small">Tips: <span class="kbd">Shift</span> + <span class="kbd">Enter</span> で cURL 全文コピー</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ② Results Inspector -->
+    <section id="panel-2" class="card">
+      <header><h2>② 結果を観察する</h2></header>
+      <div class="body" style="padding-top:0;">
+        <div class="status" style="padding: 12px 14px; border-bottom: 1px solid #25345d;">
+          <span class="chip">Status: <b id="st">—</b></span>
+          <span class="chip">Time: <b id="tm">—</b></span>
+          <span class="chip">Size: <b id="sz">—</b></span>
+          <span class="chip">Type: <b id="ct">—</b></span>
+        </div>
+        <div class="tabs">
+          <div class="tab active" data-tab="json">JSON</div>
+          <div class="tab" data-tab="text">Raw Text</div>
+          <div class="tab" data-tab="headers">Response Headers</div>
+          <div class="tab" data-tab="request">Request Preview</div>
+        </div>
+        <div class="response" id="panel-json"><div id="json-viewer" class="json-viewer"><code>ここに JSON が表示されます</code></div></div>
+        <div class="response" id="panel-text" style="display:none"><pre id="text"><code>ここにテキストが表示されます</code></pre></div>
+        <div class="response" id="panel-headers" style="display:none"><pre id="respHeaders"><code>ここにレスポンスヘッダが表示されます</code></pre></div>
+        <div class="response" id="panel-request" style="display:none"><pre id="req"><code>ここに送信内容が表示されます</code></pre></div>
+      </div>
+    </section>
+
+    <!-- API Schema Info Panel -->
+    <div id="schema-info-container" class="card" style="display:none;">
+      <header><h2>API仕様のヒント</h2></header>
+      <div class="body" id="schema-info"></div>
+    </div>
+
+    <!-- ③ Usage Guide -->
+    <section id="panel-3" class="card">
+      <header><h2>③ 使い方ガイド（困ったらここから）</h2></header>
+      <div class="body">
+        <details open>
+          <summary class="chip" style="cursor:pointer">📌 クイックスタート</summary>
+          <ol>
+            <li>「サンプルAPI」を選ぶ（Frankfurter等）。</li>
+            <li>必要ならクエリパラメータを追加。</li>
+            <li><b>▶ 送信</b>を押し、右の「結果」パネルでStatus等を確認。</li>
+            <li>タブで JSON / Raw / Headers 等を切替え、差分で学ぶ。</li>
+            <li><b>cURL</b>をコピーして、CLIでも再現。</li>
+          </ol>
+        </details>
+        <details>
+          <summary class="chip" style="cursor:pointer">🧪 ハンズオン課題（5分ドリル）</summary>
+          <ol>
+            <li><b>メソッドの差</b>：<code>JSONPlaceholder</code> をPOSTに切替え、Bodyを入れて返り値の違いを観察。</li>
+            <li><b>エラー観察</b>：URLをわざと間違える→<b>Status</b> とエラーを読む。</li>
+            <li><b>CORS</b>: <code>WorldTimeAPI</code> を叩き、コンソールのCORSエラーを確認 → cURLで成功させる。</li>
+          </ol>
+        </details>
+        <details>
+          <summary class="chip" style="cursor:pointer">🛠 よくある詰まり & トラブルシュート</summary>
+          <ul>
+            <li><b>CORSでブロック</b>：ブラウザから直接叩けないAPIは普通にあります。<br/>対処：① サーバ側で <code>Access-Control-Allow-Origin</code> を許可、② 学習目的なら <b>同一オリジンの簡易プロキシ</b>を挟む。</li>
+            <li><b>JSONが壊れる</b>：ボディに末尾カンマ/単一引用符。→ <b>JSON.stringify</b> を通す、または <b>エディタでJSON整形</b>。</li>
+            <li><b>401/403</b>：キーやトークン未設定。→ <b>Authorization</b> ヘッダ、もしくは <code>?apikey=</code> を確認。</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+    <!-- ④ OAuth 2.0 -->
+    <section id="panel-4" class="card">
+        <header><h2>④ OAuth 2.0（PKCE）実演</h2></header>
+        <div class="body">
+          <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">PKCE 認可コードフロー（学習用）</h3>
+          <div class="small">※ Authorization / Token エンドポイントと client_id を入力。CORS で失敗する場合は下の <b>PowerShell / cmd</b> の cURL を使ってください。</div>
+
+          <div class="grid-2" style="margin-top:8px">
+            <div>
+              <label>Authorization Endpoint</label>
+              <input id="oa_auth" placeholder="https://example.com/oauth2/authorize" />
+            </div>
+            <div>
+              <label>Token Endpoint</label>
+              <input id="oa_token" placeholder="https://example.com/oauth2/token" />
+            </div>
+          </div>
+          <div class="grid-2" style="margin-top:8px">
+            <div>
+              <label>Client ID</label>
+              <input id="oa_client" placeholder="your_client_id" />
+            </div>
+            <div>
+              <label>Redirect URI（現在のページ）</label>
+              <input id="oa_redirect" placeholder="(自動設定)" />
+            </div>
+          </div>
+          <div class="grid-2" style="margin-top:8px">
+            <div>
+              <label>Scope（空白区切り）</label>
+              <input id="oa_scope" placeholder="openid profile email" />
+            </div>
+            <div>
+              <label>State（任意）</label>
+              <input id="oa_state" placeholder="auto" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn primary" id="oa_begin">認可画面を開く（PKCE自動生成）</button>
+            <button class="btn" id="oa_reset">リセット</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="status"><span class="chip">OAuth Status: <b id="oa_status">—</b></span></div>
+
+            <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">トークン交換（学習用サンプル）</h3>
+            <pre id="oa_curl_ps"><code># PowerShell（Windows）推奨: curl.exe を明示
+# 認可成功後、{AUTH_CODE} を置き換えて実行
+$code = '{AUTH_CODE}'
+$verifier = '{CODE_VERIFIER}'
+$token = '{TOKEN_ENDPOINT}'
+$client = '{CLIENT_ID}'
+$redir = '{REDIRECT_URI}'
+$body = "grant_type=authorization_code&code=$code&client_id=$client&redirect_uri=$redir&code_verifier=$verifier"
+curl.exe -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data $body "$token"</code></pre>
+
+            <pre id="oa_curl_cmd"><code>REM cmd.exe 用（ダブルクォートとバックスラッシュで値をエスケープ）
+set CODE={AUTH_CODE}
+set VERIFIER={CODE_VERIFIER}
+set TOKEN={TOKEN_ENDPOINT}
+set CLIENT={CLIENT_ID}
+set REDIR={REDIRECT_URI}
+curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" --data "grant_type=authorization_code&code=%CODE%&client_id=%CLIENT%&redirect_uri=%REDIR%&code_verifier=%VERIFIER%" "%TOKEN%"</code></pre>
+
+            <h3 style="margin:8px 0;font-size:13px;color:#cfe1ff">レスポンス（fetch実行結果 or エラー）</h3>
+            <pre id="oa_result"><code>ここにトークン交換の結果が表示されます（CORSで失敗する場合は上の cURL をご利用ください）。</code></pre>
+          </div>
+        </div>
+    </section>
+
+  </div>
+
+<script src="script.js" defer></script>
+
+</body>
+</html>

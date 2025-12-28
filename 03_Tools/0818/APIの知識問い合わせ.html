@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="ja" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>API会話シリーズ — セクション連動ヘッダー & ダークモード</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111111; --muted:#666;
+      --a-bg:#eef4ff; --a-text:#0a2b52; --a-border:#a9c6ff;
+      --b-bg:#eefdf6; --b-text:#083a2b; --b-border:#9de4c1;
+      --chip:#f1f5f9; --chip-border:#e2e8f0;
+      --radius:14px; --maxw: 860px; --bubble-shadow:none;
+      --divider:#e5e7eb; --accent:#2563eb;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --bg:#0b0e13; --text:#e8ecf2; --muted:#9aa3b2;
+        --a-bg:#1a2436; --a-text:#cfe2ff; --a-border:#3b5e9b;
+        --b-bg:#152a22; --b-text:#ccffea; --b-border:#2c8c6f;
+        --chip:#111827; --chip-border:#263041;
+        --bubble-shadow:0 1px 0 rgba(255,255,255,.04) inset;
+        --divider:#1f2937; --accent:#60a5fa;
+      }
+    }
+    html[data-theme="light"]{
+      --bg:#ffffff; --text:#111111; --muted:#666;
+      --a-bg:#eef4ff; --a-text:#0a2b52; --a-border:#a9c6ff;
+      --b-bg:#eefdf6; --b-text:#083a2b; --b-border:#9de4c1;
+      --chip:#f1f5f9; --chip-border:#e2e8f0;
+      --bubble-shadow:none; --divider:#e5e7eb; --accent:#2563eb;
+    }
+    html[data-theme="dark"]{
+      --bg:#0b0e13; --text:#e8ecf2; --muted:#9aa3b2;
+      --a-bg:#1a2436; --a-text:#cfe2ff; --a-border:#3b5e9b;
+      --b-bg:#152a22; --b-text:#ccffea; --b-border:#2c8c6f;
+      --chip:#111827; --chip-border:#263041;
+      --bubble-shadow:0 1px 0 rgba(255,255,255,.04) inset;
+      --divider:#1f2937; --accent:#60a5fa;
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; background:var(--bg); color:var(--text);
+      font:15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif; }
+    header{
+      position:sticky; top:0; z-index:10;
+      background:color-mix(in oklab, var(--bg) 92%, transparent);
+      backdrop-filter:saturate(140%) blur(6px);
+      border-bottom:1px solid var(--divider);
+    }
+    .wrap{ max-width:var(--maxw); margin:0 auto; padding:10px 12px; display:flex; align-items:center; gap:10px; }
+    .title{ font-weight:700; letter-spacing:.01em; font-size:15.5px; flex:1 1 auto; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .current{ color:var(--muted); font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .actions{ display:flex; gap:8px; align-items:center; }
+    .btn{
+      appearance:none; border:1px solid var(--divider); background:var(--chip); color:var(--text);
+      padding:6px 10px; border-radius:10px; font-size:13px; cursor:pointer;
+    }
+    .btn:hover{ border-color:color-mix(in oklab, var(--accent) 40%, var(--divider)); }
+    main{ padding: 12px 0 20px; }
+    .section{ max-width:var(--maxw); margin:0 auto; padding:14px 12px 8px; }
+    .sec-head{ display:flex; align-items:center; gap:10px; margin:2px 0 8px; }
+    .sec-chip{ font-weight:700; font-size:13px; padding:4px 10px; border-radius:999px; background:var(--chip); border:1px solid var(--chip-border); }
+    .sec-title{ font-weight:700; font-size:16px; }
+    .chat{ max-width:var(--maxw); margin:0 auto; display:flex; flex-direction:column; gap:8px; padding:0 10px 8px; }
+    .row{ display:flex; align-items:flex-end; gap:8px; break-inside: avoid; }
+    .row.right{ justify-content:flex-end; }
+    .avatar{ width:28px; height:28px; border-radius:50%; display:grid; place-items:center; font-weight:700; font-size:12px;
+      border:1px solid var(--chip-border); background:var(--chip); color:var(--text); flex:0 0 auto; }
+    .bubble{ position:relative; padding:9px 11px; border-radius: var(--radius); max-width: 84%;
+      border:1px solid transparent; box-shadow:var(--bubble-shadow); font-size:14px; line-height:1.55; white-space: normal; }
+    .row.left .bubble{ background:var(--a-bg); color:var(--a-text); border-color:var(--a-border); }
+    .row.left .bubble:after{ content:""; position:absolute; left:-7px; bottom:8px; width:0; height:0;
+      border-top:7px solid transparent; border-bottom:7px solid transparent; border-right:7px solid var(--a-bg); }
+    .row.right .bubble{ background:var(--b-bg); color:var(--b-text); border-color:var(--b-border); }
+    .row.right .bubble:after{ content:""; position:absolute; right:-7px; bottom:8px; width:0; height:0;
+      border-top:7px solid transparent; border-bottom:7px solid transparent; border-left:7px solid var(--b-bg); }
+    code, pre{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    pre{ background:var(--chip); color:var(--text); border:1px solid var(--chip-border); padding:8px; border-radius:8px; overflow:auto; font-size:12.5px; line-height:1.45; margin:6px 0 0; }
+    footer{ border-top:1px solid var(--divider); }
+    .tips{ max-width:var(--maxw); margin:0 auto; padding:12px 12px; font-size:13px; color:var(--text); }
+    .kbd{ font:600 .86em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:var(--chip); color:var(--text); padding:.08em .4em; border:1px solid var(--chip-border); border-radius:6px; }
+    .tag{ display:inline-block; padding:.14em .6em; border-radius:999px; margin-right:.3em; border:1px solid var(--chip-border); color:var(--text); background:var(--chip); font-size:.82em;}
+    @page{ size: A4; margin: 12mm; }
+    @media print{
+      header{ position:static; }
+      .section{ padding:8px 0 4px; }
+      .chat{ gap:6px; padding:0; }
+      .row{ gap:6px; }
+      .avatar{ width:24px; height:24px; font-size:11px; }
+      .bubble{ max-width: 86%; padding:8px 10px; font-size:13.5px; line-height:1.48; }
+      pre{ font-size:11.5px; }
+      a[href]:after{ content:""; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="title">API会話シリーズ</div>
+      <div class="current" id="currentTitle">—</div>
+      <div class="actions">
+        <button class="btn" id="themeBtn" type="button" aria-label="テーマ切替">🌓 テーマ</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Conversations Only: 9 Sections -->
+<!-- Embed these <section> blocks inside your existing template's <main>. -->
+<!-- Class names follow the approved style: section/sec-head/sec-chip/sec-title/chat/row/avatar/bubble, with left(A)/right(B). -->
+
+<!-- Section 1: APIクライアントとは -->
+<section class="section" data-title="APIクライアントとは">
+  <div class="sec-head"><div class="sec-chip">セクション 1</div><div class="sec-title">APIクライアントとは</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">あの…先輩、「APIクライアント」って、えっと…ソフトの名前…でしたっけ？</div></div>
+    <div class="row right"><div class="bubble">いい質問。文脈で3つの意味に分かれるんだ。①自分のコード ②ツール（Postman/curl） ③公式SDK（Octokitなど）。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">あ、Postmanは知ってます。えっと…じゃあSDKってのも同じ「クライアント」…？</div></div>
+    <div class="row right"><div class="bubble">うん。同じ「APIを呼ぶ側」だからね。ドキュメントで「インストール」って出たら③を指すことが多い。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">なるほど…でも会話の中でどれのことか、いつも迷子になります…。</div></div>
+    <div class="row right"><div class="bubble">そのときは「コードですか？ツールですか？それともSDKですか？」って確認しよう。混線が一番のバグ原因だから。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+<!-- Section 2: Content-Typeの見方 -->
+<section class="section" data-title="Content-Typeの見方">
+  <div class="sec-head"><div class="sec-chip">セクション 2</div><div class="sec-title">Content-Typeの見方</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">レスポンスって、とりあえずJSONで読んでます。だめ…ですか？</div></div>
+    <div class="row right"><div class="bubble">まずは <code>Content-Type</code> を確認しよう。JSONならパーサ、XMLならXMLパーサ、画像やPDFはバイナリ扱いだよ。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">この前、エラーでHTMLが返ってパースが落ちました…。</div></div>
+    <div class="row right"><div class="bubble">あるある。エラー時は <code>text/html</code> や <code>text/plain</code> が返るAPIもある。ステータスとContent-Typeで分岐しておくと安全。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">`charset=utf-8` って付いてるの、いつもスルーしてました…。</div></div>
+    <div class="row right"><div class="bubble">文字化け防止の鍵だよ。特に日本語。基本はUTF-8だけど、念のため意識しておこう。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+<!-- Section 3: 手動パース vs 正しいパース -->
+<section class="section" data-title="手動パース vs 正しいパース">
+  <div class="sec-head"><div class="sec-chip">セクション 3</div><div class="sec-title">手動パース vs 正しいパース</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">XMLを <code>split("&lt;name&gt;")</code> で抜くやつ…動いたんですけど…ダメ…？</div></div>
+    <div class="row right"><div class="bubble">手動パースは壊れやすい。改行・入れ子・属性で崩れる。XMLパーサを使えば構造を理解して安全に取れるよ。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">JSONも文字列操作でなんとか…は、やめた方が？</div></div>
+    <div class="row right"><div class="bubble">うん。JSなら <code>JSON.parse</code>、Pythonなら <code>json.loads</code>。構文エラーも検出できるから例外処理が書ける。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">なるほど…「包丁で刻む」より「フードプロセッサー」使え、って感じですね。</div></div>
+    <div class="row right"><div class="bubble">その例え、いいね。スピードも安全性も上がる。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+<!-- Section 4: ステータスコード入門 -->
+<section class="section" data-title="ステータスコード入門">
+  <div class="sec-head"><div class="sec-chip">セクション 4</div><div class="sec-title">ステータスコード入門</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">404って…サーバー壊れてるから…でしたっけ？</div></div>
+    <div class="row right"><div class="bubble">404は「そのURLに無い」。クライアント側の指定ミス系。壊れてるのはたいてい5xxだね。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">じゃあ200以外は全部失敗…とも限らない？</div></div>
+    <div class="row right"><div class="bubble">正解。201は作成成功、204は成功だけどボディ無し、304は未変更（キャッシュ）。数字の意味を掴もう。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">まず数字でザックリ、次にヘッダー、最後にボディ…の順が良さそう。</div></div>
+    <div class="row right"><div class="bubble">その順番が一番事故が少ない。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+<!-- Section 5: ボディ編（JSON/XML/ファイル/画像/フォーム） -->
+<section class="section" data-title="ボディ編：JSON/XML/ファイル/画像/フォーム">
+  <div class="sec-head"><div class="sec-chip">セクション 5</div><div class="sec-title">ボディ編：JSON/XML/ファイル/画像/フォーム</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">JSONは <code>res.json()</code>…で、XMLは…テキストにしてから、ですよね…？</div></div>
+    <div class="row right"><div class="bubble">そう。テキスト→XMLパーサ。PDF/画像/ZIPはバイナリ。受け取り方を分岐しよう。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">フォームみたいな <code>key=value&amp;…</code> が返るときは…？</div></div>
+    <div class="row right"><div class="bubble">テキストで受けて <code>URLSearchParams</code> などで解釈。最近はレスポンスでは少ないけど覚えておくと安心。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">画像API、キャッシュされて古いのが出ちゃう時あります…。</div></div>
+    <div class="row right"><div class="bubble">クエリにタイムスタンプを足してキャッシュ回避する手もある（ただしCDNポリシーと相談）。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+<!-- Section 6: 認証編（APIキー / OAuth） -->
+<section class="section" data-title="認証編：APIキー / OAuth">
+  <div class="sec-head"><div class="sec-chip">セクション 6</div><div class="sec-title">認証編：APIキー / OAuth</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">APIキーと…ベアラー？どっちを使えば…。</div></div>
+    <div class="row right"><div class="bubble">APIキーは固定の合言葉。手軽だけど権限が粗い。BearerはOAuthで発行される期限付きトークンで、権限や失効が管理しやすい。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">トークン切れたら…ログインからやり直し…です？</div></div>
+    <div class="row right"><div class="bubble">アクセストークンが切れたらリフレッシュトークンで再発行。UIの再ログインは不要にできる設計が多いよ。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">ヘッダーは <code>Authorization: Bearer &lt;token&gt;</code> でしたね…！</div></div>
+    <div class="row right"><div class="bubble">それそれ。送信先やHTTPSも忘れずに。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+<!-- Section 7: エラーハンドリング編 -->
+<section class="section" data-title="エラーハンドリング編：再試行/タイムアウト/ログ">
+  <div class="sec-head"><div class="sec-chip">セクション 7</div><div class="sec-title">エラーハンドリング編：再試行/タイムアウト/ログ</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">429とか502とか…来たら、とりあえずもう一回…ですよね？</div></div>
+    <div class="row right"><div class="bubble">やみくも再試行はNG。指数バックオフ＋Jitter、<code>Retry-After</code> があれば尊重。全体のタイムアウトや回数上限も決めよう。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">ログは…エラーメッセージだけで十分…です？</div></div>
+    <div class="row right"><div class="bubble">最低限、ステータス/主要ヘッダー/ボディの一部（個人情報はマスク）を残して、原因の切り分けをできるように。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">タイムアウト値、毎回迷います…。</div></div>
+    <div class="row right"><div class="bubble">UI操作なら3–10秒、バッチなら30–120秒を目安にSLAで決める。外部APIの制限も考慮してね。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+<!-- Section 8: キャッシュ編 -->
+<section class="section" data-title="キャッシュ編：Cache-Control/ETag/条件付き">
+  <div class="sec-head"><div class="sec-chip">セクション 8</div><div class="sec-title">キャッシュ編：Cache-Control/ETag/条件付き</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">最新だけ欲しいのに、古いデータが…。</div></div>
+    <div class="row right"><div class="bubble"><code>Cache-Control: no-store</code> を送るか、ETag/Last-Modifiedで条件付きリクエスト。304なら未変更で無駄が減る。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">フロント側で何かできること…は？</div></div>
+    <div class="row right"><div class="bubble">クエリにタイムスタンプを足してキャッシュバスターにする方法があるよ（ただしCDNのキャッシュ戦略と整合させよう）。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+<!-- Section 9: 実務チェックリスト -->
+<section class="section" data-title="実務チェックリスト（保存版）">
+  <div class="sec-head"><div class="sec-chip">セクション 9</div><div class="sec-title">実務チェックリスト（保存版）</div></div>
+  <div class="chat">
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">毎回の確認順、これで合ってます？「数字→ヘッダー→ボディ」…。</div></div>
+    <div class="row right"><div class="bubble">合ってる。加えて「ログ」「再試行ポリシー」「認証/権限」「キャッシュ」も最後に確認すれば盤石だよ。</div><div class="avatar" aria-hidden="true">B</div></div>
+    <div class="row left"><div class="avatar" aria-hidden="true">A</div>
+      <div class="bubble">よし…印刷して席に貼ります…！</div></div>
+    <div class="row right"><div class="bubble">このままA4印刷OK。ダーク派ならそのままでも読みやすいはず。</div><div class="avatar" aria-hidden="true">B</div></div>
+  </div>
+</section>
+
+  </main>
+  <footer>
+    <div class="tips">
+      <span class="tag">Tips</span>
+      レスポンス確認は <span class="kbd">ステータスコード → ヘッダー → ボディ</span> の順が吉。
+      JSONは <span class="kbd">JSON.parse / res.json()</span>、XMLは専用パーサ、ファイルはバイナリで。
+    </div>
+  </footer>
+
+  <script>
+    // Theme toggle with persistence
+    (function(){
+      const html = document.documentElement;
+      const btn = document.getElementById('themeBtn');
+      const saved = localStorage.getItem('theme');
+      if(saved === 'light' || saved === 'dark'){ html.setAttribute('data-theme', saved); }
+      btn.addEventListener('click', () => {
+        const now = html.getAttribute('data-theme');
+        const next = now === 'dark' ? 'light' : (now === 'light' ? 'auto' : 'dark');
+        if(next === 'auto'){ localStorage.removeItem('theme'); }
+        else{ localStorage.setItem('theme', next); }
+        html.setAttribute('data-theme', next);
+        btn.textContent = '🌓 テーマ (' + next + ')';
+      });
+      btn.textContent = '🌓 テーマ (' + (saved || 'auto') + ')';
+    })();
+
+    // Sticky header: show current section title
+    (function(){
+      const sections = Array.from(document.querySelectorAll('section.section'));
+      const currentEl = document.getElementById('currentTitle');
+      const map = new Map();
+      sections.forEach(sec => map.set(sec, sec.dataset.title || ''));
+      const opts = { root:null, rootMargin:'-40% 0px -55% 0px', threshold:[0, 0.25, 0.5, 0.75, 1] };
+      let current = '';
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if(e.isIntersecting){
+            const t = map.get(e.target);
+            if(t && t !== current){
+              current = t;
+              currentEl.textContent = '— ' + t;
+            }
+          }
+        });
+      }, opts);
+      sections.forEach(sec => io.observe(sec));
+      const first = sections[0];
+      if(first){ currentEl.textContent = '— ' + (first.dataset.title || ''); }
+    })();
+  </script>
+</body>
+</html>
