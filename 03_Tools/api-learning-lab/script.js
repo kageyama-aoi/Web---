@@ -25,15 +25,13 @@
   let presets = [];
 
   // Main App Logic
-  async function initializeApp() {
-    try {
-      const response = await fetch('./data/presets.json');
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      presets = await response.json();
+  function initializeApp() {
+    if (window.API_PRESETS && Array.isArray(window.API_PRESETS)) {
+      presets = window.API_PRESETS;
       loadPresets();
-    } catch (error) {
-      console.error('Failed to load presets:', error);
-      if (jsonViewerEl) jsonViewerEl.innerHTML = `<code style="color:var(--bad)">APIプリセットの読み込みに失敗しました。<br>./data/presets.jsonを確認してください。<br>${error}</code>`;
+    } else {
+      console.error('Failed to load presets: window.API_PRESETS is not defined.');
+      if (jsonViewerEl) jsonViewerEl.innerHTML = `<code style="color:var(--bad)">APIプリセットの読み込みに失敗しました。<br>./data/presets.jsを確認してください。</code>`;
     }
   }
 
