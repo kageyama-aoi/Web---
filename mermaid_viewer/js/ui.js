@@ -1,6 +1,20 @@
 import { STORAGE_KEYS } from './constants.js';
 
-export function setStatus(el, msg) { el.textContent = msg || ''; }
+let _statusTimer;
+export function setStatus(el, msg) {
+  clearTimeout(_statusTimer);
+  el.classList.remove('fade-out');
+  el.textContent = msg || '';
+  if (msg) {
+    _statusTimer = setTimeout(() => {
+      el.classList.add('fade-out');
+      setTimeout(() => {
+        el.textContent = '';
+        el.classList.remove('fade-out');
+      }, 400);
+    }, 3000);
+  }
+}
 
 export function showError(el, err) { el.textContent = (err && (err.str || err.message)) || String(err); }
 
