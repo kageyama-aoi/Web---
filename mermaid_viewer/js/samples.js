@@ -135,6 +135,34 @@ SAMPLES["gantt_milestone"] = `gantt
   shima25s                 :crit, milestone, 2025-04-14, 1d
   shima26s                 :crit, milestone, 2025-07-24, 1d`;
 
+export const SAMPLE_ORDER = [
+  'flow',
+  'seq',
+  'git',
+  'git_dev_shishi_cp',
+  'state',
+  'er',
+  'gantt',
+  'env_gantt',
+  'gantt_milestone',
+  'timeline',
+  'env_flow',
+];
+
+export const SAMPLE_LABELS = {
+  flow: 'フローチャート',
+  seq: 'シーケンス',
+  git: 'Gitグラフ（v10表記）',
+  git_dev_shishi_cp: 'Gitグラフ（dev起点・凍結はshishiにCP）',
+  state: 'ステート',
+  er: 'ER',
+  gantt: 'ガント',
+  env_gantt: '環境別ガント',
+  gantt_milestone: 'ガント: マイルストーン',
+  timeline: 'タイムライン',
+  env_flow: 'デプロイ（環境別 Flow）',
+};
+
 // 追加サンプル：dev起点・凍結中はshishiにチェリーピックして本番UP
 SAMPLES["git_dev_shishi_cp"] = `%%{init: { "gitGraph": { "mainBranchName": "schoolmng_dev", "showBranches": true, "showCommitLabel": true } }}%%
 gitGraph LR:
