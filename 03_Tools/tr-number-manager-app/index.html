@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TR番号管理ツール</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>TR番号管理ツール</h1>
+
+        <div class="section">
+            <label for="trNumberDisplay">現在のTR番号:</label>
+            <span id="trNumberDisplay">[TR_NUMBER_DISPLAY_AREA]</span>
+        </div>
+
+        <div class="section">
+            <label for="dataInput">データ入力エリア (CSV/JSON/表をここに貼り付け):</label>
+            <textarea id="dataInput" placeholder="ここにデータを貼り付けてください"></textarea>
+        </div>
+
+        <div class="buttons">
+            <button id="processDataButton">データ処理</button>
+            <button id="clearInputButton">入力クリア</button>
+        </div>
+
+        <div class="section">
+            <label for="resultOutput">処理結果/メッセージ表示エリア:</label>
+            <textarea id="resultOutput" readonly></textarea>
+        </div>
+
+        <div class="status">
+            ステータス: <span id="statusMessage">準備完了</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
